@@ -1,0 +1,8 @@
+/af
+/test
+/etc
+poetry.lock
+pyproject.toml
+.env
+__pycache__
+/logs
