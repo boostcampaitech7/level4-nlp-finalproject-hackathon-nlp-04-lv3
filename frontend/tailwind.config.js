@@ -83,8 +83,8 @@ export default {
           transparent: 'rgba(112, 112, 112, 0.1)',
         },
         black: '#000000',
-        white: '#FFFFFF',
         white: {
+          1: '#FFFFFF',
           transparent: 'rgba(255, 255, 255, 0.2)',
         },
         blue: {
@@ -95,8 +95,8 @@ export default {
           500: '#BBCAFF',
           600: '#D3DCFF',
           700: '#EAEFFF',
-          transparent: 'rgba(67, 109, 255, 0.08)',
           transparent: {
+            1: 'rgba(67, 109, 255, 0.08)',
             inverse: 'rgba(67, 109, 255, 0.3)',
           },
         },
@@ -109,8 +109,8 @@ export default {
           600: '#FFBFBF',
           700: '#FFDBDB',
           800: '#FFECEC',
-          transparent: 'rgba(255, 70, 70, 0.08)',
           transparent: {
+            1: 'rgba(255, 70, 70, 0.08)',
             inverse: 'rgba(255, 70, 70, 0.3)',
           },
         },
