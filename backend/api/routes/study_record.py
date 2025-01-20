@@ -45,11 +45,12 @@ def fetch_record_by_id(
                 vocab_id=vocab.vocab_id,
                 vocab=vocab.vocab,
                 hanja=vocab.hanja,
-                meaning=vocab.meaning,
-                explaination=vocab.explanation,
+                dict_mean=vocab.dict_mean,
+                easy_explain=vocab.easy_explain,
                 correct_example=vocab.correct_example,
                 incorrect_example=vocab.incorrect_example,
                 quiz_id=vocab_quiz.quiz_id,
+                quiz_question=vocab_quiz.question[1:],
                 quiz_level=vocab_quiz.level,
                 quiz_options=vocab_quiz.options[4:],
                 quiz_correct=study_record.correct[1:],
@@ -72,6 +73,7 @@ def fetch_record_by_id(
                 category=text.category,
                 quiz_id=text_quiz.quiz_id,
                 quiz_level=text_quiz.level,
+                quiz_question=text_quiz.question,
                 quiz_options=text_quiz.options,
                 quiz_correct=study_record.correct,
                 quiz_user_answer=study_record.user_answer,
@@ -119,7 +121,7 @@ def fetch_record_by_page(
                         record_id=study_record.record_id,
                         quiz_level=vocab_quiz.level,
                         vocab=vocab.vocab,
-                        meaning=vocab.meaning,
+                        dict_mean=vocab.dict_mean,
                     )
                 )
             )
@@ -180,7 +182,7 @@ def fetch_vocab_record_by_page(
                 record_id=study_record.record_id,
                 quiz_level=vocab_quiz.level,
                 vocab=vocab.vocab,
-                meaning=vocab.meaning,
+                dict_mean=vocab.dict_mean,
             )
         )
     return response_body

@@ -39,7 +39,7 @@ def fetch_record_by_page(
     # 3. 복습할 단어 퀴즈 추출
     response_body = list()
     for study_record in study_records:
-        vocab_quiz = session.get(VocabQuizzes, study_record.quiz_vocab_id)
+        vocab_quiz = session.get(VocabQuizzes, study_record.vocab_quiz_id)
         vocab = session.get(Vocabs, vocab_quiz.vocab_id)
         response_body.append(
             VocabStudyRecordDTO(
@@ -47,11 +47,12 @@ def fetch_record_by_page(
                 vocab_id=vocab.vocab_id,
                 vocab=vocab.vocab,
                 hanja=vocab.hanja,
-                meaning=vocab.meaning,
-                explanation=vocab.explanation,
+                dict_mean=vocab.dict_mean,
+                easy_explain=vocab.easy_explain,
                 correct_example=vocab.correct_example,
                 incorrect_example=vocab.incorrect_example,
                 quiz_id=vocab_quiz.quiz_id,
+                quiz_question=vocab_quiz.question[:1],
                 quiz_level=vocab_quiz.level,
                 quiz_options=vocab_quiz.options[:4],
                 quiz_correct=study_record.correct[:1],

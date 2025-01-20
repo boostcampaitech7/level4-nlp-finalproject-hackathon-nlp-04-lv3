@@ -7,12 +7,13 @@ class VocabStudyRecordDTO(BaseModel):
     vocab_id: int
     vocab: str
     hanja: str
-    meaning: str
+    dict_mean: str
     explanation: List[str]
     correct_example: List[str]
     incorrect_example: str
     quiz_id: int
     quiz_level: int
+    quiz_question: List[str]
     quiz_options: List[str]
     quiz_correct: List[bool]
     quiz_user_answer: List[int]
@@ -29,6 +30,7 @@ class TextStudyRecordDTO(BaseModel):
     category: str
     quiz_id: int
     quiz_level: int
+    quiz_question: List[str]
     quiz_correct: List[bool]
     quiz_user_answer: List[int]
     quiz_options: List[str]
@@ -45,7 +47,7 @@ class VocabStudyRecordSummaryDTO(BaseModel):
     record_id: int
     quiz_level: int
     vocab: str
-    meaning: str
+    dict_mean: str
 
 
 class TextStudyRecordSummaryDTO(BaseModel):
