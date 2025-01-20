@@ -1,0 +1,118 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-main: #8a59ff;
+  --color-line: #d4d4d4;
+  --color-text-primary: #202020;
+  --color-text-intermediate: #3e3e3e;
+  --color-text-secondary: #707070;
+  --color-text-tertiary: #5e82ff;
+  --color-text-inverse: #ffffff;
+  --color-text-transparent: rgba(112, 112, 112, 0.1);
+
+  --color-surface-primary-1: #c9b2ff;
+  --color-surface-primary-2: #ffffff;
+  --color-surface-secondary: #f2f2f2;
+
+  --color-button-primary: #c9b2ff;
+  --color-button-primary-2: #ba9cff;
+  --color-button-secondary: #e8e8e8;
+  --color-button-secondary-2: #d4d4d4;
+  --color-button-inverse: #000000;
+  --color-button-primary-hover: #a680ff;
+  --color-button-secondary-hover: #acacac;
+
+  --color-background-primary: #f2f2f2;
+  --color-background-secondary: #acacac;
+
+  --color-accent-highlight: #ffc9a2;
+  --color-accent-positive: rgba(67, 109, 255, 0.08);
+  --color-accent-negative: rgba(255, 70, 70, 0.08);
+  --color-accent-red: #ff5757;
+  --color-accent-purple: #9a6eff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-main: #d8c8ff;
+    --color-line: #848484;
+    --color-text-primary: #f2f2f2;
+    --color-text-intermediate: #e8e8e8;
+    --color-text-secondary: #e8e8e8;
+    --color-text-tertiary: #e9eeff;
+    --color-text-inverse: #000000;
+    --color-text-transparent: rgba(255, 255, 255, 0.2);
+
+    --color-surface-primary-1: #ba9cff;
+    --color-surface-primary-2: #000000;
+    --color-surface-secondary: #707070;
+
+    --color-button-primary: #ba9cff;
+    --color-button-primary-2: #ba9cff;
+    --color-button-secondary: #3e3e3e;
+    --color-button-secondary-2: #3e3e3e;
+    --color-button-inverse: #ffffff;
+    --color-button-primary-hover: #c9b2ff;
+    --color-button-secondary-hover: #c0c0c0;
+
+    --color-background-primary: #3e3e3e;
+    --color-background-secondary: #c0c0c0;
+
+    --color-accent-highlight: #ffc9a2;
+    --color-accent-positive: rgba(67, 109, 255, 0.3);
+    --color-accent-negative: rgba(255, 70, 70, 0.3);
+    --color-accent-red: #ff5757;
+    --color-accent-purple: #9a6eff;
+  }
+}
+
+@font-face {
+  font-family: 'PretendardBlack';
+  src: url('/src/assets/fonts/Pretendard-Black.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'PretendardBold';
+  src: url('/src/assets/fonts/Pretendard-Bold.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'PretendardSemiBold';
+  src: url('/src/assets/fonts/Pretendard-SemiBold.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'PretendardExtraBold';
+  src: url('/src/assets/fonts/Pretendard-ExtraBold.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'PretendardMedium';
+  src: url('/src/assets/fonts/Pretendard-Medium.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'PretendardRegular';
+  src: url('/src/assets/fonts/Pretendard-Regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'PartialSans';
+  src: url('/src/assets/fonts/PartialSansKR-Regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
