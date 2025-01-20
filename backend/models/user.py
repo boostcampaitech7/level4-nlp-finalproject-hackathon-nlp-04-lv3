@@ -1,8 +1,6 @@
-import uuid
 from datetime import datetime, time
 from sqlmodel import SQLModel, Field
 from sqlalchemy import Column, TIME, VARCHAR, TIMESTAMP
-from sqlalchemy.dialects.postgresql import CITEXT
 
 
 """
