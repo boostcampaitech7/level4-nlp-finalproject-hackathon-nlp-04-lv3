@@ -1,27 +1,27 @@
-import { useEffect, RefObject } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useEffect, RefObject } from 'react'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger)
 
 export interface CardAnimationConfig {
-  initialX?: number;
-  initialY?: number;
-  initialRotation?: number;
-  initialScale?: number;
+  initialX?: number
+  initialY?: number
+  initialRotation?: number
+  initialScale?: number
   spacing?: {
-    x?: number;
-    y?: number;
-    rotation?: number;
-  };
-  duration?: number;
-  stagger?: number;
-  ease?: string;
+    x?: number
+    y?: number
+    rotation?: number
+  }
+  duration?: number
+  stagger?: number
+  ease?: string
   scrollTrigger?: {
-    start?: string;
-    end?: string;
-    toggleActions?: string;
-  };
+    start?: string
+    end?: string
+    toggleActions?: string
+  }
 }
 
 const defaultConfig: CardAnimationConfig = {
@@ -42,24 +42,27 @@ const defaultConfig: CardAnimationConfig = {
     end: 'bottom center',
     toggleActions: 'play none none reverse',
   },
-};
+}
 
 export const useCardAnimation = (
   containerRef: RefObject<HTMLElement>,
   cardSelector: string,
-  config: CardAnimationConfig = {}
+  config: CardAnimationConfig = {},
 ) => {
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!containerRef.current) return
 
     const mergedConfig = {
       ...defaultConfig,
       ...config,
       spacing: { ...defaultConfig.spacing, ...config.spacing },
-      scrollTrigger: { ...defaultConfig.scrollTrigger, ...config.scrollTrigger },
-    };
+      scrollTrigger: {
+        ...defaultConfig.scrollTrigger,
+        ...config.scrollTrigger,
+      },
+    }
 
-    const cardElements = containerRef.current.querySelectorAll(cardSelector);
+    const cardElements = containerRef.current.querySelectorAll(cardSelector)
 
     // 초기 설정
     gsap.set(cardElements, {
@@ -69,19 +72,22 @@ export const useCardAnimation = (
       scale: mergedConfig.initialScale,
       opacity: 0,
       transformOrigin: 'center center',
-    });
+    })
 
     // 애니메이션 적용
     cardElements.forEach((card, index) => {
-      const rotation = (mergedConfig.initialRotation || 0) + 
-        (index * (mergedConfig.spacing?.rotation || 0));
+      const rotation =
+        (mergedConfig.initialRotation || 0) +
+        index * (mergedConfig.spacing?.rotation || 0)
 
       gsap.to(card, {
         opacity: 1,
         scale: 1,
         rotation,
-        x: (mergedConfig.initialX || 0) + (index * (mergedConfig.spacing?.x || 0)),
-        y: (mergedConfig.initialY || 0) + (index * (mergedConfig.spacing?.y || 0)),
+        x:
+          (mergedConfig.initialX || 0) + index * (mergedConfig.spacing?.x || 0),
+        y:
+          (mergedConfig.initialY || 0) + index * (mergedConfig.spacing?.y || 0),
         duration: mergedConfig.duration,
         delay: index * (mergedConfig.stagger || 0),
         ease: mergedConfig.ease,
@@ -89,12 +95,12 @@ export const useCardAnimation = (
           trigger: containerRef.current,
           ...mergedConfig.scrollTrigger,
         },
-      });
-    });
+      })
+    })
 
     // 클린업
     return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-    };
-  }, [containerRef, cardSelector, config]);
-};
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill())
+    }
+  }, [containerRef, cardSelector, config])
+}

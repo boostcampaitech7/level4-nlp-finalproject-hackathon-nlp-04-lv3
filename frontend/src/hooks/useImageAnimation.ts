@@ -1,21 +1,21 @@
-import { useEffect, RefObject } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useEffect, RefObject } from 'react'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger)
 
 interface ImageAnimationConfig {
-  duration?: number;
-  x?: number;
-  scale?: number;
-  opacity?: number;
-  ease?: string;
-  delay?: number;
+  duration?: number
+  x?: number
+  scale?: number
+  opacity?: number
+  ease?: string
+  delay?: number
   scrollTrigger?: {
-    start?: string;
-    end?: string;
-    toggleActions?: string;
-  };
+    start?: string
+    end?: string
+    toggleActions?: string
+  }
 }
 
 const defaultConfig: ImageAnimationConfig = {
@@ -30,30 +30,33 @@ const defaultConfig: ImageAnimationConfig = {
     end: 'bottom center',
     toggleActions: 'play none none reverse',
   },
-};
+}
 
 export const useImageAnimation = (
   containerRef: RefObject<HTMLElement>,
   imageSelector: string,
-  config: ImageAnimationConfig = {}
+  config: ImageAnimationConfig = {},
 ) => {
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!containerRef.current) return
 
     const mergedConfig = {
       ...defaultConfig,
       ...config,
-      scrollTrigger: { ...defaultConfig.scrollTrigger, ...config.scrollTrigger },
-    };
+      scrollTrigger: {
+        ...defaultConfig.scrollTrigger,
+        ...config.scrollTrigger,
+      },
+    }
 
-    const imageElements = containerRef.current.querySelectorAll(imageSelector);
+    const imageElements = containerRef.current.querySelectorAll(imageSelector)
 
     // 초기 상태 설정
     gsap.set(imageElements, {
       x: mergedConfig.x,
       scale: mergedConfig.scale,
       opacity: 0,
-    });
+    })
 
     // 애니메이션 적용
     gsap.to(imageElements, {
@@ -67,10 +70,10 @@ export const useImageAnimation = (
         trigger: containerRef.current,
         ...mergedConfig.scrollTrigger,
       },
-    });
+    })
 
     return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-    };
-  }, [containerRef, imageSelector, config]);
-};
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill())
+    }
+  }, [containerRef, imageSelector, config])
+}

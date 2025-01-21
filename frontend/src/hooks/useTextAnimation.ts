@@ -1,21 +1,21 @@
-import { useEffect, RefObject } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useEffect, RefObject } from 'react'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger)
 
 interface TextAnimationConfig {
-  stagger?: number;
-  duration?: number;
-  x?: number;
-  y?: number;
-  opacity?: number;
-  ease?: string;
+  stagger?: number
+  duration?: number
+  x?: number
+  y?: number
+  opacity?: number
+  ease?: string
   scrollTrigger?: {
-    start?: string;
-    end?: string;
-    toggleActions?: string;
-  };
+    start?: string
+    end?: string
+    toggleActions?: string
+  }
 }
 
 const defaultConfig: TextAnimationConfig = {
@@ -30,30 +30,33 @@ const defaultConfig: TextAnimationConfig = {
     end: 'bottom center',
     toggleActions: 'play none none reverse',
   },
-};
+}
 
 export const useTextAnimation = (
   containerRef: RefObject<HTMLElement>,
   textSelector: string,
-  config: TextAnimationConfig = {}
+  config: TextAnimationConfig = {},
 ) => {
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!containerRef.current) return
 
     const mergedConfig = {
       ...defaultConfig,
       ...config,
-      scrollTrigger: { ...defaultConfig.scrollTrigger, ...config.scrollTrigger },
-    };
+      scrollTrigger: {
+        ...defaultConfig.scrollTrigger,
+        ...config.scrollTrigger,
+      },
+    }
 
-    const textElements = containerRef.current.querySelectorAll(textSelector);
+    const textElements = containerRef.current.querySelectorAll(textSelector)
 
     // 초기 상태 설정
     gsap.set(textElements, {
       x: mergedConfig.x,
       y: mergedConfig.y,
       opacity: 0,
-    });
+    })
 
     // 애니메이션 적용
     gsap.to(textElements, {
@@ -67,10 +70,10 @@ export const useTextAnimation = (
         trigger: containerRef.current,
         ...mergedConfig.scrollTrigger,
       },
-    });
+    })
 
     return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-    };
-  }, [containerRef, textSelector, config]);
-};
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill())
+    }
+  }, [containerRef, textSelector, config])
+}

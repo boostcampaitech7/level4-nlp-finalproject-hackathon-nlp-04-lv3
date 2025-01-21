@@ -1,7 +1,12 @@
-import { CardAnimationConfig } from '../hooks/useCardAnimation';
+import { CardAnimationConfig } from '../hooks/useCardAnimation'
 
 // 애니메이션 프리셋 타입
-export type AnimationPreset = 'fanOut' | 'stack' | 'cascade' | 'spiral' | 'shuffle';
+export type AnimationPreset =
+  | 'fanOut'
+  | 'stack'
+  | 'cascade'
+  | 'spiral'
+  | 'shuffle'
 
 // 프리셋 설정들
 export const animationPresets: Record<AnimationPreset, CardAnimationConfig> = {
@@ -77,4 +82,4 @@ export const animationPresets: Record<AnimationPreset, CardAnimationConfig> = {
     stagger: 0.08,
     ease: 'power1.out',
   },
-};
+}

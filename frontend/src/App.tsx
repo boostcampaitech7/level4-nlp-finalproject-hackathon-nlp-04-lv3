@@ -12,23 +12,18 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route element={<Pages.MainLayout />}>
-          <Route path="/" element={
-            isAuthenticated() ? (
-              <Pages.MainPage />
-            ) : (
-              <Pages.GuestMainPage />
-            )
-          } />
+          <Route
+            path="/"
+            element={
+              isAuthenticated() ? <Pages.MainPage /> : <Pages.GuestMainPage />
+            }
+          />
 
           {/* 인증이 필요한 라우트들 */}
           <Route
             path="/*"
             element={
-              isAuthenticated() ? (
-                <Outlet />
-              ) : (
-                <Navigate to="/" replace />
-              )
+              isAuthenticated() ? <Outlet /> : <Navigate to="/" replace />
             }
           >
             {/* 1. auth */}

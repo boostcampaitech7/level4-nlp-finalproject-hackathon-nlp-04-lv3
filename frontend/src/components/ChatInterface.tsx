@@ -1,15 +1,15 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { ChatMessage as ChatMessageType, ChatAction } from '../types/chat';
-import { ChatMessage } from '../pages/MainPage/ChatMessage';
+import React, { useState, useRef, useEffect } from 'react'
+import { ChatMessage as ChatMessageType, ChatAction } from '../types/chat'
+import { ChatMessage } from '../pages/MainPage/ChatMessage'
 
 interface ChatInterfaceProps {
-  messages: ChatMessageType[];
-  actions?: ChatAction[];
-  onSendMessage: (message: string) => void;
-  className?: string;
-  width?: string;
-  height?: string;
-  messageSize?: string;
+  messages: ChatMessageType[]
+  actions?: ChatAction[]
+  onSendMessage: (message: string) => void
+  className?: string
+  width?: string
+  height?: string
+  messageSize?: string
 }
 
 export const ChatInterface: React.FC<ChatInterfaceProps> = ({
@@ -21,28 +21,30 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
   height = 'h-[600px]',
   messageSize = 'text-[22px]',
 }) => {
-  const [inputValue, setInputValue] = useState('');
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [inputValue, setInputValue] = useState('')
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    scrollToBottom()
+  }, [messages])
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
     if (inputValue.trim()) {
-      onSendMessage(inputValue);
-      setInputValue('');
+      onSendMessage(inputValue)
+      setInputValue('')
     }
-  };
+  }
 
   return (
-    <div className={`flex flex-col bg-[var(--color-surface-primary-2)] rounded-[32px] shadow-lg ${width} ${height} ${className}`}>
+    <div
+      className={`flex flex-col bg-[var(--color-surface-primary-2)] rounded-[32px] shadow-lg ${width} ${height} ${className}`}
+    >
       {/* 채팅 메시지 영역 */}
       <div className="flex-1 p-6 overflow-y-auto space-y-4">
         {messages.map((message, index) => (
@@ -104,5 +106,5 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
         </form>
       </div>
     </div>
-  );
-};
+  )
+}

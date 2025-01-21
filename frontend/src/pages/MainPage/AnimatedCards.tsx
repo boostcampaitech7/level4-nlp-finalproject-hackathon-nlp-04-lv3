@@ -1,5 +1,5 @@
-import React from 'react';
-import { AnimationWrapper } from './AnimationWrapper';
+import React from 'react'
+import { AnimationWrapper } from './AnimationWrapper'
 
 const AnimatedCards: React.FC = () => {
   const cards = [
@@ -9,7 +9,7 @@ const AnimatedCards: React.FC = () => {
     { title: '수면', caption: '50% 할인' },
     { title: '마감시간', caption: '2월12일' },
     { title: '가온누리', caption: '어떠한 일이 있어도 세상의 중심' },
-  ];
+  ]
 
   return (
     <AnimationWrapper
@@ -18,7 +18,7 @@ const AnimatedCards: React.FC = () => {
       preset="fanOut"
       // 필요한 경우 추가 설정으로 프리셋을 덮어쓸 수 있습니다
       config={{
-        initialX: 0,  // 프리셋의 설정을 덮어씁니다
+        initialX: 0, // 프리셋의 설정을 덮어씁니다
       }}
     >
       {cards.map((card, index) => (
@@ -31,7 +31,9 @@ const AnimatedCards: React.FC = () => {
           </div>
           <div className="self-stretch h-[76px] flex-col justify-start items-start gap-2.5 flex">
             <div className="px-2.5 justify-center items-end gap-2.5 inline-flex">
-              <div className="display-l text-[var(--color-text-primary)]">{card.title}</div>
+              <div className="display-l text-[var(--color-text-primary)]">
+                {card.title}
+              </div>
               <div className="h-[38px] py-[7px]" />
             </div>
           </div>
@@ -43,7 +45,7 @@ const AnimatedCards: React.FC = () => {
         </div>
       ))}
     </AnimationWrapper>
-  );
-};
+  )
+}
 
-export default AnimatedCards;
+export default AnimatedCards
