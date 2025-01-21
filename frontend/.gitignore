@@ -26,3 +26,12 @@ dist-ssr
 # TypeScript
 tsconfig.tsbuildinfo
 vite.config.d.ts
+
+# Environment variables
+.env.local
+.env.*.local
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
