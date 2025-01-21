@@ -7,6 +7,7 @@ interface ButtonProps {
   showFrontIcon?: boolean
   showBackIcon?: boolean
   onClick: React.MouseEventHandler<HTMLButtonElement>
+  plusClasses?: string
 }
 
 const Button = ({
@@ -16,19 +17,11 @@ const Button = ({
   showFrontIcon = false,
   showBackIcon = false,
   onClick,
+  plusClasses = '',
 }: ButtonProps) => {
-  const baseStyles = `
-    inline-flex
-    items-center
-    content-center
-    justify-center
-    transition-all
-    duration-200
-    px-[10px]
-    py-[5px]
-    space-x-[3px]
-    m-0
-  `
+  const baseStyles =
+    'inline-flex items-center content-center justify-center transition-all duration-200 px-[10px] py-[5px] space-x-[3px] m-0 select-none'
+
   const sizeStyles = {
     small: 'button-m h-[39px] rounded-[16px]',
     medium: 'title-s h-[64px] rounded-[20px]',
@@ -57,7 +50,7 @@ const Button = ({
     purple2: 'hover:bg-purple-700 hover:text-text-secondary',
   }
 
-  const buttonStyles = `${baseStyles} ${sizeStyles[size]} ${colorStyles[color]} ${hoverColorStyles[color]}`
+  const buttonStyles = `${baseStyles} ${sizeStyles[size]} ${colorStyles[color]} ${hoverColorStyles[color]} ${plusClasses}`
 
   return (
     <button className={buttonStyles} onClick={onClick}>
