@@ -43,7 +43,6 @@ def create_alarm(user_id: int, type: bool):
 
 # 알람 스케줄링
 def schedule_alarm(user_id: int, alarm_time: time):
-
     scheduler.add_job(
         create_alarm,
         "cron",
@@ -66,7 +65,6 @@ def schedule_alarm(user_id: int, alarm_time: time):
 
 # 알람 재스케줄링
 def reschedule_alarm(user_id: int, alarm_time: time):
-
     scheduler.reschedule_job(
         job_id=f"review_{user_id}",
         trigger="cron",
