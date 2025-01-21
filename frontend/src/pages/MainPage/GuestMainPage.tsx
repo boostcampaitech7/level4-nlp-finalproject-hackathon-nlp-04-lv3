@@ -1,11 +1,11 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import AnimatedCards from 'components/AnimatedCards';
-import { TextAnimationWrapper } from '../../components/TextAnimationWrapper';
-import { ImageAnimationWrapper } from '../../components/ImageAnimationWrapper';
-import { ChatInterface } from '../../components/ChatInterface';
+import AnimatedCards from './AnimatedCards';
+import { TextAnimationWrapper } from './TextAnimationWrapper';
+import { ImageAnimationWrapper } from './ImageAnimationWrapper';
+import { ChatInterface } from './ChatInterface';
 import { ChatMessage, ChatAction } from '../../types/chat';
-import { ChatAnimationWrapper } from '../../components/ChatAnimationWrapper';
-import LoginPopup from '../../components/LoginPopup';
+import { ChatAnimationWrapper } from './ChatAnimationWrapper';
+import LoginPopup from './LoginPopup';
 import Button from 'components/Button';
 
 export const GuestMainPage: React.FC = () => {

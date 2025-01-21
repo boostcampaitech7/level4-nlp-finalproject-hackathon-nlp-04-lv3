@@ -1,11 +1,10 @@
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router'
 import * as Pages from './pages'
-import VocabPage from './vocabpage'
 
 // 임시로 로그인 상태를 확인하는 함수
 const isAuthenticated = () => {
   // TODO: 실제 로그인 상태 확인 로직 구현
-  return false
+  return true
 }
 
 function App() {
@@ -96,9 +95,6 @@ function App() {
             </Route>
           </Route>
         </Route>
-
-        {/* 게스트용 라우트 */}
-        <Route path="vocab-test" element={<VocabPage />} />
       </Routes>
     </BrowserRouter>
   )

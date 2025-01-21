@@ -1,6 +1,6 @@
 import React from 'react';
-import { ChatMessage as ChatMessageType } from '../types/chat';
-import { useScrollTriggerAnimation } from '../hooks/useScrollTriggerAnimation';
+import { ChatMessage as ChatMessageType } from '../../types/chat';
+import { useScrollTriggerAnimation } from '../../hooks/useScrollTriggerAnimation';
 
 interface ChatMessageProps {
   message: ChatMessageType;

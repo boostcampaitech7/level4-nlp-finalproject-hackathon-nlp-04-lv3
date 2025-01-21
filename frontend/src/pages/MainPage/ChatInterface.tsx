@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ChatMessage as ChatMessageType, ChatAction } from '../types/chat';
-import { ChatMessage } from '../pages/MainPage/ChatMessage';
+import { ChatMessage as ChatMessageType, ChatAction } from '../../types/chat';
+import { ChatMessage } from './ChatMessage';
 
 interface ChatInterfaceProps {
   messages: ChatMessageType[];
