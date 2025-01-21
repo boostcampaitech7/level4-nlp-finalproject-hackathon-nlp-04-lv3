@@ -20,7 +20,7 @@ const Button = ({
   plusClasses = '',
 }: ButtonProps) => {
   const baseStyles =
-    'inline-flex items-center content-center justify-center transition-all duration-200 px-[10px] py-[5px] space-x-[3px] m-0 select-none'
+    'inline-flex items-center content-center justify-center transition-all duration-200 px-[10px] py-[5px] gap-x-[3px] m-0 select-none'
 
   const sizeStyles = {
     small: 'button-m h-[39px] rounded-[16px]',
