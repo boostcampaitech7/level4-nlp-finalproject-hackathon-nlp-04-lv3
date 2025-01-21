@@ -23,11 +23,8 @@ class Diaries(SQLModel, table=True):
     text: str = Field(sa_column=Column(TEXT, nullable=False))
     feedback: str = Field(sa_column=Column(TEXT, nullable=True))
     review: str = Field(sa_column=Column(TEXT, nullable=True))
-    status: bool = Field(sa_column=Column(BOOLEAN, nullable=False))
+    status: int = Field(sa_column=Column(BOOLEAN, nullable=False))
     bookmark: bool = Field(sa_column=Column(BOOLEAN, nullable=False))
     created_at: date = Field(
         default_factory=date.today, sa_column=Column(DATE, nullable=False)
     )
-
-
-# status = 0: 저장, 1: 제출, 2: 피드백

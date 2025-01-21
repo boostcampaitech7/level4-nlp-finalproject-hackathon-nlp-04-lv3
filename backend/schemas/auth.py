@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Optional
 
 
 class JwToken(BaseModel):
@@ -6,6 +7,18 @@ class JwToken(BaseModel):
     token_type: str
 
 
+class UserSignupDTO(BaseModel):
+    username: str
+    name: str
+    password: str
+    level: int
+
+
 class SocialLoginDTO(BaseModel):
     code: str
-    level: int
+
+
+class SocialSignupDTO(BaseModel):
+    name: str
+    email: str
+    level: Optional[int] = None

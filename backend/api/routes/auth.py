@@ -1,16 +1,22 @@
-from fastapi import Depends, APIRouter, HTTPException, status
+from fastapi import Depends, Response, APIRouter, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import Session, select, exists
 import requests
 from starlette.responses import JSONResponse
 
-from schemas.user import UserSignupDTO
-from schemas.auth import SocialLoginDTO, JwToken
+from schemas.auth import UserSignupDTO, SocialLoginDTO, SocialSignupDTO, JwToken
 from models.user import Users
 from models.score import Scores
 from core.config import config
 from core.database import get_session
-from core.security import create_access_token, pwd_context, generate_random_password
+from core.security import (
+    create_access_token,
+    pwd_context,
+    generate_random_password,
+    validate_access_token,
+    oauth2_scheme,
+)
+from services.alarm import schedule_alarm
 
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -55,6 +61,9 @@ def signup(new_user: UserSignupDTO, session: Session = Depends(get_session)):
     session.add(score)
     session.commit()
 
+    # 2.3. 알람 스케줄링
+    schedule_alarm(user_id=user.user_id, alarm_time=user.alarm_time)
+
     return {"message": "User created successfully"}
 
 
@@ -84,7 +93,7 @@ def login(
     return JwToken(access_token=access_token, token_type="bearer")
 
 
-@router.post(path="/naver-login", description="naver social signup/login")
+@router.post(path="/naver-login", description="naver social login")
 async def naver_login(form: SocialLoginDTO, session: Session = Depends(get_session)):
     try:
         # 1. naver에 access token 요청
@@ -110,21 +119,9 @@ async def naver_login(form: SocialLoginDTO, session: Session = Depends(get_sessi
     statement = select(Users).where(Users.username == email)
     user = session.exec(statement).first()
 
-    # email 없을 시 회원가입 처리 진행
+    # email 없을 시 라벨 퀴즈 풀기
     if not user:
-        # 3.1. user 등록
-        user = Users(
-            username=email,
-            name=name,
-            password=pwd_context.hash(generate_random_password()),
-        )
-        session.add(user)
-        session.flush()  # user_id 할당
-
-        # 3.2. score 등록
-        score = Scores(user_id=user.user_id, level=form.level)
-        session.add(score)
-        session.commit()
+        return SocialSignupDTO(name=name, email=email).model_dump(exclude_none=True)
 
     # 4. JwToken 반환
     access_token = create_access_token(data={"sub": user.user_id})
@@ -132,3 +129,56 @@ async def naver_login(form: SocialLoginDTO, session: Session = Depends(get_sessi
 
     response_body = {"message": "oauth register successful", "name": user.username}
     return JSONResponse(status_code=status.HTTP_200_OK, content=response_body)
+
+
+@router.post(path="/naver-signup", description="naver social signup")
+async def naver_signup(form: SocialSignupDTO, session: Session = Depends(get_session)):
+    statement = select(exists().where(Users.username == form.email))
+    result = session.exec(statement).first()
+
+    #  0. e-mail 중복 시 예외 처리
+    if result:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail="E-mail already exists."
+        )
+
+    # 1. user 등록
+    user = Users(
+        username=form.email,
+        name=form.name,
+        password=pwd_context.hash(generate_random_password()),
+    )
+    session.add(user)
+    session.flush()  # user_id 할당
+
+    # 3.2. score 등록
+    score = Scores(user_id=user.user_id, level=form.level)
+    session.add(score)
+    session.commit()
+
+    # 3.3. 알람 스케줄링
+    schedule_alarm(user_id=user.user_id, alarm_time=user.alarm_time)
+
+    # 4. JwToken 반환
+    access_token = create_access_token(data={"sub": user.user_id})
+    # return JwToken(access_token=access_token, token_type="bearer")
+
+    response_body = {"message": "oauth register successful", "name": user.username}
+    return JSONResponse(status_code=status.HTTP_200_OK, content=response_body)
+
+
+@router.get(
+    path="/logout",
+    status_code=status.HTTP_200_OK,
+    description="logout and delete_cookie",
+)
+def logout(
+    response: Response,  # FastAPI Response 객체
+    token: str = Depends(oauth2_scheme),  # 인증 토큰 의존성
+):
+    # 토큰 검증
+    user_id = validate_access_token(token)["sub"]
+
+    # 쿠키 삭제
+    response.delete_cookie("access_token")  # 삭제할 쿠키의 이름 지정
+    return {"message": "User logged out successfully"}
