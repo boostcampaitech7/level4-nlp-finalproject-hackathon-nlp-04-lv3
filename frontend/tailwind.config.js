@@ -15,17 +15,27 @@ export default {
           transparent: 'var(--color-text-transparent)',
         },
         surface: {
-          primary1: 'var(--color-surface-primary-1)',
-          primary2: 'var(--color-surface-primary-2)',
-          secondary: 'var(--color-sorface-secondary)',
+          primary: {
+            1: 'var(--color-surface-primary-1)',
+            2: 'var(--color-surface-primary-2)',
+          },
+          secondary: 'var(--color-surface-secondary)',
         },
         button: {
-          primary: 'var(--color-button-primary)',
-          primary2: 'var(--color-button-primary-2)',
-          secondary: 'var(--color-button-secondary)',
-          secondary2: 'var(--color-button-secondary-2)',
-          primaryHover: 'var(--color-button-primary-hover)',
-          secondaryHover: 'var(--color-button-secondary-hover)',
+          primary: {
+            1: 'var(--color-button-primary-1)',
+            2: 'var(--color-button-primary-2)',
+            hover: {
+              1: 'var(--color-button-primary-hover-1)',
+              2: 'var(--color-button-primary-hover-2)',
+            },
+          },
+          secondary: {
+            1: 'var(--color-button-secondary-1)',
+            2: 'var(--color-button-secondary-2)',
+            hover: 'var(--color-button-secondary-hover)',
+          },
+          inverse: 'var(--color-button-inverse)',
         },
         background: {
           primary: 'var(--color-background-primary)',
@@ -35,8 +45,12 @@ export default {
           highlight: 'var(--color-accent-highlight)',
           positive: 'var(--color-accent-positive)',
           negative: 'var(--color-accent-negative)',
-          red: 'var(--color-accent-red)',
+          red: {
+            1: 'var(--color-accent-red-1)',
+            2: 'var(--color-accent-red-2)',
+          },
           purple: 'var(--color-accent-purple)',
+          blue: 'var(--color-accent-blue)',
         },
         purple: {
           100: '#8B59FF',
@@ -69,8 +83,10 @@ export default {
           transparent: 'rgba(112, 112, 112, 0.1)',
         },
         black: '#000000',
-        white: '#ffffff',
-        whiteTransparent: 'rgba(255, 255, 255, 0.2)',
+        white: {
+          1: '#FFFFFF',
+          transparent: 'rgba(255, 255, 255, 0.2)',
+        },
         blue: {
           100: '#436DFF',
           200: '#5F82FF',
@@ -79,8 +95,10 @@ export default {
           500: '#BBCAFF',
           600: '#D3DCFF',
           700: '#EAEFFF',
-          transparent: 'rgba(67, 109, 255, 0.08)',
-          transparentInverse: 'rgba(67, 109, 255, 0.3)',
+          transparent: {
+            1: 'rgba(67, 109, 255, 0.08)',
+            inverse: 'rgba(67, 109, 255, 0.3)',
+          },
         },
         red: {
           100: '#FF4646',
@@ -91,8 +109,10 @@ export default {
           600: '#FFBFBF',
           700: '#FFDBDB',
           800: '#FFECEC',
-          transparent: 'rgba(255, 70, 70, 0.08)',
-          transparentInverse: 'rgba(255, 70, 70, 0.3)',
+          transparent: {
+            1: 'rgba(255, 70, 70, 0.08)',
+            inverse: 'rgba(255, 70, 70, 0.3)',
+          },
         },
       },
       fontFamily: {

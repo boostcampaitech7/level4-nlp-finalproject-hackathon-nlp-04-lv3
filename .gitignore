@@ -1,11 +1,8 @@
-/af
-/test
-/etc
-poetry.lock
-pyproject.toml
+etc/
 .env
 __pycache__
-/logs
+logs/
+data/
 
 # Logs
 logs
@@ -34,3 +31,8 @@ dist-ssr
 
 # Windsurf
 .windsurfrules
+
+# Airflow
+airflow-webserver.pid
+airflow.cfg
+webserver_config.py
