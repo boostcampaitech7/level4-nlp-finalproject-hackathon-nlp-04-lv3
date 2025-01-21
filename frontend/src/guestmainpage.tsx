@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import AnimatedCards from 'components/AnimatedCards';
 import { TextAnimationWrapper } from './components/TextAnimationWrapper';
 import { ImageAnimationWrapper } from './components/ImageAnimationWrapper';
@@ -11,6 +11,11 @@ import { ReactComponent as ChevronRight } from './assets/icons/FaChevronRight.sv
 import { ReactComponent as ChevronLeft } from './assets/icons/FaChevronLeft.svg';
 
 const GuestMainPage: React.FC = () => {
+  useEffect(() => {
+    // 페이지 로드 시 스크롤 위치 초기화
+    window.scrollTo(0, 0);
+  }, []);
+
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: '1',

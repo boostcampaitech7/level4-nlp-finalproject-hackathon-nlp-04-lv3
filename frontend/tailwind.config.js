@@ -159,11 +159,11 @@ export default {
         },
         '.button-l': {
           fontFamily: theme('fontFamily.pretendardSemiBold'),
-          fontSize: '32px',
+          fontSize: '24px',
         },
         '.button-m': {
           fontFamily: theme('fontFamily.pretendardSemiBold'),
-          fontSize: '24px',
+          fontSize: '20px',
         },
         '.button-s': {
           fontFamily: theme('fontFamily.pretendardMedium'),

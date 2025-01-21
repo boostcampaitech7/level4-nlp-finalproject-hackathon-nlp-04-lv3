@@ -46,8 +46,8 @@ const CustomButton: React.FC<CustomButtonProps> = ({
     const textColorClass = textColor || {
       'primary': 'text-[var(--color-text-intermediate)]',
       'primary-2': 'text-[var(--color-text-intermediate)]',
-      'secondary': 'text-[var(--color-text-intermediate)]',
-      'secondary-2': 'text-[var(--color-text-intermediate)]',
+      'secondary': 'text-[var(--color-text-secondary)]',
+      'secondary-2': 'text-[var(--color-text-secondary)]',
       'inverse': 'text-[var(--color-text-inverse)]'
     }[variant];
 

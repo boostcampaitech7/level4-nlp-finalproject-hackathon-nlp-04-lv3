@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import GuestMainPage from './guestmainpage';
-
+import VocabPage from './vocabpage';
 const App: React.FC = () => {
   return (
     <Router>
@@ -10,6 +10,7 @@ const App: React.FC = () => {
         <Route path="/" element={<Navigate to="/guest" replace />} />
         {/* 게스트 메인 페이지 라우트 */}
         <Route path="/guest" element={<GuestMainPage />} />
+        <Route path="/vocab" element={<VocabPage />} />
       </Routes>
     </Router>
   );
