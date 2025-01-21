@@ -1,4 +1,4 @@
-import { FaAngleLeft, FaAngleRight } from 'react-icons/fa6'
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa6'
 
 interface ButtonProps {
   text: string
@@ -54,13 +54,13 @@ const Button = ({
 
   return (
     <button className={buttonStyles} onClick={onClick}>
-      {showBackIcon && <FaAngleLeft size={iconSize[size]} />}
+      {showBackIcon && <FaChevronLeft size={iconSize[size]} />}
       <span className="w-[3px]"></span>
       <div className={`${size === 'large' ? 'flex-1' : 'w-fit'} text-center`}>
         {text}
       </div>
       <span className="w-[3px]"></span>
-      {showFrontIcon && <FaAngleRight size={iconSize[size]} />}
+      {showFrontIcon && <FaChevronRight size={iconSize[size]} />}
     </button>
   )
 }
