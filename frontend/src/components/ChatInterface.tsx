@@ -42,7 +42,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
   };
 
   return (
-    <div className={`flex flex-col bg-white rounded-[32px] shadow-lg ${width} ${height} ${className}`}>
+    <div className={`flex flex-col bg-[var(--color-surface-primary-2)] rounded-[32px] shadow-lg ${width} ${height} ${className}`}>
       {/* 채팅 메시지 영역 */}
       <div className="flex-1 p-6 overflow-y-auto space-y-4">
         {messages.map((message, index) => (
@@ -58,13 +58,13 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
 
       {/* 액션 버튼 영역 */}
       {actions.length > 0 && (
-        <div className="px-6 py-4 border-t border-gray-100">
+        <div className="py-2">
           <div className="flex gap-2 justify-center">
             {actions.map((action) => (
               <button
                 key={action.id}
                 onClick={action.onClick}
-                className="px-4 py-2 bg-[#e8e8e8] rounded-[14px] text-[#707070] text-base font-medium hover:bg-[#d8d8d8] transition-colors"
+                className="px-4 py-2 bg-[var(--color-button-secondary-1)] rounded-[14px] text-[var(--color-text-secondary)] text-base font-medium hover:bg-[#d8d8d8] transition-colors"
               >
                 {action.label}
               </button>
@@ -74,7 +74,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
       )}
 
       {/* 입력 영역 */}
-      <div className="p-4 border-t border-gray-100">
+      <div className="p-4 ">
         <form onSubmit={handleSubmit} className="flex gap-2">
           <input
             ref={inputRef}
@@ -82,11 +82,11 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             placeholder="메시지를 입력해 주세요"
-            className="flex-1 p-2.5 bg-[#f2f2f2] rounded-2xl text-[#707070] text-base font-medium outline-none focus:ring-2 focus:ring-[#c9b2ff]"
+            className="button-s flex-1 p-1.5 bg-[var(--color-surface-secondary)] rounded-2xl text-[var(--color-text-intermidiate)] outline-none focus:ring-2 focus:ring-[var(--color-accent-purple)]"
           />
           <button
             type="submit"
-            className="w-10 h-10 bg-[#c9b2ff] rounded-full flex items-center justify-center hover:bg-[#b89dff] transition-colors"
+            className="w-10 h-10 bg-[var(--color-button-primary-1)] rounded-full flex items-center justify-center hover:bg-[#b89dff] transition-colors"
           >
             <svg
               width="20"

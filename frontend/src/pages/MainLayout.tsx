@@ -1,12 +1,17 @@
 import { Outlet } from 'react-router'
 import { Header } from '../components'
+import { ReactNode } from 'react'
 
-const MainLayout = () => {
+interface MainLayoutProps {
+  children?: ReactNode
+}
+
+const MainLayout = ({ children }: MainLayoutProps) => {
   return (
     <div>
       <Header />
       <main>
-        <Outlet />
+        {children || <Outlet />}
       </main>
       <footer />
     </div>

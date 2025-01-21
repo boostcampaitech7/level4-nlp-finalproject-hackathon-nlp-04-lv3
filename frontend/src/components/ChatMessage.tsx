@@ -19,11 +19,11 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, messageSize }
       <div
         className={`px-6 py-3 rounded-3xl max-w-[80%] ${
           message.type === 'user'
-            ? 'bg-[#f0eaff] rounded-tr-none'
-            : 'bg-[#f2f2f2] rounded-tl-none'
+            ? 'bg-[var(--color-surface-secondary)] rounded-tr-none'
+            : 'bg-[var(--color-background-secondary)] rounded-tl-none'
         }`}
       >
-        <p className={`text-[#202020] ${messageSize} font-normal font-['Pretendard']`}>
+        <p className={`text-[var(--color-text-primary)] ${messageSize} caption-s`}>
           {message.content}
         </p>
       </div>

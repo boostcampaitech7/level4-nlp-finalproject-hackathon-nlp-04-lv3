@@ -157,7 +157,7 @@ export default {
           fontFamily: theme('fontFamily.pretendardBold'),
           fontSize: '38px',
         },
-        '.titile-m': {
+        '.title-m': {
           fontFamily: theme('fontFamily.pretendardSemiBold'),
           fontSize: '32px',
         },
