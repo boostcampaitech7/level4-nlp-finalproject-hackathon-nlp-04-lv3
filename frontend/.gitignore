@@ -35,3 +35,4 @@ vite.config.d.ts
 *.tmp
 *.temp
 *.bak
+frontend/settings.json
