@@ -1,4 +1,5 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 
 interface LoginPopupProps {
   isOpen: boolean
@@ -6,16 +7,18 @@ interface LoginPopupProps {
 }
 
 const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
+  const navigate = useNavigate()
+  
   if (!isOpen) return null
 
   const handleLogin = () => {
-    // 로그인 처리 로직
-    console.log('로그인 처리')
+    navigate('/auth/login')
+    onClose()
   }
 
   const handleSignup = () => {
-    // 회원가입 처리 로직
-    console.log('회원가입 처리')
+    navigate('/auth/signup')
+    onClose()
   }
 
   return (
