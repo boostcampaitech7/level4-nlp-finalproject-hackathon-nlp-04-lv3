@@ -24,11 +24,11 @@ const Header = ({ pageName }: HeaderProps) => {
   }
 
   return (
-    <div className="inline-flex justify-between items-center px-[40px] w-full min-w-[1440px] h-[126px] bg-surface-secondary border-b-[3px] border-line select-none">
+    <div className="sticky top-0 inline-flex h-[126px] w-full min-w-[1440px] select-none items-center justify-between border-b-[3px] border-line bg-surface-secondary px-[40px]">
       <div className="inline-flex items-end gap-[30px]">
         <Link
           to="/"
-          className="font-partialSans text-[59px] lett tracking-[-.08em]"
+          className="lett font-partialSans text-[59px] tracking-[-.08em]"
         >
           <span className="text-main">아라</span>
           <span className="text-text-intermediate">부기</span>
@@ -37,7 +37,7 @@ const Header = ({ pageName }: HeaderProps) => {
       </div>
       <div className="inline-flex items-center gap-[40px]">
         {isLogin && (
-          <button className="inline-flex justify-center items-center rounded-full bg-button-secondary-2 w-[60px] h-[60px] hover:bg-button-secondary-hover">
+          <button className="inline-flex h-[60px] w-[60px] items-center justify-center rounded-full bg-button-secondary-2 hover:bg-button-secondary-hover">
             <FaRegBell size={33} />
           </button>
         )}
