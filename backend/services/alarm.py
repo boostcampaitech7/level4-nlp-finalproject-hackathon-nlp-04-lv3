@@ -8,6 +8,7 @@ from core.scheduler import scheduler
 from models.alarm import Alarms
 from models.score import Scores
 from models.diary import Diaries
+from models.user import Users
 
 
 # 알람 생성 함수
@@ -71,3 +72,13 @@ def reschedule_alarm(user_id: int, alarm_time: time):
         hour=alarm_time.hour,
         minute=alarm_time.minute,
     )
+
+
+# 알람 스케줄 초기화
+def initalize_schedule():
+    with Session(engine) as session:
+        statement = select(Users)
+        user_list = session.exec(statement).all()
+
+    for user in user_list:
+        schedule_alarm(user.user_id, user.alarm_time)
