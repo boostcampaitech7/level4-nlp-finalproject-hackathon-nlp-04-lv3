@@ -138,7 +138,7 @@ def feedback(
 
     # 2. diary 찾기
     statement = select(Diaries).where(
-        Diaries.user_id == user_id, Diaries.created_at == date.today()
+        Diaries.user_id == user_id, cast(Diaries.created_at, Date) == date.today()
     )
     diary = session.exec(statement).first()
 
@@ -148,6 +148,7 @@ def feedback(
             user_id=user_id, text=new_diary.text, status=True, bookmark=False
         )
         session.add(diary)
+        # 제출 일기 개수 증가
         session.commit()
     # 2.2. diary가 존재할 시 수정
     else:
@@ -172,7 +173,7 @@ def save(
 
     # 2. diary 찾기
     statement = select(Diaries).where(
-        Diaries.user_id == user_id, Diaries.created_at == date.today()
+        Diaries.user_id == user_id, cast(Diaries.created_at, Date) == date.today()
     )
     diary = session.exec(statement).first()
 
@@ -183,6 +184,7 @@ def save(
         )
         session.add(diary)
         session.commit()
+        # 제출 일기 개수 증가
     # 2.2. diary가 존재할 시 수정
     else:
         diary.text = new_diary.text
