@@ -1,6 +1,7 @@
 import { FaRegBell, FaBars } from 'react-icons/fa6'
 import Button from './Button'
 import { Link, useNavigate } from 'react-router'
+import { useSidebarStore } from '../stores/sidebarStore'
 
 interface HeaderProps {
   pageName?: string
@@ -9,6 +10,7 @@ interface HeaderProps {
 const Header = ({ pageName }: HeaderProps) => {
   // 추후 실제 로그인 상태 확인하는 훅으로 대체할 것
   const isLogin = false
+  const { openSidebar } = useSidebarStore()
   const navigate = useNavigate()
 
   const hadleClickUserButton = () => {
@@ -17,10 +19,6 @@ const Header = ({ pageName }: HeaderProps) => {
     } else {
       navigate('auth/login')
     }
-  }
-
-  const handleClickSidebarButton = () => {
-    console.info('사이드 바 구현 예정')
   }
 
   return (
@@ -48,7 +46,7 @@ const Header = ({ pageName }: HeaderProps) => {
           onClick={hadleClickUserButton}
           plusClasses="px-[30px]"
         />
-        <button onClick={handleClickSidebarButton}>
+        <button onClick={openSidebar}>
           <FaBars size={44} />
         </button>
       </div>
