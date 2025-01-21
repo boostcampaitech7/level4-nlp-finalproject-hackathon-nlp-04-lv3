@@ -4,7 +4,7 @@ import * as Pages from './pages'
 // 임시로 로그인 상태를 확인하는 함수
 const isAuthenticated = () => {
   // TODO: 실제 로그인 상태 확인 로직 구현
-  return true
+  return false
 }
 
 function App() {
@@ -19,6 +19,12 @@ function App() {
             }
           />
 
+          {/* 인증이 필요하지 않은 라우트들 */}
+          <Route path="auth">
+            <Route path="login" element={<Pages.LoginPage />} />
+            <Route path="signup" element={<Pages.SignupPage />} />
+          </Route>
+
           {/* 인증이 필요한 라우트들 */}
           <Route
             path="/*"
@@ -26,13 +32,7 @@ function App() {
               isAuthenticated() ? <Outlet /> : <Navigate to="/" replace />
             }
           >
-            {/* 1. auth */}
-            <Route path="auth">
-              <Route path="login" element={<Pages.LoginPage />} />
-              <Route path="signup" element={<Pages.SignupPage />} />
-            </Route>
-
-            {/* 2. text */}
+            {/* 1. text */}
             <Route path="text">
               <Route
                 path=":text_id/quiz/:level/result"
@@ -51,7 +51,7 @@ function App() {
               <Route path="add" element={<Pages.TextAddPage />} />
             </Route>
 
-            {/* 3. vocab */}
+            {/* 2. vocab */}
             <Route path="vocab">
               <Route
                 path=":vocab_id/quiz/:level/result"
@@ -68,14 +68,14 @@ function App() {
               <Route path=":vocab_id" element={<Pages.VocabDetailPage />} />
             </Route>
 
-            {/* 4. diary */}
+            {/* 3. diary */}
             <Route path="diary">
               <Route path=":diary_id" element={<Pages.DiaryDetailPage />} />
               <Route path="list" element={<Pages.DiaryListPage />} />
               <Route path="write" element={<Pages.DiaryWritePage />} />
             </Route>
 
-            {/* 5. user */}
+            {/* 4. user */}
             <Route path="user">
               <Route
                 path="study-record/:record_id"
