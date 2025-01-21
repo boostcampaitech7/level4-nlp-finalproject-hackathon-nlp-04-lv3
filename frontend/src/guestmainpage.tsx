@@ -62,13 +62,13 @@ const GuestMainPage: React.FC = () => {
           </div>
 
           {/* 중앙 섹션 */}
-          <div className="text-[var(--color-text-primary)] text-[42px] font-extrabold font-['Pretendard'] flex-grow text-center self-baseline">
+          <div className="headline-l text-[var(--color-text-primary)] flex-grow text-center self-baseline">
             Section
           </div>
         </div>
         {/* 로그인 버튼 */}
         <div className="flex items-center">
-          <CustomButton variant="inverse" size="xl" onClick={handleButtonClick}>
+          <CustomButton variant="inverse" size="lg" typography="button-m" onClick={handleButtonClick}>
             로그인하기
           </CustomButton>
         </div>
@@ -109,7 +109,7 @@ const GuestMainPage: React.FC = () => {
                   <div className="h-[80px] flex flex-col justify-end items-end gap-6">
                     <div className="h-9 flex justify-end items-center gap-3">
                       <div className="w-9 h-9" />
-                      <CustomButton variant="secondary" size="lg" onClick={handleButtonClick}>
+                      <CustomButton variant="secondary" size="md" rightIcon={<ChevronRight />} onClick={handleButtonClick}>
                         알아보기
                       </CustomButton>
                     </div>
@@ -125,7 +125,7 @@ const GuestMainPage: React.FC = () => {
                   <div className="h-[80px] flex flex-col justify-end items-end gap-6">
                     <div className="h-9 flex justify-end items-center gap-3">
                       <div className="w-9 h-9" />
-                      <CustomButton variant="secondary" size="lg" onClick={handleButtonClick}>
+                      <CustomButton variant="secondary" size="md" rightIcon={<ChevronRight />} onClick={handleButtonClick}>
                         알아보기
                       </CustomButton>
                     </div>
@@ -141,8 +141,8 @@ const GuestMainPage: React.FC = () => {
                   <div className="h-[80px] flex flex-col justify-end items-end gap-6">
                     <div className="h-9 flex justify-end items-center gap-3">
                       <div className="w-9 h-9" />
-                      <CustomButton variant="secondary" size="lg" onClick={handleButtonClick}>
-                        알아보기
+                      <CustomButton variant="secondary" size="md" rightIcon={<ChevronRight />} onClick={handleButtonClick}>
+                      알아보기
                       </CustomButton>
                     </div>
                   </div>
