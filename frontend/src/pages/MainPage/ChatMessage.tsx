@@ -27,7 +27,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
         }`}
       >
         <p
-          className={`text-text-primary)] ${messageSize} caption-s`}
+          className={`text-text-primary ${messageSize} caption-s`}
         >
           {message.content}
         </p>

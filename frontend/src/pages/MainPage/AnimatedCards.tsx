@@ -31,14 +31,14 @@ const AnimatedCards: React.FC = () => {
           </div>
           <div className="self-stretch h-[76px] flex-col justify-start items-start gap-2.5 flex">
             <div className="px-2.5 justify-center items-end gap-2.5 inline-flex">
-              <div className="display-l text-text-primary)]">
+              <div className="display-l text-text-primary">
                 {card.title}
               </div>
               <div className="h-[38px] py-[7px]" />
             </div>
           </div>
-          <div className="self-stretch grow shrink basis-0 px-2.5 justify-center items-center gap-2.5 inline-flex">
-            <div className="caption-m text-text-secondary)] grow shrink basis-0 self-stretch">
+          <div className="self-stretch grow shrink basis-0 px-2.5 py-2 justify-center items-center gap-2.5 inline-flex">
+            <div className="caption-m text-text-secondary grow shrink basis-0 self-stretch">
               {card.caption}
             </div>
           </div>

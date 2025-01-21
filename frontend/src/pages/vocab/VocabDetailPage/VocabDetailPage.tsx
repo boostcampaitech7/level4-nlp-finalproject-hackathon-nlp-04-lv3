@@ -176,17 +176,17 @@ const VocabDetailPage = () => {
                 <div className="self-stretch h-[126.95px] pt-[30px] flex-col justify-start items-center gap-3 flex">
                   <div className="self-stretch justify-center items-center gap-2.5 inline-flex">
                     <div className="grow shrink basis-0 h-[37.95px] px-[8.95px] py-[4.48px] bg-button-secondary-1 rounded-[14.32px] justify-center items-center gap-[2.69px] flex">
-                      <div className="grow shrink basis-0 text-center text-text-secondary)] button-s">
+                      <div className="grow shrink basis-0 text-center text-text-secondary button-s">
                         쉽게 설명
                       </div>
                     </div>
                     <div className="grow shrink basis-0 h-[37.95px] px-[8.95px] py-[4.48px] bg-button-secondary-1 rounded-[14.32px] justify-center items-center gap-[2.69px] flex">
-                      <div className="grow shrink basis-0 text-center text-text-secondary)] button-s">
+                      <div className="grow shrink basis-0 text-center text-text-secondary button-s">
                         반대말
                       </div>
                     </div>
                     <div className="grow shrink basis-0 h-[37.95px] px-[8.95px] py-[4.48px] bg-button-secondary-1 rounded-[14.32px] justify-center items-center gap-[2.69px] flex">
-                      <div className="grow shrink basis-0 text-center text-text-secondary)] button-s">
+                      <div className="grow shrink basis-0 text-center text-text-secondary button-s">
                         추가 설명
                       </div>
                     </div>

@@ -32,16 +32,16 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
       >
         <div className="w-full h-full flex flex-col">
           <div className="flex-1 flex items-center justify-center">
-            <div className="headline-s text-[color:var(--color-text-primary)]">
+            <div className="headline-s text-text-primary">
               로그인이 필요한 서비스입니다
             </div>
           </div>
-          <div className="h-[90px] border-t border-[color:var(--color-text-primary)] flex">
+          <div className="h-[90px] border-t border-text-primary flex">
             <div
-              className="flex-1 border-r border-[color:var(--color-text-primary)] flex items-center justify-center transition-colors duration-200 hover:bg-black/5 group cursor-pointer"
+              className="flex-1 border-r border-text-primary flex items-center justify-center transition-colors duration-200 hover:bg-black/5 group cursor-pointer"
               onClick={handleLogin}
             >
-              <div className="body-m text-[color:var(--color-text-tertiary)] transition-all duration-200] group-hover:scale-105">
+              <div className="body-m text-text-tertiary transition-all duration-200] group-hover:scale-105">
                 로그인하기
               </div>
             </div>
@@ -49,7 +49,7 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
               className="flex-1 flex items-center justify-center transition-colors duration-200 hover:bg-black/5 group cursor-pointer"
               onClick={handleSignup}
             >
-              <div className="body-m text-[color:var(--color-text-tertiary)] transition-all duration-200] group-hover:scale-105">
+              <div className="body-m text-text-tertiary transition-all duration-200] group-hover:scale-105">
                 회원가입하러 가기
               </div>
             </div>
