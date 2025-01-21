@@ -27,7 +27,7 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
       onClick={onClose}
     >
       <div
-        className="w-[708px] h-[190px] bg-[color:var(--color-surface-secondary)] rounded-[32px] flex items-center justify-center"
+        className="w-[708px] h-[190px] bg-surface-secondary rounded-[32px] flex items-center justify-center"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="w-full h-full flex flex-col">

@@ -6,14 +6,14 @@ const VocabDetailPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--color-background-primary)]">
+    <div className="min-h-screen bg-background-primary">
       {/* Main Content */}
       <main className="container mx-auto px-4 py-5">
         <div className="h-[917px] px-[138px] py-5 justify-start items-start gap-[19px] inline-flex">
           <div className="flex-col justify-center items-center gap-5 inline-flex">
             <div className="self-stretch h-[742px] flex-col justify-start items-start gap-4 flex">
               <div className="w-[800px] justify-start items-start gap-5 inline-flex">
-                <div className="w-[390px] h-[363px] px-[50px] py-[30px] bg-[var(--color-surface-secondary-1)] rounded-[32px] shadow-[0px_0px_13.199999809265137px_0px_rgba(178,148,250,1.00)] flex-col justify-start items-start inline-flex">
+                <div className="w-[390px] h-[363px] px-[50px] py-[30px] bg-surface-secondary rounded-[32px] shadow-[0px_0px_13.199999809265137px_0px_rgba(178,148,250,1.00)] flex-col justify-start items-start inline-flex">
                   <div className="w-[303px] h-[60px] justify-end items-start inline-flex">
                     <div className="w-[60px] h-[60px] relative" />
                   </div>
@@ -31,7 +31,7 @@ const VocabDetailPage = () => {
                     </div>
                   </div>
                 </div>
-                <div className="w-[390px] h-[363px] bg-[var(--color-surface-secondary-1)] rounded-[32px] border-4 border-[#e8e8e8] overflow-hidden">
+                <div className="w-[390px] h-[363px] bg-surface-secondary-1 rounded-[32px] border-4 border-[#e8e8e8] overflow-hidden">
                   {/* 카드 내용 */}
                   <div className="w-full h-full flex flex-col">
                     <div className="px-8 pt-6 pb-4">
@@ -53,7 +53,7 @@ const VocabDetailPage = () => {
               </div>
               <div className="w-[800px] justify-start items-start gap-5 inline-flex">
                 <div className="flex-col justify-start items-start inline-flex">
-                  <div className="w-[390px] h-[363px] bg-[var(--color-surface-secondary-1)] rounded-[32px] border-4 border-[#e8e8e8] overflow-hidden">
+                  <div className="w-[390px] h-[363px] bg-surface-secondary-1 rounded-[32px] border-4 border-[#e8e8e8] overflow-hidden">
                     {/* 카드 내용 */}
                     <div className="w-full h-full flex flex-col">
                       {/* 제목 */}
@@ -102,7 +102,7 @@ const VocabDetailPage = () => {
                   </div>
                 </div>
                 <div className="flex-col justify-start items-start inline-flex">
-                  <div className="w-[390px] h-[363px] bg-[var(--color-surface-secondary-1)] rounded-[32px] border-4 border-[#e8e8e8] overflow-hidden">
+                  <div className="w-[390px] h-[363px]  rounded-[32px] border-4 border-[#e8e8e8] overflow-hidden">
                     {/* 카드 내용 */}
                     <div className="w-full h-full flex flex-col">
                       {/* 제목 */}
@@ -163,7 +163,7 @@ const VocabDetailPage = () => {
             </div>
           </div>
           <div className="w-[345px] flex-col justify-center items-center gap-2.5 inline-flex">
-            <div className="h-[802px] pb-[9px] bg-[var(--color-surface-secondary-1)] rounded-[32px] shadow-[0px_0px_8.100000381469727px_5px_rgba(0,0,0,0.25)] border flex-col justify-start items-center flex overflow-hidden">
+            <div className="h-[802px] pb-[9px] bg-surface-secondary-1 rounded-[32px] shadow-[0px_0px_8.100000381469727px_5px_rgba(0,0,0,0.25)] border flex-col justify-start items-center flex overflow-hidden">
               <div className="w-[345px] h-[793px] px-6 py-[17px] flex-col justify-between items-center inline-flex">
                 <div className="self-stretch h-[257px] flex-col justify-center items-center gap-6 flex overflow-hidden">
                   <div className="self-stretch h-[257px] flex-col justify-center items-center gap-6 flex">
@@ -175,18 +175,18 @@ const VocabDetailPage = () => {
                 </div>
                 <div className="self-stretch h-[126.95px] pt-[30px] flex-col justify-start items-center gap-3 flex">
                   <div className="self-stretch justify-center items-center gap-2.5 inline-flex">
-                    <div className="grow shrink basis-0 h-[37.95px] px-[8.95px] py-[4.48px] bg-[var(--color-button-secondary-1)] rounded-[14.32px] justify-center items-center gap-[2.69px] flex">
-                      <div className="grow shrink basis-0 text-center text-[var(--color-text-secondary)] button-s">
+                    <div className="grow shrink basis-0 h-[37.95px] px-[8.95px] py-[4.48px] bg-button-secondary-1 rounded-[14.32px] justify-center items-center gap-[2.69px] flex">
+                      <div className="grow shrink basis-0 text-center text-text-secondary)] button-s">
                         쉽게 설명
                       </div>
                     </div>
-                    <div className="grow shrink basis-0 h-[37.95px] px-[8.95px] py-[4.48px] bg-[var(--color-button-secondary-1)] rounded-[14.32px] justify-center items-center gap-[2.69px] flex">
-                      <div className="grow shrink basis-0 text-center text-[var(--color-text-secondary)] button-s">
+                    <div className="grow shrink basis-0 h-[37.95px] px-[8.95px] py-[4.48px] bg-button-secondary-1 rounded-[14.32px] justify-center items-center gap-[2.69px] flex">
+                      <div className="grow shrink basis-0 text-center text-text-secondary)] button-s">
                         반대말
                       </div>
                     </div>
-                    <div className="grow shrink basis-0 h-[37.95px] px-[8.95px] py-[4.48px] bg-[var(--color-button-secondary-1)] rounded-[14.32px] justify-center items-center gap-[2.69px] flex">
-                      <div className="grow shrink basis-0 text-center text-[var(--color-text-secondary)] button-s">
+                    <div className="grow shrink basis-0 h-[37.95px] px-[8.95px] py-[4.48px] bg-button-secondary-1 rounded-[14.32px] justify-center items-center gap-[2.69px] flex">
+                      <div className="grow shrink basis-0 text-center text-text-secondary)] button-s">
                         추가 설명
                       </div>
                     </div>

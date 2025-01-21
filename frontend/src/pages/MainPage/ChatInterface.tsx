@@ -43,7 +43,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
 
   return (
     <div
-      className={`flex flex-col bg-[var(--color-surface-primary-2)] rounded-[32px] shadow-lg ${width} ${height} ${className}`}
+      className={`flex flex-col bg-surface-primary-2 rounded-[32px] shadow-lg ${width} ${height} ${className}`}
     >
       {/* 채팅 메시지 영역 */}
       <div className="flex-1 p-6 overflow-y-auto space-y-4">
@@ -66,7 +66,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
               <button
                 key={action.id}
                 onClick={action.onClick}
-                className="px-4 py-2 bg-[var(--color-button-secondary-1)] rounded-[14px] text-[var(--color-text-secondary)] text-base font-medium hover:bg-[#d8d8d8] transition-colors"
+                className="px-4 py-2 bg-button-secondary-1 rounded-[14px] text-text-secondary-1 text-base font-medium hover:bg-[#d8d8d8] transition-colors"
               >
                 {action.label}
               </button>
@@ -84,11 +84,11 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             placeholder="메시지를 입력해 주세요"
-            className="button-s flex-1 p-1.5 bg-[var(--color-surface-secondary)] rounded-2xl text-[var(--color-text-intermidiate)] outline-none focus:ring-2 focus:ring-[var(--color-accent-purple)]"
+            className="button-s flex-1 p-1.5 bg-surface-secondary-2 rounded-2xl text-text-intermidiate outline-none focus:ring-2 focus:ring-accent-purple"
           />
           <button
             type="submit"
-            className="w-10 h-10 bg-[var(--color-button-primary-1)] rounded-full flex items-center justify-center hover:bg-[#b89dff] transition-colors"
+            className="w-10 h-10 bg-button-primary-1 rounded-full flex items-center justify-center hover:bg-[#b89dff] transition-colors"
           >
             <svg
               width="20"

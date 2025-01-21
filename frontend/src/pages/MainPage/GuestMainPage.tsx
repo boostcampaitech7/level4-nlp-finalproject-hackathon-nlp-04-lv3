@@ -60,7 +60,7 @@ export const GuestMainPage: React.FC = () => {
   }
 
   return (
-    <div className="w-full h-auto bg-[var(--color-surface-primary-1)] flex flex-col items-center overflow-hidden">
+    <div className="w-full h-auto bg-$1 flex flex-col items-center overflow-hidden">
       <div className="max-w-[1440px] mx-auto px-4 md:px-8 lg:px-16 relative">
         <ImageAnimationWrapper
           imageSelector=".animated-image"
@@ -83,18 +83,18 @@ export const GuestMainPage: React.FC = () => {
           <div className="self-stretch h-auto flex-col justify-start items-center gap-[89px] flex pt-[100px]">
             <div className="h-[152px] flex-col justify-start items-center gap-[53px] flex">
               <div className="self-stretch text-center whitespace-normal">
-                <span className="display-l text-[var(--color-main)]">
+                <span className="display-l text-$1">
                   아라부기
                 </span>
-                <span className="display-l text-[var(--color-text-primary)]">
+                <span className="display-l text-$1">
                   와 함께 <br />더 깊이 이해하고 더 넓게 소통하세요.
                 </span>
               </div>
             </div>
             <div className="self-stretch px-2.5 flex justify-center items-stretch gap-5">
               <div className="w-full md:w-1/3 flex flex-col justify-between items-stretch">
-                <div className="flex-grow p-6 bg-[var(--color-surface-primary-2)] rounded-[28px] flex flex-col justify-between">
-                  <div className="body-m text-[var(--color-text-primary)] leading-7">
+                <div className="flex-grow p-6 bg-$1 rounded-[28px] flex flex-col justify-between">
+                  <div className="body-m text-$1 leading-7">
                     ‘사랑’과 ‘애정’은 느낌이 어떻게 다를까?
                   </div>
                   <div className="h-[80px] flex flex-col justify-end items-end gap-6">
@@ -113,8 +113,8 @@ export const GuestMainPage: React.FC = () => {
               </div>
 
               <div className="w-full md:w-1/3 flex flex-col justify-between items-stretch">
-                <div className="flex-grow p-6 bg-[var(--color-surface-primary-2)] rounded-[28px] flex flex-col justify-between">
-                  <div className="body-m text-[var(--color-text-primary)] leading-7">
+                <div className="flex-grow p-6 bg-$1 rounded-[28px] flex flex-col justify-between">
+                  <div className="body-m text-$1 leading-7">
                     ‘고구마’는 어떻게 생긴 말일까? 한자어일까, 고유어일까,
                     아니면 외국어에서 왔을까?
                   </div>
@@ -134,8 +134,8 @@ export const GuestMainPage: React.FC = () => {
               </div>
 
               <div className="w-full md:w-1/3 flex flex-col justify-between items-stretch">
-                <div className="flex-grow p-6 bg-[var(--color-surface-primary-2)] rounded-[28px] flex flex-col justify-between">
-                  <div className="body-m text-[var(--color-text-primary)] leading-7">
+                <div className="flex-grow p-6 bg-$1 rounded-[28px] flex flex-col justify-between">
+                  <div className="body-m text-$1 leading-7">
                     ‘엉겁결’이라는 말, 왜 그렇게 쓰일까?
                   </div>
                   <div className="h-[80px] flex flex-col justify-end items-end gap-6">
@@ -156,16 +156,16 @@ export const GuestMainPage: React.FC = () => {
           </div>
 
           <div className=" h-auto flex-col justify-start items-stretch gap-6 flex">
-            <div className="title-m self-stretch h-[55px] text-[var(--color-text-primary)]">
+            <div className="title-m self-stretch h-[55px] text-$1">
               📖 OOO님이 관심 있어 할 만한 글이에요!
             </div>
             <div className="self-stretch p-2.5 grid grid-cols-1 md:grid-cols-2 gap-[60px]">
-              <div className="bg-[var(--color-surface-primary-2)] rounded-[28px] p-[30px] flex flex-col gap-[26px] h-full">
+              <div className="bg-$1 rounded-[28px] p-[30px] flex flex-col gap-[26px] h-full">
                 <div className="flex items-center gap-2">
-                  <span className="text-[var(--color-text-primary)] title-m">
+                  <span className="text-$1 title-m">
                     말의 품격
                   </span>
-                  <span className="text-[var(--color-text-intermediate)] body-m">
+                  <span className="text-$1 body-m">
                     이기주
                   </span>
                 </div>
@@ -192,12 +192,12 @@ export const GuestMainPage: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <div className="bg-[var(--color-surface-primary-2)] rounded-[28px] p-[30px] flex flex-col gap-[26px] h-full">
+              <div className="bg-$1 rounded-[28px] p-[30px] flex flex-col gap-[26px] h-full">
                 <div className="flex items-center gap-2">
-                  <span className="text-[var(--color-text-primary)] title-m">
+                  <span className="text-$1 title-m">
                     고요의 힘
                   </span>
-                  <span className="text-[var(--color-text-intermediate)] body-m">
+                  <span className="text-$1 body-m">
                     틱낫한
                   </span>
                 </div>
@@ -239,13 +239,13 @@ export const GuestMainPage: React.FC = () => {
               }}
             >
               <div className="grow shrink basis-0 text-center md:text-left flex flex-col gap-2">
-                <span className="animated-text block text-[var(--color-text-primary)] display-m">
+                <span className="animated-text block text-$1 display-m">
                   나에게 맞는
                 </span>
-                <span className="animated-text block text-[var(--color-main)] display-m">
+                <span className="animated-text block text-$1 display-m">
                   매일 새로운
                 </span>
-                <span className="animated-text block text-[var(--color-text-primary)] display-m">
+                <span className="animated-text block text-$1 display-m">
                   맞춤 학습
                 </span>
               </div>
@@ -278,16 +278,16 @@ export const GuestMainPage: React.FC = () => {
             >
               <div className="grow shrink basis-0 text-right flex flex-col gap-2">
                 <div className="animated-text block display-m">
-                  <span className="text-[var(--color-text-primary)]">
+                  <span className="text-$1">
                     읽다가{' '}
                   </span>
-                  <span className="text-[var(--color-main)]">막히면?</span>
+                  <span className="text-$1">막히면?</span>
                 </div>
                 <div className="animated-text block display-m">
-                  <span className="text-[var(--color-main)]">아라부기</span>
-                  <span className="text-[var(--color-text-primary)]">가</span>
+                  <span className="text-$1">아라부기</span>
+                  <span className="text-$1">가</span>
                 </div>
-                <span className="animated-text block text-[var(--color-text-primary)] display-m">
+                <span className="animated-text block text-$1 display-m">
                   친절하게 풀어드립니다
                 </span>
               </div>
@@ -299,20 +299,20 @@ export const GuestMainPage: React.FC = () => {
         isOpen={isLoginPopupOpen}
         onClose={() => setIsLoginPopupOpen(false)}
       />
-      <div className="w-full py-[23px] bg-[var(--color-button-inverse)] justify-center items-center gap-2.5 inline-flex">
+      <div className="w-full py-[23px] bg-$1 justify-center items-center gap-2.5 inline-flex">
         <div className="grow shrink basis-0 flex-col justify-center items-center gap-2.5 inline-flex">
           <div className="self-stretch text-center">
-            <span className="text-[var(--color-main)] text-[59px] font-normal font-['PartialSans']">
+            <span className="text-$1 text-[59px] font-normal font-['PartialSans']">
               아라
             </span>
-            <span className="text-[var(--color-text-intermediate)] text-[59px] font-normal font-['PartialSans']">
+            <span className="text-$1 text-[59px] font-normal font-['PartialSans']">
               부기
             </span>
           </div>
-          <div className="self-stretch text-center text-[var(--color-text-inverse)] body-m">
+          <div className="self-stretch text-center text-$1 body-m">
             GitHub: https://shorturl.at/XIlUM
           </div>
-          <div className="self-stretch text-center text-[var(--color-text-inverse)] body-m">
+          <div className="self-stretch text-center text-$1 body-m">
             2024.08-2025.02
           </div>
         </div>

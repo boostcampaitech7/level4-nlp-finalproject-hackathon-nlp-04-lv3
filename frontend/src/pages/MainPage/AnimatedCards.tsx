@@ -24,21 +24,21 @@ const AnimatedCards: React.FC = () => {
       {cards.map((card, index) => (
         <div
           key={index}
-          className="card absolute w-[390px] h-[363px] px-[50px] py-[30px] bg-[var(--color-surface-secondary)] rounded-[32px] shadow-[0px_0px_13.199999809265137px_0px_var(--color-accent-purple)] flex-col justify-start items-start"
+          className="card absolute w-[390px] h-[363px] px-[50px] py-[30px] bg-surface-secondary rounded-[32px] shadow-[0px_0px_13.199999809265137px_0px_var(--color-accent-purple)] flex-col justify-start items-start"
         >
           <div className="w-[303px] h-[60px] justify-end items-start inline-flex">
             <div className="w-[60px] h-[60px] px-[1.47px] pb-[5.73px] justify-center items-center flex" />
           </div>
           <div className="self-stretch h-[76px] flex-col justify-start items-start gap-2.5 flex">
             <div className="px-2.5 justify-center items-end gap-2.5 inline-flex">
-              <div className="display-l text-[var(--color-text-primary)]">
+              <div className="display-l text-text-primary)]">
                 {card.title}
               </div>
               <div className="h-[38px] py-[7px]" />
             </div>
           </div>
           <div className="self-stretch grow shrink basis-0 px-2.5 justify-center items-center gap-2.5 inline-flex">
-            <div className="caption-m text-[var(--color-text-secondary)] grow shrink basis-0 self-stretch">
+            <div className="caption-m text-text-secondary)] grow shrink basis-0 self-stretch">
               {card.caption}
             </div>
           </div>

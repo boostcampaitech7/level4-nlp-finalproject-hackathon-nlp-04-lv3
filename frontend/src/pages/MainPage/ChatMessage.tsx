@@ -22,12 +22,12 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
       <div
         className={`px-6 py-3 rounded-3xl max-w-[80%] ${
           message.type === 'user'
-            ? 'bg-[var(--color-surface-secondary)] rounded-tr-none'
-            : 'bg-[var(--color-background-secondary)] rounded-tl-none'
+            ? 'bg-surface-secondary rounded-tr-none'
+            : 'bg-background-secondary rounded-tl-none'
         }`}
       >
         <p
-          className={`text-[var(--color-text-primary)] ${messageSize} caption-s`}
+          className={`text-text-primary)] ${messageSize} caption-s`}
         >
           {message.content}
         </p>
