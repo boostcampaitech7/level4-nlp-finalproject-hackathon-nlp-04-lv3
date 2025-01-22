@@ -7,6 +7,8 @@ import { ChatMessage, ChatAction } from '../../types/chat'
 import { ChatAnimationWrapper } from './ChatAnimationWrapper'
 import LoginPopup from './LoginPopup'
 import Button from 'components/Button'
+import { AnimationWrapper } from './AnimationWrapper'
+import { MagneticText } from 'components/MagneticText'
 
 export const GuestMainPage: React.FC = () => {
   useEffect(() => {
@@ -79,23 +81,28 @@ export const GuestMainPage: React.FC = () => {
             className="animated-image w-full h-full object-contain opacity-70"
           />
         </ImageAnimationWrapper>
-        <div className="flex-col justify-start items-center gap-[85px] flex relative z-10">
-          <div className="self-stretch h-auto flex-col justify-start items-center gap-[89px] flex pt-[100px]">
-            <div className="h-[152px] flex-col justify-start items-center gap-[53px] flex">
-              <div className="self-stretch text-center whitespace-normal">
-                <span className="display-l text-main">
-                  아라부기
-                </span>
-                <span className="display-l text-text-primary">
-                  와 함께 <br />더 깊이 이해하고 더 넓게 소통해주세요.
-                </span>
-              </div>
+        <div className="flex-col justify-start items-center gap-[185px] flex relative z-10">
+          <div className="self-stretch h-auto flex-col justify-start items-center gap-[10px] flex pt-[50px]">
+            <div className="self-stretch text-center whitespace-normal">
+              <span className="display-l text-main">아라부기</span>
+              <span className="display-l text-text-primary">
+                와 함께 <br />더 깊이 이해하고 더 넓게 소통해주세요.
+              </span>
             </div>
-            <div className="self-stretch px-2.5 flex justify-center items-stretch gap-5">
-              <div className="w-full md:w-1/3 flex flex-col justify-between items-stretch">
+            <AnimationWrapper
+              cardSelector=".card"
+              preset="fadeUp"
+              config={{
+                initialY: 50,
+                duration: 1,
+                stagger: 0.2,
+              }}
+              className="self-stretch px-2.5 flex justify-center items-stretch gap-5"
+            >
+              <div className="card w-full md:w-1/3 flex flex-col justify-between items-stretch">
                 <div className="flex-grow p-6 bg-surface-primary-2 rounded-[28px] flex flex-col justify-between">
                   <div className="body-m text-text-primary leading-7">
-                    ‘사랑’과 ‘애정’은 느낌이 어떻게 다를까?
+                    '사랑'과 '애정'은 느낌이 어떻게 다를까?
                   </div>
                   <div className="h-[80px] flex flex-col justify-end items-end gap-6">
                     <div className="h-9 flex justify-end items-center gap-3">
@@ -112,10 +119,10 @@ export const GuestMainPage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="w-full md:w-1/3 flex flex-col justify-between items-stretch">
+              <div className="card w-full md:w-1/3 flex flex-col justify-between items-stretch">
                 <div className="flex-grow p-6 bg-surface-primary-2 rounded-[28px] flex flex-col justify-between">
                   <div className="body-m text-text-primary leading-7">
-                    ‘고구마’는 어떻게 생긴 말일까? 한자어일까, 고유어일까,
+                    '고구마'는 어떻게 생긴 말일까? 한자어일까, 고유어일까,
                     아니면 외국어에서 왔을까?
                   </div>
                   <div className="h-[80px] flex flex-col justify-end items-end gap-6">
@@ -133,10 +140,10 @@ export const GuestMainPage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="w-full md:w-1/3 flex flex-col justify-between items-stretch">
+              <div className="card w-full md:w-1/3 flex flex-col justify-between items-stretch">
                 <div className="flex-grow p-6 bg-surface-primary-2 rounded-[28px] flex flex-col justify-between">
                   <div className="body-m text-text-primary leading-7">
-                    ‘엉겁결’이라는 말, 왜 그렇게 쓰일까?
+                    '엉겁결'이라는 말, 왜 그렇게 쓰일까?
                   </div>
                   <div className="h-[80px] flex flex-col justify-end items-end gap-6">
                     <div className="h-9 flex justify-end items-center gap-3">
@@ -152,7 +159,7 @@ export const GuestMainPage: React.FC = () => {
                   </div>
                 </div>
               </div>
-            </div>
+            </AnimationWrapper>
           </div>
 
           <div className=" h-auto flex-col justify-start items-stretch gap-6 flex">
@@ -171,14 +178,16 @@ export const GuestMainPage: React.FC = () => {
                 </div>
                 <div className="flex flex-col justify-between h-full">
                   <div className="text-text-secondary body-m mb-6">
-                    지금 우리는 '말의 힘'이 세상을 지배하는 시대에 살고 있다.
-                    온당한 말 한마디가 천 냥 빚만 갚는 게 아니라 사람의 인생을,
-                    나아가 조직과 공동체의 명운을 바꿔놓기도 한다. 말하기가
-                    개인의 경쟁력을 평가하는 잣대가 된 지도 오래다. 말 잘하는
-                    사람을 매력 있는 사람으로 간주하는 풍토는 갈수록 확산하고
-                    있다. 그래서인지 날카로운 혀를 빼 들어 칼처럼 휘두르는
-                    사람은 넘쳐나고, 자극적인 이야기를 폭포수처럼 쏟아내며
-                    좌중을 들었다 놨다 하는 능변가는 홍수처럼 범람한다.
+                    <MagneticText>
+                      지금 우리는 '말의 힘'이 세상을 지배하는 시대에 살고 있다.
+                      온당한 말 한마디가 천 냥 빚만 갚는 게 아니라 사람의 인생을,
+                      나아가 조직과 공동체의 명운을 바꿔놓기도 한다. 말하기가
+                      개인의 경쟁력을 평가하는 잣대가 된 지도 오래다. 말 잘하는
+                      사람을 매력 있는 사람으로 간주하는 풍토는 갈수록 확산하고
+                      있다. 그래서인지 날카로운 혀를 빼 들어 칼처럼 휘두르는
+                      사람은 넘쳐나고, 자극적인 이야기를 폭포수처럼 쏟아내며
+                      좌중을 들었다 놨다 하는 능변가는 홍수처럼 범람한다.
+                    </MagneticText>
                   </div>
                   <div className="flex justify-end items-center gap-3">
                     <Button

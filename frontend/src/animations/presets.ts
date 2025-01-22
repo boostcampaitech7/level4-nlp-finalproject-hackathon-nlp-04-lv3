@@ -7,9 +7,24 @@ export type AnimationPreset =
   | 'cascade'
   | 'spiral'
   | 'shuffle'
+  | 'fadeUp'
 
 // 프리셋 설정들
 export const animationPresets: Record<AnimationPreset, CardAnimationConfig> = {
+  // 아래에서 위로 페이드인되며 나타나는 애니메이션
+  fadeUp: {
+    initialX: 0,
+    initialY: 50,
+    initialRotation: 0,
+    spacing: {
+      x: 0,
+      y: 0,
+      rotation: 0,
+    },
+    duration: 0.8,
+    stagger: 0.2,
+  },
+
   // 부채꼴 모양으로 펼쳐지는 애니메이션
   fanOut: {
     initialX: -150,

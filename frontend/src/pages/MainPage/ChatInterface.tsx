@@ -90,7 +90,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
             type="submit"
             className="w-10 h-10 bg-button-primary-1 rounded-full flex items-center justify-center hover:bg-[#b89dff] transition-colors"
           >
-            <svg
+            <svg  
               width="20"
               height="20"
               viewBox="0 0 24 24"

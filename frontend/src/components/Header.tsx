@@ -1,14 +1,14 @@
 import { FaRegBell, FaBars } from 'react-icons/fa6'
 import Button from './Button'
 import { Link, useNavigate } from 'react-router'
+import { isAuthenticated } from '../App'
 
 interface HeaderProps {
   pageName?: string
 }
 
 const Header = ({ pageName }: HeaderProps) => {
-  // 추후 실제 로그인 상태 확인하는 훅으로 대체할 것
-  const isLogin = false
+  const isLogin = isAuthenticated()
   const navigate = useNavigate()
 
   const hadleClickUserButton = () => {
