@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useLayoutEffect, useRef, useEffect } from 'react'
 import gsap from 'gsap'
 import ScrollTrigger from 'gsap/ScrollTrigger'
 
@@ -15,87 +15,91 @@ export const ChatAnimationWrapper: React.FC<ChatAnimationWrapperProps> = ({
   className = '',
 }) => {
   const containerRef = useRef<HTMLDivElement>(null)
-  const animationRef = useRef<gsap.Context | null>(null)
+  const timelineRef = useRef<gsap.core.Timeline | null>(null)
 
-  useEffect(() => {
-    // 사용자의 reduced motion 설정 확인
-    const prefersReducedMotion = window.matchMedia(
-      '(prefers-reduced-motion: reduce)',
-    ).matches
+  const setupAnimation = () => {
+    const el = containerRef.current
+    if (!el) return
 
-    const element = containerRef.current
-    if (!element) return
+    // 이전 타임라인이 있다면 정리
+    if (timelineRef.current) {
+      timelineRef.current.kill()
+    }
 
-    // 초기 상태 설정 (reduced motion이 활성화되어 있으면 투명도만 적용)
-    gsap.set(element, {
-      opacity: 0,
-      ...(prefersReducedMotion
-        ? {}
-        : {
-            scale: 0.9,
-            y: 50,
-          }),
+    // 초기 상태 설정
+    gsap.set(el, { 
+      opacity: 0, 
+      y: 50,
+      scale: 0.95
     })
 
-    // GSAP Context 생성
-    const ctx = gsap.context(() => {
-      // 기본 애니메이션 설정
-      const animation = {
-        opacity: 1,
-        duration: prefersReducedMotion ? 0.3 : 0.8,
-        ease: 'power2.out',
-        clearProps: 'all', // 애니메이션 완료 후 인라인 스타일 제거
-      }
-
-      // reduced motion이 비활성화된 경우에만 추가 애니메이션 적용
-      if (!prefersReducedMotion) {
-        Object.assign(animation, {
-          scale: 1,
-          y: 0,
-        })
-      }
-
-      // 모바일 기기 확인
-      const isMobile = window.innerWidth <= 768
-
-      // ScrollTrigger 설정
-      const scrollTrigger = {
-        trigger: element,
-        start: isMobile ? 'top bottom' : 'top bottom-=100', // 모바일에서는 더 일찍 시작
+    // 새로운 타임라인 생성
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: el,
+        start: 'top bottom-=100',
         end: 'top center',
         toggleActions: 'play none none reverse',
-        // 모바일에서는 더 가벼운 스크롤 계산
-        fastScrollEnd: true,
-        preventOverlaps: true,
       }
+    })
 
-      // 애니메이션 적용
-      gsap.to(element, {
-        ...animation,
-        scrollTrigger,
+    tl.to(el, {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      duration: 0.6,
+      ease: 'power2.out',
+    })
+
+    timelineRef.current = tl
+  }
+
+  // 초기 애니메이션 설정
+  useLayoutEffect(() => {
+    setupAnimation()
+    return () => {
+      if (timelineRef.current) {
+        timelineRef.current.kill()
+      }
+      ScrollTrigger.getAll().forEach(st => st.kill())
+    }
+  }, [])
+
+  // 모달 상태 변경 감지
+  useEffect(() => {
+    const handleModalChange = () => {
+      // ScrollTrigger 재계산
+      ScrollTrigger.refresh()
+      // 애니메이션 재설정
+      setupAnimation()
+    }
+
+    // dialog 요소의 변경을 감지
+    const observer = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        if (mutation.target.nodeName === 'DIALOG') {
+          setTimeout(handleModalChange, 100) // 약간의 지연을 두어 DOM이 완전히 업데이트되도록 함
+          break
+        }
+      }
+    })
+
+    // dialog 요소만 관찰
+    const dialogs = document.querySelectorAll('dialog')
+    dialogs.forEach(dialog => {
+      observer.observe(dialog, {
+        attributes: true,
+        attributeFilter: ['open']
       })
     })
 
-    // Context 저장
-    animationRef.current = ctx
-
-    // Cleanup 함수
     return () => {
-      if (animationRef.current) {
-        animationRef.current.revert()
-        animationRef.current = null
-      }
+      observer.disconnect()
     }
   }, [])
 
   return (
-    <div
-      ref={containerRef}
-      className={className}
-      // 접근성을 위한 ARIA 속성 추가
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div ref={containerRef} className={`will-change-transform ${className}`}>
       {children}
     </div>
   )

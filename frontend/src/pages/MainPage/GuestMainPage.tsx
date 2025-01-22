@@ -4,10 +4,9 @@ import { TextAnimationWrapper } from './TextAnimationWrapper'
 import { ImageAnimationWrapper } from './ImageAnimationWrapper'
 import { ChatInterface } from './ChatInterface'
 import { ChatMessage, ChatAction } from '../../types/chat'
-import { ChatAnimationWrapper } from './ChatAnimationWrapper'
+import { AnimationWrapper } from './AnimationWrapper'
 import LoginPopup from './LoginPopup'
 import Button from 'components/Button'
-import { AnimationWrapper } from './AnimationWrapper'
 import { MagneticText } from 'components/MagneticText'
 
 export const GuestMainPage: React.FC = () => {
@@ -81,7 +80,7 @@ export const GuestMainPage: React.FC = () => {
             className="animated-image w-full h-full object-contain opacity-70"
           />
         </ImageAnimationWrapper>
-        <div className="flex-col justify-start items-center gap-[185px] flex relative z-10">
+        <div className="flex-col justify-start items-center gap-[150px] flex relative z-10">
           <div className="self-stretch h-auto flex-col justify-start items-center gap-[10px] flex pt-[50px]">
             <div className="self-stretch text-center whitespace-normal">
               <span className="display-l text-main">아라부기</span>
@@ -235,7 +234,7 @@ export const GuestMainPage: React.FC = () => {
               </div>
             </div>
           </div>
-          <div className="my-[50px]">
+          <div>
             <TextAnimationWrapper
               textSelector=".animated-text"
               className="w-full py-[50px] flex justify-center items-center gap-[200px] flex-col md:flex-row"
@@ -263,17 +262,29 @@ export const GuestMainPage: React.FC = () => {
               </div>
             </TextAnimationWrapper>
           </div>
-          <div className="w-full py-[50px] justify-center items-center gap-[158px] flex flex-col md:flex-row">
-            <ChatAnimationWrapper>
-              <ChatInterface
-                messages={messages}
-                actions={chatActions}
-                onSendMessage={handleSendMessage}
-                width="w-[345px]"
-                height="h-[700px]"
-                messageSize="text-[18px]"
-              />
-            </ChatAnimationWrapper>
+          <div className="w-full py-[100px] justify-center items-center gap-[100px] flex flex-col md:flex-row">
+            <AnimationWrapper
+              cardSelector=".chat-container"
+              preset="fadeUp"
+              config={{
+                initialY: 50,
+                initialOpacity: 0,
+                duration: 0.6,
+                stagger: 0.1,
+                ease: 'power2.out',
+              }}
+            >
+              <div className="chat-container">
+                <ChatInterface
+                  messages={messages}
+                  actions={chatActions}
+                  onSendMessage={handleSendMessage}
+                  width="w-[345px]"
+                  height="h-[700px]"
+                  messageSize="text-[18px]"
+                />
+              </div>
+            </AnimationWrapper>
             <TextAnimationWrapper
               textSelector=".animated-text"
               className="w-full py-[50px] flex justify-center items-center gap-[58px] flex-col md:flex-row"

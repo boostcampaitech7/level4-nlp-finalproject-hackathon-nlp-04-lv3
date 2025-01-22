@@ -9,6 +9,7 @@ export interface CardAnimationConfig {
   initialY?: number
   initialRotation?: number
   initialScale?: number
+  initialOpacity?: number
   spacing?: {
     x?: number
     y?: number
@@ -29,6 +30,7 @@ const defaultConfig: CardAnimationConfig = {
   initialY: 0,
   initialRotation: -25,
   initialScale: 0.8,
+  initialOpacity: 0,
   spacing: {
     x: 25,
     y: 0,
@@ -70,7 +72,7 @@ export const useCardAnimation = (
       y: mergedConfig.initialY,
       rotation: mergedConfig.initialRotation,
       scale: mergedConfig.initialScale,
-      opacity: 0,
+      opacity: mergedConfig.initialOpacity,
       transformOrigin: 'center center',
     })
 
