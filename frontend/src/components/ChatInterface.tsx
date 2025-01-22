@@ -1,110 +1,236 @@
-import React, { useState, useRef, useEffect } from 'react'
-import { ChatMessage as ChatMessageType, ChatAction } from '../types/chat'
-import { ChatMessage } from '../pages/MainPage/ChatMessage'
+import React, { useState, useEffect, useRef } from 'react';
+import Button from './Button';
+import { FaPaperPlane } from 'react-icons/fa';
+
+interface Message {
+  userMessage: string;
+  botMessage: string;
+  timestamp: string;
+}
 
 interface ChatInterfaceProps {
-  messages: ChatMessageType[]
-  actions?: ChatAction[]
-  onSendMessage: (message: string) => void
-  className?: string
-  width?: string
-  height?: string
-  messageSize?: string
+  vocabId: string;
 }
 
-export const ChatInterface: React.FC<ChatInterfaceProps> = ({
-  messages,
-  actions = [],
-  onSendMessage,
-  className = '',
-  width = 'w-[400px]',
-  height = 'h-[600px]',
-  messageSize = 'text-[22px]',
-}) => {
-  const [inputValue, setInputValue] = useState('')
-  const messagesEndRef = useRef<HTMLDivElement>(null)
-  const inputRef = useRef<HTMLInputElement>(null)
+export const ChatInterface: React.FC<ChatInterfaceProps> = ({ vocabId }) => {
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [inputMessage, setInputMessage] = useState('');
+  const [conversationId, setConversationId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }
+  // 새 메시지가 추가될 때마다 스크롤을 아래로 이동
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   useEffect(() => {
-    scrollToBottom()
-  }, [messages])
+    // 대화 내역 불러오기
+    const fetchChatHistory = async () => {
+      if (!conversationId) return;
+      
+      try {
+        const response = await fetch(`/api/v1/chatbot/conversations/${conversationId}`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch chat history');
+        }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (inputValue.trim()) {
-      onSendMessage(inputValue)
-      setInputValue('')
+        const data = await response.json();
+        if (data.status === 'success' && Array.isArray(data.data.messages)) {
+          setMessages(data.data.messages);
+        }
+      } catch (error) {
+        console.error('Failed to fetch chat history:', error);
+      }
+    };
+
+    fetchChatHistory();
+  }, [conversationId]);
+
+  const sendMessage = async (message: string) => {
+    if (!message.trim()) return;
+    
+    setIsLoading(true);
+    // 즉시 사용자 메시지를 UI에 표시
+    const newMessage: Message = {
+      userMessage: message,
+      botMessage: '',
+      timestamp: new Date().toISOString()
+    };
+    setMessages(prev => [...prev, newMessage]);
+    setInputMessage('');
+
+    try {
+      const response = await fetch('/api/v1/chatbot/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify({
+          conversationId: conversationId || undefined,
+          userMessage: message,
+          vocabId: vocabId
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send message');
+      }
+
+      const data = await response.json();
+      if (data.status === 'success') {
+        setConversationId(data.data.conversationId);
+        // 기존 메시지 배열에서 마지막 메시지를 업데이트
+        setMessages(prev => {
+          if (prev.length === 0) return prev;
+          
+          return prev.map((message, index) => {
+            if (index === prev.length - 1) {
+              return {
+                userMessage: message.userMessage,
+                botMessage: data.data.botMessage,
+                timestamp: message.timestamp
+              };
+            }
+            return message;
+          });
+        });
+      }
+    } catch (error) {
+      console.error('Failed to send message:', error);
+      // 에러 발생 시 에러 메시지를 챗봇 응답으로 표시
+      setMessages(prev => {
+        if (prev.length === 0) return prev;
+        
+        return prev.map((message, index) => {
+          if (index === prev.length - 1) {
+            return {
+              userMessage: message.userMessage,
+              botMessage: '죄송합니다. 메시지 전송 중 오류가 발생했습니다.',
+              timestamp: message.timestamp
+            };
+          }
+          return message;
+        });
+      });
+    } finally {
+      setIsLoading(false);
     }
-  }
+  };
+
+  const handleButtonClick = (text: string) => {
+    if (!isLoading) {
+      sendMessage(text);
+    }
+  };
 
   return (
-    <div
-      className={`flex flex-col bg-surface-primary-2 rounded-[32px] shadow-lg ${width} ${height} ${className}`}
-    >
-      {/* 채팅 메시지 영역 */}
-      <div className="flex-1 p-6 overflow-y-auto space-y-4">
-        {messages.map((message, index) => (
-          <ChatMessage
-            key={message.id}
-            message={message}
-            messageSize={messageSize}
-            index={index}
-          />
-        ))}
-        <div ref={messagesEndRef} />
-      </div>
-
-      {/* 액션 버튼 영역 */}
-      {actions.length > 0 && (
-        <div className="py-2">
-          <div className="flex gap-2 justify-center">
-            {actions.map((action) => (
-              <button
-                key={action.id}
-                onClick={action.onClick}
-                className="px-4 py-2 bg-button-secondary-1 rounded-[14px] text-text-secondary text-base font-medium hover:bg-[#d8d8d8] transition-colors"
-              >
-                {action.label}
-              </button>
+    <div className="w-[345px] flex-col justify-center items-center gap-2.5 inline-flex">
+      <div className="h-[802px] pb-[9px] bg-surface-primary-2 rounded-[32px] shadow-[0px_0px_8.100000381469727px_5px_rgba(0,0,0,0.05)] border flex-col justify-start items-center flex overflow-hidden">
+        <div className="w-[345px] h-[793px] px-6 py-[17px] flex-col justify-between items-center inline-flex">
+          {/* Chat history area */}
+          <div 
+            ref={chatContainerRef}
+            className="self-stretch h-[600px] flex-col justify-start items-center gap-4 flex overflow-y-auto"
+          >
+            {messages.map((message, index) => (
+              <div key={index} className="w-full space-y-4">
+                <div className="flex justify-end">
+                  <div className="max-w-[80%] bg-button-primary-1 text-surface-secondary rounded-2xl p-3">
+                    {message.userMessage}
+                  </div>
+                </div>
+                {(message.botMessage || isLoading) && (
+                  <div className="flex justify-start">
+                    <div className="max-w-[80%] bg-surface-secondary rounded-2xl p-3">
+                      {message.botMessage || '답변을 생성하고 있습니다...'}
+                    </div>
+                  </div>
+                )}
+              </div>
             ))}
           </div>
-        </div>
-      )}
-
-      {/* 입력 영역 */}
-      <div className="p-4 ">
-        <form onSubmit={handleSubmit} className="flex gap-2">
-          <input
-            ref={inputRef}
-            type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            placeholder="메시지를 입력해 주세요"
-            className="button-s flex-1 p-1.5 bg-surface-secondary rounded-2xl text-text-intermidiate outline-none focus:ring-2 focus:ring-accent-purple"
-          />
-          <button
-            type="submit"
-            className="w-10 h-10 bg-button-primary-1 rounded-full flex items-center justify-center hover:bg-[#b89dff] transition-colors"
-          >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M2.01 21L23 12L2.01 3L2 10L17 12L2 14L2.01 21Z"
-                fill="white"
+          
+          {/* Chat input area */}
+          <div className="self-stretch h-[126.95px] pt-[30px] flex-col justify-start items-center gap-3 flex">
+            <div className="self-stretch justify-center items-center gap-2.5 inline-flex">
+              <Button
+                size="small"
+                color="grey"
+                text="쉽게 설명"
+                onClick={() => handleButtonClick("쉽게 설명해주세요")}
+                plusClasses="px-[10px] button-s"
               />
-            </svg>
-          </button>
-        </form>
+              <Button
+                size="small"
+                color="grey"
+                text="반대말"
+                onClick={() => handleButtonClick("반대말을 알려주세요")}
+                plusClasses="px-[10px] button-s"
+              />
+              <Button
+                size="small"
+                color="grey"
+                text="추가 설명"
+                onClick={() => handleButtonClick("추가 설명해주세요")}
+                plusClasses="px-[10px] button-s"
+              />
+            </div>
+            <div className="self-stretch h-[47px] p-2.5 bg-surface-secondary rounded-2xl flex-col justify-center items-start flex">
+              <form 
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (!isLoading) {
+                    sendMessage(inputMessage);
+                  }
+                }}
+                className="w-full"
+              >
+                <div className="self-stretch flex items-center gap-2">
+                  <div className="flex-1">
+                    <input
+                      type="text"
+                      value={inputMessage}
+                      onChange={(e) => setInputMessage(e.target.value)}
+                      placeholder="메시지를 입력해 주세요"
+                      className="w-full h-8 text-text-secondary button-s bg-transparent outline-none"
+                      disabled={isLoading}
+                    />
+                  </div>
+                  <button 
+                    type="submit"
+                    className="flex-shrink-0 w-8 h-8 bg-surface-primary-1 rounded-full flex items-center justify-center hover:bg-button-primary-hover-1 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={isLoading}
+                  >
+                    <FaPaperPlane size={16} className="text-text-primary" />
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* Help section */}
+      <div className="justify-start items-center inline-flex">
+        <div className="w-[32px] h-[32px] px-[11px] py-0.5 bg-white/80 rounded-[17.50px] border-2 border-[#707070] flex-col justify-center items-center gap-2.5 inline-flex">
+          <div className="text-center text-text-secondary body-s leading-[31.20px] tracking-tight">
+            ?
+          </div>
+        </div>
+        <div className="p-2.5 justify-center items-center gap-2.5 flex">
+          <div className="text-text-secondary body-s">
+            현재 페이지의 사용법 알아보기
+          </div>
+        </div>
       </div>
     </div>
-  )
-}
+  );
+};
