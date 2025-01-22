@@ -2,7 +2,7 @@ import { FaRegBell, FaBars } from 'react-icons/fa6'
 import Button from './Button'
 import { Link, useNavigate } from 'react-router'
 import { useSidebarStore } from '../stores/sidebarStore'
-import { isAuthenticated } from '../utils/auth'
+import useIsAuthenticated from '../hooks/useIsAuthenticated'
 
 interface HeaderProps {
   pageName?: string
@@ -11,9 +11,10 @@ interface HeaderProps {
 const Header = ({ pageName }: HeaderProps) => {
   const { openSidebar } = useSidebarStore()
   const navigate = useNavigate()
+  const { isAuthenticated } = useIsAuthenticated()
 
   const handleClickUserButton = () => {
-    if (isAuthenticated()) {
+    if (isAuthenticated) {
       navigate('/user/profile')
     } else {
       navigate('auth/login')
@@ -37,7 +38,7 @@ const Header = ({ pageName }: HeaderProps) => {
         <div className="headline-l">{pageName}</div>
       </div>
       <div className="inline-flex items-center gap-[40px]">
-        {isAuthenticated() && (
+        {isAuthenticated && (
           <button className="inline-flex h-[60px] w-[60px] items-center justify-center rounded-full bg-button-secondary-2 hover:bg-button-secondary-hover">
             <FaRegBell size={33} />
           </button>
@@ -45,7 +46,7 @@ const Header = ({ pageName }: HeaderProps) => {
         <Button
           size="medium"
           color="black"
-          text={isAuthenticated() ? '마이페이지' : '로그인하기'}
+          text={isAuthenticated ? '마이페이지' : '로그인하기'}
           onClick={handleClickUserButton}
           plusClasses="px-[30px]"
         />

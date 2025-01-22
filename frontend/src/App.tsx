@@ -1,9 +1,11 @@
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom'
 import { useEffect } from 'react'
 import * as Pages from './pages'
-import { isAuthenticated } from './utils/auth'
+import useIsAuthenticated from './hooks/useIsAuthenticated'
 
 function App() {
+  const { isAuthenticated } = useIsAuthenticated()
+
   useEffect(() => {
     window.history.scrollRestoration = 'manual'
     window.scrollTo(0, 0)
@@ -16,7 +18,7 @@ function App() {
           <Route
             path="/"
             element={
-              isAuthenticated() ? <Pages.MainPage /> : <Pages.GuestMainPage />
+              isAuthenticated ? <Pages.MainPage /> : <Pages.GuestMainPage />
             }
           />
 
@@ -30,7 +32,7 @@ function App() {
           <Route
             path="/*"
             element={
-              isAuthenticated() ? <Outlet /> : <Navigate to="/" replace />
+              isAuthenticated ? <Outlet /> : <Navigate to="/" replace />
             }
           >
             {/* 1. text */}
