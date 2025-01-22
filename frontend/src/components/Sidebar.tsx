@@ -9,12 +9,14 @@ import { CgNotes } from 'react-icons/cg'
 import { LuBookOpenText } from 'react-icons/lu'
 import { useNavigate } from 'react-router'
 import { useSidebarStore } from '../stores/sidebarStore'
+import useIsAuthenticated from '../hooks/useIsAuthenticated'
 
 const Sidebar = () => {
-  // 추후 실제 로그인 상태 확인 함수로 대체
-  const isLoggedIn = false
+  const { isAuthenticated } = useIsAuthenticated()
   const { isSidebarOpen, closeSidebar } = useSidebarStore()
   const navigate = useNavigate()
+
+  // 사이드바를 닫고 해당 페이지로 이동하는 함수
   const closeSidebarWithNavigate = (path: string) => {
     closeSidebar()
     navigate(path)
@@ -65,7 +67,7 @@ const Sidebar = () => {
             onClick={() => closeSidebarWithNavigate('/user/profile')}
           />
         </div>
-        {isLoggedIn && (
+        {isAuthenticated && (
           <IconButton
             icon={FaRegCircleUser}
             text="로그아웃"

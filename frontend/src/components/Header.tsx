@@ -2,6 +2,7 @@ import { FaRegBell, FaBars } from 'react-icons/fa6'
 import Button from './Button'
 import { Link, useNavigate } from 'react-router'
 import { useSidebarStore } from '../stores/sidebarStore'
+import useIsAuthenticated from '../hooks/useIsAuthenticated'
 
 interface HeaderProps {
   pageName?: string
@@ -9,12 +10,12 @@ interface HeaderProps {
 
 const Header = ({ pageName }: HeaderProps) => {
   // 추후 실제 로그인 상태 확인하는 훅으로 대체할 것
-  const isLogin = false
+  const { isAuthenticated } = useIsAuthenticated()
   const { openSidebar } = useSidebarStore()
   const navigate = useNavigate()
 
   const hadleClickUserButton = () => {
-    if (isLogin) {
+    if (isAuthenticated) {
       navigate('/user/profile')
     } else {
       navigate('auth/login')
@@ -34,7 +35,7 @@ const Header = ({ pageName }: HeaderProps) => {
         <div className="headline-l">{pageName}</div>
       </div>
       <div className="inline-flex items-center gap-[40px]">
-        {isLogin && (
+        {isAuthenticated && (
           <button className="inline-flex h-[60px] w-[60px] items-center justify-center rounded-full bg-button-secondary-2 hover:bg-button-secondary-hover">
             <FaRegBell size={33} />
           </button>
@@ -42,7 +43,7 @@ const Header = ({ pageName }: HeaderProps) => {
         <Button
           size="medium"
           color="black"
-          text={isLogin ? '마이페이지' : '로그인하기'}
+          text={isAuthenticated ? '마이페이지' : '로그인하기'}
           onClick={hadleClickUserButton}
           plusClasses="px-[30px]"
         />
