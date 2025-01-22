@@ -24,8 +24,18 @@ function App() {
 
           {/* 인증이 필요하지 않은 라우트들 */}
           <Route path="auth">
-            <Route path="login" element={<Pages.LoginPage />} />
-            <Route path="signup" element={<Pages.SignupPage />} />
+          <Route
+              path="login"
+              element={
+                isAuthenticated ? <Navigate to="/" replace /> : <Pages.LoginPage />
+              }
+            />
+            <Route
+              path="signup"
+              element={
+                isAuthenticated ? <Navigate to="/" replace /> : <Pages.SignupPage />
+              }
+            />
           </Route>
 
           {/* 인증이 필요한 라우트들 */}
