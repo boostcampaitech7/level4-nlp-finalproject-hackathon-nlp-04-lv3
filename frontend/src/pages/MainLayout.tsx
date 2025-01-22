@@ -1,10 +1,11 @@
 import { Outlet } from 'react-router'
-import { Header } from '../components'
+import { Header, Sidebar } from '../components'
 
 const MainLayout = () => {
   return (
     <div>
       <Header />
+      <Sidebar />
       <main>
         <Outlet />
       </main>
