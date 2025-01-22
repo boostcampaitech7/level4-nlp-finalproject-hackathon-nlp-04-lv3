@@ -211,6 +211,7 @@ export const GuestMainPage: React.FC = () => {
                 </div>
                 <div className="flex flex-col justify-between h-full">
                   <div className="text-text-secondary body-m mb-6">
+                  <MagneticText>
                     우리의 머릿속은 늘 생각으로 가득 차다. 그래서 다른 사람들의
                     이야기를 들을 공간조차 없다. 우리가 타인과 더 많이
                     연결되고자 한다면 그들의 이야기를 경청해야 한다. 진심으로 귀
@@ -219,6 +220,7 @@ export const GuestMainPage: React.FC = () => {
                     조언하고다. 독자들은 이 책을 통해 틱낫한 스님이 설명하는
                     내면의 고독과 마음챙김의 가장 근원적 해법인 일상 수행의
                     다양하고 쉬운 방법을 직접 체험할 수 있을 것이다.
+                    </MagneticText>
                   </div>
                   <div className="flex justify-end items-center gap-3">
                     <Button
