@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { ChatMessage as ChatMessageType, ChatAction } from '../../types/chat'
 import { ChatMessage } from './ChatMessage'
+import { FaPaperPlane } from 'react-icons/fa'
 
 interface ChatInterfaceProps {
   messages: ChatMessageType[]
@@ -83,25 +84,16 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
             type="text"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
-            placeholder="메시지를 입력해 주세요"
-            className="button-s flex-1 p-1.5 bg-surface-secondary-2 rounded-2xl text-text-intermidiate outline-none focus:ring-2 focus:ring-accent-purple"
+            placeholder="메세지를 입력하기"
+            disabled
+            className="button-s flex-1 py-1 px-4 bg-surface-secondary rounded-2xl text-text-intermidiate outline-none"
           />
           <button
             type="submit"
-            className="w-10 h-10 bg-button-primary-1 rounded-full flex items-center justify-center hover:bg-[#b89dff] transition-colors"
+            disabled
+            className="flex h-[40px] w-[40px] items-center justify-center rounded-full bg-surface-primary-1 opacity-50"
           >
-            <svg  
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M2.01 21L23 12L2.01 3L2 10L17 12L2 14L2.01 21Z"
-                fill="white"
-              />
-            </svg>
+            <FaPaperPlane size={20} />
           </button>
         </form>
       </div>
