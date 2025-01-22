@@ -157,7 +157,7 @@ export default {
           fontFamily: theme('fontFamily.pretendardBold'),
           fontSize: '38px',
         },
-        '.titile-m': {
+        '.title-m': {
           fontFamily: theme('fontFamily.pretendardSemiBold'),
           fontSize: '32px',
         },
@@ -179,11 +179,11 @@ export default {
         },
         '.button-l': {
           fontFamily: theme('fontFamily.pretendardSemiBold'),
-          fontSize: '32px',
+          fontSize: '24px',
         },
         '.button-m': {
           fontFamily: theme('fontFamily.pretendardSemiBold'),
-          fontSize: '24px',
+          fontSize: '20px',
         },
         '.button-s': {
           fontFamily: theme('fontFamily.pretendardMedium'),

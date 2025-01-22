@@ -1,0 +1,14 @@
+/* Safari 전용 스타일 */
+@media not all and (min-resolution:.001dpcm) {
+  @supports (-webkit-appearance:none) {
+    .safari-send-button {
+      width: 36px !important;
+      height: 36px !important;
+    }
+    
+    .safari-send-icon {
+      width: 16px !important;
+      height: 16px !important;
+    }
+  }
+}

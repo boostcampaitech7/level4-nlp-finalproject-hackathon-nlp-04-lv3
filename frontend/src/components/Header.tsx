@@ -9,17 +9,20 @@ interface HeaderProps {
 }
 
 const Header = ({ pageName }: HeaderProps) => {
-  // 추후 실제 로그인 상태 확인하는 훅으로 대체할 것
-  const { isAuthenticated } = useIsAuthenticated()
   const { openSidebar } = useSidebarStore()
   const navigate = useNavigate()
+  const { isAuthenticated } = useIsAuthenticated()
 
-  const hadleClickUserButton = () => {
+  const handleClickUserButton = () => {
     if (isAuthenticated) {
       navigate('/user/profile')
     } else {
       navigate('auth/login')
     }
+  }
+
+  const handleClickSidebarButton = () => {
+    openSidebar()
   }
 
   return (
@@ -44,10 +47,10 @@ const Header = ({ pageName }: HeaderProps) => {
           size="medium"
           color="black"
           text={isAuthenticated ? '마이페이지' : '로그인하기'}
-          onClick={hadleClickUserButton}
+          onClick={handleClickUserButton}
           plusClasses="px-[30px]"
         />
-        <button onClick={openSidebar}>
+        <button onClick={handleClickSidebarButton}>
           <FaBars size={44} />
         </button>
       </div>
