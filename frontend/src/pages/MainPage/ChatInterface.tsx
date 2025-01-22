@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import { ChatMessage as ChatMessageType, ChatAction } from '../../types/chat'
 import { ChatMessage } from './ChatMessage'
 import { FaPaperPlane } from 'react-icons/fa'
+import '../../styles/safari.css'
 
 interface ChatInterfaceProps {
   messages: ChatMessageType[]
@@ -61,13 +62,13 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
 
       {/* 액션 버튼 영역 */}
       {actions.length > 0 && (
-        <div className="py-2">
-          <div className="flex gap-2 justify-center">
+        <div className="py-2 px-4">
+          <div className="flex flex-wrap gap-2 justify-center">
             {actions.map((action) => (
               <button
                 key={action.id}
                 onClick={action.onClick}
-                className="button-s px-4 py-2 bg-button-secondary-1 rounded-[14px] text-text-secondary hover:bg-[#d8d8d8] transition-colors"
+                className="button-s px-4 py-2 bg-button-secondary-1 rounded-[14px] text-text-secondary hover:bg-[#d8d8d8] transition-colors whitespace-nowrap"
               >
                 {action.label}
               </button>
@@ -77,8 +78,8 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
       )}
 
       {/* 입력 영역 */}
-      <div className="p-4 ">
-        <form onSubmit={handleSubmit} className="flex gap-2">
+      <div className="p-4">
+        <form onSubmit={handleSubmit} className="flex items-center gap-2">
           <input
             ref={inputRef}
             type="text"
@@ -86,14 +87,14 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
             onChange={(e) => setInputValue(e.target.value)}
             placeholder="메세지를 입력하기"
             disabled
-            className="button-s flex-1 py-1 px-4 bg-surface-secondary rounded-2xl text-text-intermidiate outline-none"
+            className="button-s flex-1 min-w-0 py-2 px-4 bg-surface-secondary rounded-2xl text-text-intermidiate outline-none"
           />
           <button
             type="submit"
             disabled
-            className="flex h-[40px] w-[40px] items-center justify-center rounded-full bg-surface-primary-1 opacity-50"
+            className="flex-shrink-0 flex h-[40px] w-[40px] items-center justify-center rounded-full bg-surface-primary-1 opacity-50"
           >
-            <FaPaperPlane size={20} />
+            <FaPaperPlane size={16} />
           </button>
         </form>
       </div>
