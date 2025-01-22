@@ -281,7 +281,6 @@ export const GuestMainPage: React.FC = () => {
                   onSendMessage={handleSendMessage}
                   width="w-[345px]"
                   height="h-[700px]"
-                  messageSize="text-[18px]"
                 />
               </div>
             </AnimationWrapper>
