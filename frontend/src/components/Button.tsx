@@ -23,7 +23,7 @@ const Button = ({
     'inline-flex items-center content-center justify-center transition-all duration-200 px-[10px] py-[5px] gap-x-[3px] m-0 select-none'
 
   const sizeStyles = {
-    small: 'button-m h-[39px] rounded-[16px]',
+    small: 'button-m min-w-[106px] h-[39px] rounded-[16px]',
     medium: 'title-s h-[64px] rounded-[20px]',
     large: 'button-l w-[510px] h-[79px] rounded-[20px]',
   }
