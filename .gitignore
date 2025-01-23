@@ -29,6 +29,10 @@ dist-ssr
 *.sln
 *.sw?
 
+# Windsurf
+.windsurfrules
+
+# Airflow
 airflow-webserver.pid
 airflow.cfg
 webserver_config.py

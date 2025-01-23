@@ -1,26 +1,19 @@
 from pydantic import BaseModel
 from datetime import date
 from typing import List, Optional
-import datetime
-
-
-class UserSignupDTO(BaseModel):
-    username: str
-    name: str
-    password: str
-    level: int
+from datetime import datetime, time
 
 
 class UserUpdateDTO(BaseModel):
     password: Optional[str] = None
-    alarm_time: Optional[datetime.time] = None
+    alarm_time: Optional[time] = None
 
 
 class UserDetailDTO(BaseModel):
     username: str
     name: str
     password: str
-    alarm_time: datetime.time
+    alarm_time: time
     tier: int
     rating: int
     text_cnt: int
@@ -30,3 +23,9 @@ class UserDetailDTO(BaseModel):
 
 class MonthStreakDTO(BaseModel):
     streak: List[date]
+
+
+class AlarmDTO(BaseModel):
+    alarm_id: int
+    type: bool
+    created_at: datetime

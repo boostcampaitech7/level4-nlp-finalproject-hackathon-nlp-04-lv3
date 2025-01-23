@@ -27,7 +27,7 @@ class Scores(SQLModel, table=True):
     tier: int = Field(default=0, sa_column=Column(INTEGER, nullable=False))
     rating: int = Field(default=0, sa_column=Column(INTEGER, nullable=False))
     streak: List[int] = Field(
-        default_factory=lambda: [-1] * 365,
+        default_factory=lambda: [0] * 365,
         sa_column=Column(ARRAY(INTEGER), nullable=False),
     )
     text_cnt: int = Field(default=0, sa_column=Column(INTEGER, nullable=False))
