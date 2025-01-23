@@ -3,8 +3,11 @@ import { VocabCard } from './VocabCard';
 import { VocabDetailType } from './types';
 import Button from 'components/Button';
 import {ChatInterface} from 'components/ChatInterface'; // Import ChatInterface component
+import { useNavigate, useParams } from 'react-router-dom'
 
 export const VocabDetailPage: React.FC = () => {
+  const { vocab_id } = useParams()
+  const navigate = useNavigate()
   const [vocabData, setVocabData] = useState<VocabDetailType>({
     vocab_id: 11123043,
     vocab: "독실한",
@@ -34,7 +37,7 @@ export const VocabDetailPage: React.FC = () => {
   };
 
   const handleButtonClick = () => {
-    // TODO: Implement button click handler
+    navigate(`/vocab/${vocab_id}/quiz`)
   };
 
   return (

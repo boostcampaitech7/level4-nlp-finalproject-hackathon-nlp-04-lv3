@@ -1,17 +1,24 @@
 import { FaRegBell, FaBars } from 'react-icons/fa6'
 import Button from './Button'
-import { Link, useNavigate } from 'react-router'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useSidebarStore } from '../stores/sidebarStore'
 import useIsAuthenticated from '../hooks/useIsAuthenticated'
+import { useMemo } from 'react'
 
-interface HeaderProps {
-  pageName?: string
-}
-
-const Header = ({ pageName }: HeaderProps) => {
+const Header = () => {
   const { openSidebar } = useSidebarStore()
   const navigate = useNavigate()
   const { isAuthenticated } = useIsAuthenticated()
+  const location = useLocation()
+
+  const pageName = useMemo(() => {
+    if (location.pathname.includes('/vocab')) {
+      return '단어 학습'
+    } else if (location.pathname.includes('/text')) {
+      return '긴 글 학습'
+    }
+    return ''
+  }, [location.pathname])
 
   const handleClickUserButton = () => {
     if (isAuthenticated) {

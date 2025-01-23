@@ -79,6 +79,10 @@ function App() {
                 element={<Pages.QuizLevelSelectionPage section="vocab" />}
               />
               <Route path=":vocab_id" element={<Pages.VocabDetailPage />} />
+              <Route
+                path=":vocab_id/quiz/:level"
+                element={<Pages.VocabQuizPage />}
+              />
             </Route>
 
             {/* 3. diary */}
