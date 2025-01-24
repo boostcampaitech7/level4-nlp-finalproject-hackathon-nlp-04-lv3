@@ -55,7 +55,7 @@ def submit_vocab_quiz(
     # 3. 사용자가 선택한 답과 정답 비교
     correct = []
     for i, answer in enumerate(user_answer):
-        correct_answer = quiz.answer[i]
+        correct_answer = quiz.answer[i+1]
         correct.append(answer == correct_answer)
     
     # 4. StudyRecords에 사용자 퀴즈 제출 기록 저장
@@ -67,7 +67,7 @@ def submit_vocab_quiz(
         created_at=datetime.now()
     )
     session.add(study_record)
-    session.commit()
+    session.flush()
 
     # 4. Scores 테이블에 반영
     scores = session.exec(select(Scores).where(Scores.user_id == user_id)).first()
