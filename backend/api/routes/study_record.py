@@ -11,8 +11,10 @@ from schemas.study_record import (
     TextStudyRecordDTO,
     StudyRecordDTO,
 )
-from models.vocab import Vocabs, VocabQuizzes
-from models.text import Texts, TextQuizzes
+from models.vocab import Vocabs
+from models.vocab_quiz import VocabQuizzes
+from models.text import Texts
+from models.text_quiz import TextQuizzes
 from models.study_record import StudyRecords
 from core.database import get_session
 from core.security import validate_access_token, oauth2_scheme

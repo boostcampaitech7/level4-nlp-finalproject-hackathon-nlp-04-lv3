@@ -1,11 +1,14 @@
-from fastapi import Depends, APIRouter, status
+from fastapi import Depends, APIRouter, HTTPException, status
 from sqlmodel import Session, select
 from sqlalchemy import Date, cast
 from typing import List
 from datetime import datetime, timedelta
 
-from models.vocab import Vocabs, VocabQuizzes
+from models.vocab import Vocabs
+from models.vocab_quiz import VocabQuizzes
+from models.score import Scores
 from models.study_record import StudyRecords
+from schemas.vocab import VocabDetailDTO
 from schemas.study_record import VocabStudyRecordDTO
 from core.database import get_session
 from core.security import validate_access_token, oauth2_scheme
@@ -62,3 +65,30 @@ def fetch_record_by_page(
             )
         )
     return response_body
+
+
+# 단어 검색
+@router.post("/vocab/{vocab}", response_model=VocabDetailDTO, status_code=status.HTTP_200_OK)
+def search_vocab(
+    vocab: str, token: str = Depends(oauth2_scheme), session: Session = Depends(get_session)
+):
+    # 1. 토큰 검증
+    user_id = validate_access_token(token)["sub"]
+
+    # 2. 단어 정보 조회
+    vocab = session.exec(select(Vocabs).where(Vocabs.vocab == vocab)).first()
+    # 2.1 단어가 존재하지 않을 시 예외 처리
+    if not vocab:
+        raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND, detail="Vocab not found"
+        )
+    
+    return VocabDetailDTO(
+        vocab_id=vocab.vocab_id,
+        vocab=vocab.vocab,
+        hanja=vocab.hanja,
+        dict_mean=vocab.dict_mean,
+        easy_explain=vocab.easy_explain,
+        correct_example=vocab.correct_example,
+        incorrect_example=vocab.incorrect_example
+    )
