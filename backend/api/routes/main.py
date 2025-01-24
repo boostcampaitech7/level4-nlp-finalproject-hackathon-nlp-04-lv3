@@ -1,20 +1,51 @@
-from fastapi import Depends, APIRouter, HTTPException, status
-from sqlmodel import Session, select
+from fastapi import Depends, APIRouter, status, HTTPException
+from sqlmodel import Session, select, func
 from sqlalchemy import Date, cast
 from typing import List
 from datetime import datetime, timedelta
 
-from models.vocab import Vocabs
-from models.vocab_quiz import VocabQuizzes
-from models.score import Scores
+from models.vocab import Vocabs, VocabQuizzes
+from models.text import Texts
 from models.study_record import StudyRecords
-from schemas.vocab import VocabDetailDTO
+from schemas.text import TextItemDTO
 from schemas.study_record import VocabStudyRecordDTO
 from core.database import get_session
 from core.security import validate_access_token, oauth2_scheme
 
-
 router = APIRouter(prefix="/main", tags=["main"])
+
+
+# 오늘의 글 조회
+@router.get(
+    "/text",
+    response_model=List[TextItemDTO],
+    status_code=status.HTTP_200_OK,
+)
+def get_random_texts(
+    token: str = Depends(oauth2_scheme), session: Session = Depends(get_session)
+):
+    # 1. 토큰 검증
+    try:
+        validate_access_token(token)
+    except Exception as e:
+        raise HTTPException(status_code=401, detail="토큰이 유효하지 않습니다.")
+
+    # 2. DB에서 긴 글 데이터 중 임의로 3개 추출 후 반환
+    statement = select(Texts).order_by(func.random()).limit(3)
+    texts = session.exec(statement).all()
+
+    # 3. 응답 데이터 생성
+    response_body = [
+        TextItemDTO(
+            text_id=text.text_id,
+            title=text.title,
+            category=text.category,
+            text=text.content[0],
+        )
+        for text in texts
+    ]
+
+    return response_body
 
 
 @router.get(
@@ -68,9 +99,13 @@ def fetch_record_by_page(
 
 
 # 단어 검색
-@router.post("/vocab/{vocab}", response_model=VocabDetailDTO, status_code=status.HTTP_200_OK)
+@router.post(
+    "/vocab/{vocab}", response_model=VocabDetailDTO, status_code=status.HTTP_200_OK
+)
 def search_vocab(
-    vocab: str, token: str = Depends(oauth2_scheme), session: Session = Depends(get_session)
+    vocab: str,
+    token: str = Depends(oauth2_scheme),
+    session: Session = Depends(get_session),
 ):
     # 1. 토큰 검증
     user_id = validate_access_token(token)["sub"]
@@ -80,9 +115,9 @@ def search_vocab(
     # 2.1 단어가 존재하지 않을 시 예외 처리
     if not vocab:
         raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND, detail="Vocab not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Vocab not found"
         )
-    
+
     return VocabDetailDTO(
         vocab_id=vocab.vocab_id,
         vocab=vocab.vocab,
@@ -90,5 +125,5 @@ def search_vocab(
         dict_mean=vocab.dict_mean,
         easy_explain=vocab.easy_explain,
         correct_example=vocab.correct_example,
-        incorrect_example=vocab.incorrect_example
+        incorrect_example=vocab.incorrect_example,
     )
