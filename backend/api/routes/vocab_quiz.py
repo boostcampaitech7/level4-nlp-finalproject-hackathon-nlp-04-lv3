@@ -100,7 +100,7 @@ def submit_vocab_quiz(
         # 업데이트 시간
         scores.updated_at = datetime.now()
 
-        session.commit()
+        session.flush()
         session.refresh(scores)
 
     # 5. 퀴즈 문제, 보기, 정답, 풀이 등을 반환
