@@ -10,7 +10,7 @@ from core.database import get_session
 
 router = APIRouter(prefix="/level", tags=["vocab"])
 
-@router.get("/vocab/{user_id}/{vocab_id}", response_model=VocabLevelDTO, status_code=200)
+@router.get("/vocab/{vocab_id}/{user_id}", response_model=VocabLevelDTO, status_code=200)
 def Fetch_vocab_level(
     user_id: int, vocab_id: int, session: Session = Depends(get_session)
 ):
