@@ -23,15 +23,14 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
   messageSize = 'text-[22px]',
 }) => {
   const [inputValue, setInputValue] = useState('')
-  const messagesEndRef = useRef<HTMLDivElement>(null)
+  const chatContainerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }
-
   useEffect(() => {
-    scrollToBottom()
+    // 메시지가 업데이트될 때마다, 스크롤을 가장 아래로 이동
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
+    }
   }, [messages])
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -47,7 +46,10 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
       className={`flex flex-col rounded-[32px] bg-surface-primary-2 shadow-lg ${width} ${height} ${className}`}
     >
       {/* 채팅 메시지 영역 */}
-      <div className="custom-scrollbar-small flex-1 space-y-4 overflow-y-auto p-6">
+      <div
+        className="custom-scrollbar-small flex-1 space-y-4 overflow-y-auto scroll-smooth p-6"
+        ref={chatContainerRef}
+      >
         {messages.map((message, index) => (
           <ChatMessage
             key={message.id}
@@ -56,7 +58,6 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
             index={index}
           />
         ))}
-        <div ref={messagesEndRef} />
       </div>
 
       {/* 액션 버튼 영역 */}
