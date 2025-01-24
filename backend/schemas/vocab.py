@@ -12,6 +12,11 @@ class VocabDetailDTO(BaseModel):
     correct_example: List[str]
     incorrect_example: List[str]
 
+class LevelData(BaseModel):
+    level: int
+    quiz_id: int
+    is_solved: bool
+
 class VocabLevelDTO(BaseModel):
     user_level: int
-    completed: List[bool]
+    level_data: List[LevelData]
