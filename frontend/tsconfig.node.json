@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "incremental": true,
+    "composite": true,
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
     "target": "ES2022",
     "lib": ["ES2023"],
@@ -11,7 +13,7 @@
     "allowImportingTsExtensions": true,
     "isolatedModules": true,
     "moduleDetection": "force",
-    "noEmit": true,
+    "emitDeclarationOnly": true,
 
     /* Linting */
     "strict": true,

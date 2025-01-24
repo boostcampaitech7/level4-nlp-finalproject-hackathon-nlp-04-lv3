@@ -153,7 +153,7 @@ def feedback(
     # 2.2. diary가 존재할 시 수정
     else:
         diary.text = new_diary.text
-        diary.status = True
+        diary.status = 1
         session.commit()
 
     return {
@@ -179,9 +179,7 @@ def save(
 
     # 2.1. diary가 존재하지 않을 시 새로 생성
     if not diary:
-        diary = Diaries(
-            user_id=user_id, text=new_diary.text, status=False, bookmark=False
-        )
+        diary = Diaries(user_id=user_id, text=new_diary.text, status=0, bookmark=False)
         session.add(diary)
         session.commit()
         # 제출 일기 개수 증가

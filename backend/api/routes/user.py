@@ -8,6 +8,7 @@ from models.user import Users
 from models.score import Scores
 from core.database import get_session
 from core.security import validate_access_token, oauth2_scheme, pwd_context
+from services.alarm import reschedule_alarm
 
 
 router = APIRouter(prefix="/user", tags=["user"])
@@ -110,6 +111,8 @@ def edit(
         user.password = pwd_context.hash(updated_user.password)
     if updated_user.alarm_time:
         user.alarm_time = updated_user.alarm_time
+        # 알람 재스케줄링
+        reschedule_alarm(user_id=user.user_id, alarm_time=user.alarm_time)
 
     session.commit()
     session.refresh(user)
