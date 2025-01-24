@@ -68,51 +68,27 @@ def fetch_record_by_page(
 
 
 # 단어 검색
-@router.post("/vocab/{vocab_id}", response_model=VocabDetailDTO, status_code=status.HTTP_200_OK)
+@router.post("/vocab/{vocab}", response_model=VocabDetailDTO, status_code=status.HTTP_200_OK)
 def search_vocab(
     vocab: str, token: str = Depends(oauth2_scheme), session: Session = Depends(get_session)
 ):
-    # 1. 단어 정보 조회
-    vocab = session.exec(select(Vocabs).where(Vocabs.vocab == vocab)).first()
+    # 1. 토큰 검증
+    user_id = validate_access_token(token)["sub"]
 
-    # 2. 단어가 존재하지 않을 시 예외 처리
+    # 2. 단어 정보 조회
+    vocab = session.exec(select(Vocabs).where(Vocabs.vocab == vocab)).first()
+    # 2.1 단어가 존재하지 않을 시 예외 처리
     if not vocab:
         raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND, detail="Vocab not found"
         )
-
-    # 3. 토큰 검증 및 user_id 추출
-    user_id = validate_access_token(token)["sub"]
     
-    # 4. 사용자 level 추출
-    score = session.exec(select(Scores).where(Scores.user_id == user_id)).first()
-    if not score:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Score not found"
-        )
-    
-    level = score.level  # 1~5 범위로 지정된 level 값
-    if level is None or not (1 <= level <= 5):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid level"
-        )
-    
-
-    # 5. level에 맞는 easy_explain 데이터 선택 (level-1 인덱스 사용)
-    try:
-        easy_explain = vocab.easy_explain[level - 1]  # level이 1~5이므로 (level-1) 인덱스 사용
-    except IndexError:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Explanation for the user's level not found"
-        )
-    
-
     return VocabDetailDTO(
         vocab_id=vocab.vocab_id,
         vocab=vocab.vocab,
         hanja=vocab.hanja,
         dict_mean=vocab.dict_mean,
-        easy_explain=easy_explain,
+        easy_explain=vocab.easy_explain,
         correct_example=vocab.correct_example,
         incorrect_example=vocab.incorrect_example
     )
