@@ -6,7 +6,6 @@ from datetime import datetime, timedelta
 
 from models.vocab import Vocabs
 from models.vocab_quiz import VocabQuizzes
-from models.bookmark import VocabBookmarks
 from models.score import Scores
 from models.study_record import StudyRecords
 from schemas.vocab import VocabDetailDTO

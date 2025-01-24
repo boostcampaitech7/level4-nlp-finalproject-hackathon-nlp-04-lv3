@@ -5,7 +5,6 @@ from sqlalchemy import func
 from schemas.vocab import VocabDetailDTO
 from models.vocab import Vocabs
 from models.score import Scores
-#from models.bookmark import VocabBookmarks
 from core.database import get_session
 from core.security import validate_access_token, oauth2_scheme
 from datetime import datetime
@@ -51,11 +50,7 @@ def fetch_vocab_detail(
         status_code=status.HTTP_404_NOT_FOUND, detail="Vocab not found"
         )
 
-    # 4. 즐겨찾기 유무 확인
-    #bookmark = bool(session.exec(select(VocabBookmarks).where(VocabBookmarks.user_id == user_id, VocabBookmarks.vocab_id == vocab.vocab_id)).first())
-
-
-    # 5. level에 맞는 easy_explain 데이터 선택 (level-1 인덱스 사용)
+    # 4. level에 맞는 easy_explain 데이터 선택 (level-1 인덱스 사용)
     try:
         easy_explain = vocab.easy_explain[level - 1]  # level이 1~5이므로 (level-1) 인덱스 사용
     except IndexError:
@@ -67,48 +62,8 @@ def fetch_vocab_detail(
         vocab_id=vocab.vocab_id,
         vocab=vocab.vocab,
         hanja=vocab.hanja,
-        #bookmark=bookmark,
         dict_mean=vocab.dict_mean,
         easy_explain=easy_explain,
         correct_example=vocab.correct_example,
         incorrect_example=vocab.incorrect_example
     )
-
-'''
-# 단어 즐겨찾기 추가
-@router.post("/bookmark", status_code=status.HTTP_200_OK)
-def add_vocab_bookmark(
-    user_id: int, vocab_id: int, session: Session = Depends(get_session)
-):
-    bookmark = VocabBookmarks(
-        user_id=user_id,
-        vocab_id=vocab_id,
-        updated_at=datetime.now()
-    )
-    session.add(bookmark)
-    session.commit()
-    session.refresh(bookmark)
-
-    return {"status": "success"} # status 200 반환
-'''
-'''
-# 단어 즐겨찾기 삭제
-@router.delete("/bookmark", status_code=status.HTTP_200_OK)
-def remove_vocab_bookmark(
-    user_id: int, vocab_id: int, session: Session = Depends(get_session)
-):
-    bookmark = session.exec(
-        select(VocabBookmarks).where(
-            VocabBookmarks.user_id == user_id,
-            VocabBookmarks.vocab_id == vocab_id
-        )
-    ).first()
-
-    if not bookmark:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Bookmark not found")
-    
-    session.delete(bookmark)
-    session.commit()
-
-    return {"status": "success"} # status 200 반환
-    '''
