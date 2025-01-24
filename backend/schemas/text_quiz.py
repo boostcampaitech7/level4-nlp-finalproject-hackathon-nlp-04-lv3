@@ -1,20 +1,27 @@
-from pydantic import BaseModel, Field
-from typing import List, Optional
+from pydantic import BaseModel
+from typing import List
 
 
-class TextQuizListDTO(BaseModel):
-    quiz_id: List[int] = Field(default_factory=list)
-    question: List[str] = Field(default_factory=list)
-    answer: List[str] = Field(default_factory=list)
-    user_answer: Optional[List[str]] = Field(default_factory=list)
-    is_correct: Optional[List[bool]] = Field(default_factory=list)
-    answer_explain: Optional[List[str]] = Field(default_factory=list)
+class TextQuizDTO(BaseModel):
+    question: List[str]
+    options: List[str]
 
 
-class TextQuizUserAnswerItemDTO(BaseModel):
-    quiz_id: int
-    user_answer: int
+class TextQuizResponseDTO(BaseModel):
+    question: List[str]
+    options: List[str]
+    answer: List[int]
+    answer_explain: List[str]
+    user_answer: List[int]
+    correct: List[bool]
+    rating: int
+    level_message: str
 
 
-class TextQuizUserAnswerListDTO(BaseModel):
-    user_answers: List[TextQuizUserAnswerItemDTO] = Field(default_factory=list)
+class TextQuizSolutionDTO(BaseModel):
+    question: List[str]
+    options: List[str]
+    answer: List[int]
+    answer_explain: List[str]
+    user_answer: List[int]
+    correct: List[bool]
