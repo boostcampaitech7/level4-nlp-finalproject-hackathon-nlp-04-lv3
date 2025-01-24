@@ -1,6 +1,6 @@
+from typing import List
 from datetime import datetime
 from sqlmodel import SQLModel, Field
-from typing import List
 from sqlalchemy import Column, ARRAY, INTEGER, TIMESTAMP
 
 
