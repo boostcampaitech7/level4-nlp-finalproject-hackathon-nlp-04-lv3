@@ -6,13 +6,14 @@ class TextItemDTO(BaseModel):
     text_id: int
     title: str
     category: str
-    text: Optional[List[str]] = Field(default_factory=list)
-    bookmark: Optional[bool] = Field(default=None)
+    content: Optional[List[str]] = Field(default_factory=list)
+    bookmark: Optional[bool] = Field(default=False)
 
 
 class TextListDTO(BaseModel):
     page_num: int
     texts: List[TextItemDTO] = Field(default_factory=list)
+    total_count: Optional[int] = Field(default=None)
 
 
 class TextExplainRequestDTO(BaseModel):
@@ -26,12 +27,15 @@ class TextExplainResponseDTO(BaseModel):
 
 
 class TextChatbotItemDTO(BaseModel):
+    chat_id: int
+    text_id: int
     question: str
     answer: str
 
 
 class TextChatbotListDTO(BaseModel):
-    conversation: List[TextChatbotItemDTO] = Field(default_factory=list)
+    page_num: int
+    chats: List[TextChatbotItemDTO] = Field(default_factory=list)
 
 
 class TextChatbotRequestDTO(BaseModel):
