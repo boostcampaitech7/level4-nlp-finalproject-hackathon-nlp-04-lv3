@@ -17,15 +17,13 @@ from models.alarm import Alarms
 
 from api.routes.user import router as user_router
 from api.routes.auth import router as auth_router
-
 from api.routes.main import router as main_router
+from api.routes.alarm import router as alarm_router
+from api.routes.level import router as level_router
 from api.routes.vocab import router as vocab_router
 from api.routes.vocab_quiz import router as vocab_quiz_router
 from api.routes.diary import router as diary_router
-from api.routes.level import router as level_router
-from api.routes.main import router as main_router
 from api.routes.study_record import router as record_router
-from api.routes.alarm import router as alarm_router
 from services.alarm import initalize_schedule
 
 

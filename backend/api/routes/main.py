@@ -72,19 +72,19 @@ def fetch_record_by_page(
 def search_vocab(
     vocab: str, token: str = Depends(oauth2_scheme), session: Session = Depends(get_session)
 ):
-    # 단어 정보 조회
+    # 1. 단어 정보 조회
     vocab = session.exec(select(Vocabs).where(Vocabs.vocab == vocab)).first()
 
-    # 단어가 존재하지 않을 시 예외 처리
+    # 2. 단어가 존재하지 않을 시 예외 처리
     if not vocab:
         raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND, detail="Vocab not found"
         )
 
-    # 토큰 검증 및 user_id 추출
+    # 3. 토큰 검증 및 user_id 추출
     user_id = validate_access_token(token)["sub"]
     
-    # 사용자 level 추출
+    # 4. 사용자 level 추출
     score = session.exec(select(Scores).where(Scores.user_id == user_id)).first()
     if not score:
         raise HTTPException(
@@ -98,7 +98,7 @@ def search_vocab(
         )
     
 
-    # 4. level에 맞는 easy_explain 데이터 선택 (level-1 인덱스 사용)
+    # 5. level에 맞는 easy_explain 데이터 선택 (level-1 인덱스 사용)
     try:
         easy_explain = vocab.easy_explain[level - 1]  # level이 1~5이므로 (level-1) 인덱스 사용
     except IndexError:
