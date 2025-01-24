@@ -116,7 +116,6 @@ def submit_vocab_quiz(
 
     # 5. 퀴즈 문제, 보기, 정답, 풀이 등을 반환
     return VocabQuizResponseDTO(
-        quiz_id=quiz_id,
         question=quiz.question[1:],
         options=quiz.options[4:],
         answer=quiz.answer[1:],
@@ -149,7 +148,6 @@ def fetch_vocab_quiz_solution(
     
     # 2. 결과 반환
     return VocabQuizSolutionDTO(
-        quiz_id=quiz.quiz_id,
         question=quiz.question[1:],
         options=quiz.options[4:],
         answer=quiz.answer[1:],

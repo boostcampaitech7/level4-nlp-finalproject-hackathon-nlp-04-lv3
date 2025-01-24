@@ -8,7 +8,6 @@ class VocabQuizDTO(BaseModel):
 
 
 class VocabQuizResponseDTO(BaseModel):
-    quiz_id: int
     question: List[str]
     options: List[str]
     answer: List[int]
@@ -19,7 +18,6 @@ class VocabQuizResponseDTO(BaseModel):
     level_message: str
 
 class VocabQuizSolutionDTO(BaseModel):
-    quiz_id: int
     question: List[str]
     options: List[str]
     answer: List[int]
