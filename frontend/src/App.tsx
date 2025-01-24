@@ -1,10 +1,10 @@
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom'
 import { useEffect } from 'react'
 import * as Pages from './pages'
-import useIsAuthenticated from './hooks/useIsAuthenticated'
+import { useAuthStore } from './stores/authStore'
 
 function App() {
-  const { isAuthenticated } = useIsAuthenticated()
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
 
   useEffect(() => {
     window.history.scrollRestoration = 'manual'

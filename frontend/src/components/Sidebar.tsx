@@ -9,10 +9,11 @@ import { CgNotes } from 'react-icons/cg'
 import { LuBookOpenText } from 'react-icons/lu'
 import { useNavigate } from 'react-router'
 import { useSidebarStore } from '../stores/sidebarStore'
-import useIsAuthenticated from '../hooks/useIsAuthenticated'
-
+// import useIsAuthenticated from '../hooks/useIsAuthenticated'
+import { useAuthStore } from '../stores/authStore'
 const Sidebar = () => {
-  const { isAuthenticated } = useIsAuthenticated()
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
+  const setIsAuthenticated = useAuthStore((state) => state.setIsAuthenticated)
   const { isSidebarOpen, closeSidebar } = useSidebarStore()
   const navigate = useNavigate()
 
@@ -20,6 +21,12 @@ const Sidebar = () => {
   const closeSidebarWithNavigate = (path: string) => {
     closeSidebar()
     navigate(path)
+  }
+
+  const handleLogout = () => {
+    setIsAuthenticated(false)
+    closeSidebar()
+    navigate('/auth/login')
   }
 
   return (
@@ -75,7 +82,7 @@ const Sidebar = () => {
             icon={FaRegCircleUser}
             text="로그아웃"
             color="red"
-            onClick={() => console.log('로그아웃 함수 구현 예정')}
+            onClick={handleLogout}
           />
         )}
       </div>
