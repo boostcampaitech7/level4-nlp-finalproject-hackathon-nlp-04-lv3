@@ -22,10 +22,7 @@ def fetch_text_quiz(
     session: Session = Depends(get_session),
 ):
     # 1. 토큰 검증
-    try:
-        validate_access_token(token)
-    except Exception as e:
-        raise HTTPException(status_code=401, detail="토큰이 유효하지 않습니다.")
+    validate_access_token(token)
 
     # 2. 퀴즈 조회
     quiz = session.exec(
@@ -51,10 +48,7 @@ def submit_text_quiz(
     session: Session = Depends(get_session),
 ):
     # 1. 토큰 검증 및 user_id 추출
-    try:
-        user_id = validate_access_token(token)["sub"]
-    except Exception as e:
-        raise HTTPException(status_code=401, detail="토큰이 유효하지 않습니다.")
+    user_id = validate_access_token(token)["sub"]
 
     # 2. 퀴즈 정보
     quiz = session.exec(select(TextQuizzes).where(TextQuizzes.quiz_id == quiz_id))
@@ -118,6 +112,9 @@ def submit_text_quiz(
         session.flush()
         session.refresh(scores)
 
+    # 데이터베이스에 변경사항 반영
+    session.commit()
+
     # 6. 응답 데이터 생성
     return TextQuizResponseDTO(
         question=quiz.question,
@@ -143,10 +140,7 @@ def fetch_text_quiz_solution(
     session: Session = Depends(get_session),
 ):
     # 1. 토큰 검증
-    try:
-        user_id = validate_access_token(token)["sub"]
-    except Exception as e:
-        raise HTTPException(status_code=401, detail="토큰이 유효하지 않습니다.")
+    user_id = validate_access_token(token)["sub"]
 
     quiz = session.exec(
         select(TextQuizzes).where(TextQuizzes.quiz_id == quiz_id)

@@ -3,6 +3,7 @@ from sqlmodel import Session, select, func
 from sqlalchemy import Date, cast, desc
 from typing import List
 from datetime import datetime, timedelta
+from math import ceil
 
 from models.text import Texts
 from models.text_conversation import TextConversations
@@ -26,10 +27,7 @@ def get_text_list(
     session: Session = Depends(get_session),
 ):
     # 1. 토큰 검증
-    try:
-        validate_access_token(token)
-    except Exception as e:
-        raise HTTPException(status_code=401, detail="토큰이 유효하지 않습니다.")
+    validate_access_token(token)
 
     # 2. DB에서 페이지 번호에 해당하는 16개의 긴 글 데이터 추출
     statement = (
@@ -41,6 +39,7 @@ def get_text_list(
     total_count = None
     if include_total_count:
         total_count = session.exec(select(func.count(Texts.text_id))).scalar()
+        total_page_count = ceil(total_count / 16)
 
     # 4. 응답 데이터 생성
     response_body = TextListDTO(
@@ -53,7 +52,7 @@ def get_text_list(
             )
             for text in text_list
         ],
-        total_count=total_count if include_total_count else None,
+        total_page_count=total_page_count if include_total_count else None,
     )
 
     return response_body
@@ -155,11 +154,11 @@ def get_chatbot_list(
 
     # 3. 응답 데이터 생성
     response_body = TextChatbotListDTO(
+        text_id=text_id,
         page_num=page_num,
         chats=[
             TextChatbotItemDTO(
                 chat_id=chat.chat_id,
-                text_id=chat.text_id,
                 question=chat.question,
                 answer=chat.answer,
             )

@@ -28,12 +28,12 @@ class TextExplainResponseDTO(BaseModel):
 
 class TextChatbotItemDTO(BaseModel):
     chat_id: int
-    text_id: int
     question: str
     answer: str
 
 
 class TextChatbotListDTO(BaseModel):
+    text_id: int
     page_num: int
     chats: List[TextChatbotItemDTO] = Field(default_factory=list)
 
