@@ -36,8 +36,14 @@ function App() {
                 isAuthenticated ? <Navigate to="/" replace /> : <Pages.SignupPage />
               }
             />
+            <Route
+              path="comprehension"
+              element={
+                isAuthenticated ? <Navigate to="/" replace /> : <Pages.ComprehensionSurveyPage />
+              }
+            />
           </Route>
-
+          
           {/* 인증이 필요한 라우트들 */}
           <Route
             path="/*"

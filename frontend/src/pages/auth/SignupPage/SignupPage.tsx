@@ -1,13 +1,13 @@
 // SignupPage.tsx
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { FaEye, FaEyeSlash } from 'react-icons/fa'
 import Button from 'components/Button'
 import { ReactComponent as AraboogieImage } from '../../../assets/araboogie100.svg'
 import { ChatInterface } from '../../MainPage/GuestChatInterface'
-
 const SignupPage = () => {
   localStorage.removeItem('popupShown');
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [formData, setFormData] = useState({
@@ -60,9 +60,9 @@ const SignupPage = () => {
       return
     }
 
-    // 더미 회원가입 API 호출
     try {
-      const dummyResponse = await fetch('/api/auth/signup', {
+      // TODO: 백엔드 API 연동 시 아래 코드 사용
+      /*const dummyResponse = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -73,11 +73,19 @@ const SignupPage = () => {
           password: formData.password
         })
       })
+      const result = await dummyResponse.json()*/
+  
+      // 임시 더미 성공 처리
+      const dummySuccess = {
+        status: 200,
+        message: "회원가입 성공 (개발용 더미 데이터)"
+      }
+  
+      console.log('회원가입 성공:', dummySuccess)
       
-      const result = await dummyResponse.json()
-      console.log('회원가입 성공:', result)
-      alert('회원가입이 완료되었습니다!')
-      // TODO: 로그인 페이지로 리다이렉트
+      alert('회원가입 요청이 완료되었습니다! 이해도 설문 페이지로 이동합니다.')
+      navigate('/auth/comprehension')
+      
     } catch (error) {
       console.error('회원가입 실패:', error)
       alert('회원가입에 실패했습니다. 다시 시도해주세요.')
