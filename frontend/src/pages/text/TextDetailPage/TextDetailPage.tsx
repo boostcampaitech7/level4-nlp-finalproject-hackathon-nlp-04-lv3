@@ -5,9 +5,20 @@ import TextContent from './TextContent'
 import Button from 'components/Button'
 import EasyExplainArea from './EasyExplainArea'
 import ChatbotArea from './ChatbotArea'
+import { useEffect, useMemo } from 'react'
+import { useParams } from 'react-router-dom'
 
 const TextDetailPage = () => {
-  const { data: textData } = useTextData(123)
+  const { text_id } = useParams<{ text_id: string }>()
+  const textId = useMemo(() => {
+    const parsedId = parseInt(text_id || '', 10)
+    return isNaN(parsedId) ? 0 : parsedId
+  }, [text_id])
+  const { data: textData } = useTextData(textId)
+  useEffect(() => {
+    // 페이지 로드 시 스크롤 위치 초기화
+    window.scrollTo(0, 0)
+  }, [])
 
   return (
     <div className="flex flex-grow justify-center bg-background-primary pb-[36px] pt-[24px]">

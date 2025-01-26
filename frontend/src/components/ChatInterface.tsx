@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { ChatMessage as ChatMessageType, ChatAction } from '../types/chat'
-import { ChatMessage } from '../pages/MainPage/ChatMessage'
+import { ChatMessage } from './ChatMessage'
 import 'styles/scrollbar.css'
 
 interface ChatInterfaceProps {
@@ -62,8 +62,8 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
 
       {/* 액션 버튼 영역 */}
       {actions.length > 0 && (
-        <div className="py-2">
-          <div className="flex justify-center gap-2">
+        <div className="px-6 py-2">
+          <div className="flex flex-wrap justify-end gap-2">
             {actions.map((action) => (
               <button
                 key={action.id}

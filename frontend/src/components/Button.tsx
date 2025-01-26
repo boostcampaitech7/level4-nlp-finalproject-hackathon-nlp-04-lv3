@@ -2,7 +2,7 @@ import { FaChevronLeft, FaChevronRight } from 'react-icons/fa6'
 
 interface ButtonProps {
   text: string
-  size?: 'small' | 'medium' | 'large'
+  size?: 'small' | 'medium' | 'large' | 'xsmall'
   color?: 'purple' | 'grey' | 'white' | 'black' | 'orange' | 'purple2'
   showFrontIcon?: boolean
   showBackIcon?: boolean
@@ -23,11 +23,13 @@ const Button = ({
     'inline-flex items-center content-center justify-center transition-all duration-200 px-[10px] py-[5px] gap-x-[3px] m-0 select-none'
 
   const sizeStyles = {
+    xsmall: 'button-s min-w-[106px] h-[25px] rounded-[12px]',
     small: 'button-m min-w-[106px] h-[39px] rounded-[16px]',
     medium: 'title-s h-[64px] rounded-[20px]',
     large: 'button-l w-[510px] h-[79px] rounded-[20px]',
   }
   const iconSize = {
+    xsmall: 16,
     small: 22,
     medium: 32,
     large: 32,
