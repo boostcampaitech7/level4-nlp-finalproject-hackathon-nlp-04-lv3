@@ -1,8 +1,7 @@
-from datetime import datetime
 from sqlmodel import SQLModel, Field
-from typing import List
 from sqlalchemy import Column, INTEGER, TIMESTAMP, BOOLEAN, ARRAY
-
+from typing import List
+from datetime import datetime
 
 """
 CREATE TABLE study_records (

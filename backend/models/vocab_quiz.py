@@ -1,7 +1,5 @@
 from sqlmodel import SQLModel, Field
-from sqlalchemy import Column, INTEGER, TEXT, TIMESTAMP, VARCHAR
-from sqlalchemy.dialects.postgresql import ARRAY
-
+from sqlalchemy import Column, INTEGER, ARRAY, TEXT, TIMESTAMP, VARCHAR
 from typing import List
 from datetime import datetime
 
@@ -18,15 +16,18 @@ CREATE TABLE vocab_quizzes (
 );
 """
 
+
 class VocabQuizzes(SQLModel, table=True):
     __tablename__ = "vocab_quizzes"
-    
+
     quiz_id: int | None = Field(default=None, primary_key=True)
     vocab_id: int = Field(foreign_key="vocabs.vocab_id")
     level: int = Field(sa_column=Column(INTEGER, nullable=False))
     question: List[str] = Field(sa_column=Column(ARRAY(TEXT), nullable=False))
     answer: List[int] = Field(sa_column=Column(ARRAY(INTEGER), nullable=False))
-    answer_explain: List[str] = Field(sa_column=Column(ARRAY(VARCHAR(255)), nullable=False))
+    answer_explain: List[str] = Field(
+        sa_column=Column(ARRAY(VARCHAR(255)), nullable=False)
+    )
     options: List[str] = Field(sa_column=Column(ARRAY(TEXT), nullable=False))
     created_at: datetime = Field(
         default_factory=datetime.now, sa_column=Column(TIMESTAMP, nullable=False)

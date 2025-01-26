@@ -2,7 +2,6 @@ from sqlmodel import SQLModel, Field
 from sqlalchemy import Column, TIMESTAMP
 from datetime import datetime
 
-
 """
 CREATE TABLE text_bookmarks (
     bookmark_id SERIAL PRIMARY KEY,            -- 즐겨찾기 ID

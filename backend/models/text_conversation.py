@@ -8,7 +8,7 @@ CLASS TABLE text_conversations (
     user_id INTEGER REFERENCES users(user_id),     -- 사용자 ID
     text_id INTEGER REFERENCES texts(text_id),     -- 긴 글 ID
     question TEXT,                                 -- 사용자 질문
-    answer TEXT,                                   -- 채 답변
+    answer TEXT,                                   -- 챗봇 답변
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- 생성 일시
 );
 """
