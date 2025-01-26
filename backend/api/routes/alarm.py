@@ -20,7 +20,7 @@ def delete_alarm_by_id(
     session: Session = Depends(get_session),
 ):
     # 1. 토큰 검증
-    user_id = validate_access_token(token)["sub"]
+    validate_access_token(token)
 
     # 2. 알람 조회
     alarm = session.get(Alarms, alarm_id)

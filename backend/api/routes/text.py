@@ -69,10 +69,7 @@ def get_text_item(
     session: Session = Depends(get_session),
 ):
     # 1. 토큰 검증
-    try:
-        validate_access_token(token)
-    except Exception as e:
-        raise HTTPException(status_code=401, detail="토큰이 유효하지 않습니다.")
+    validate_access_token(token)
 
     # 2. text_id를 전달받아 해당하는 text의 상세 내용 추출 후 반환
     statement = select(Texts).where(Texts.text_id == text_id)
@@ -104,10 +101,7 @@ def request_text_account(
     token: str = Depends(oauth2_scheme),
 ):
     # 1. 토큰 검증
-    try:
-        user_id = validate_access_token(token)
-    except Exception as e:
-        raise HTTPException(status_code=401, detail="토큰이 유효하지 않습니다.")
+    validate_access_token(token)
 
     # 2. 드래그한 부분을 전달하여 챗봇에 설명을 요청
     explain = ""  # 긴 글 설명 요청 연결
@@ -134,10 +128,7 @@ def get_chatbot_list(
     session: Session = Depends(get_session),
 ):
     # 1. 토큰 검증
-    try:
-        user_id = validate_access_token(token)["sub"]
-    except Exception as e:
-        raise HTTPException(status_code=401, detail="토큰이 유효하지 않습니다.")
+    user_id = validate_access_token(token)["sub"]
 
     # 2. DB에서 페이지 번호에 해당하는 5개의 챗봇 데이터 추출
     statement = (
@@ -180,10 +171,7 @@ def request_text_chatbot_response(
     session: Session = Depends(get_session),
 ):
     # 1. 토큰 검증
-    try:
-        user_id = validate_access_token(token)["sub"]
-    except Exception as e:
-        raise HTTPException(status_code=401, detail="토큰이 유효하지 않습니다.")
+    user_id = validate_access_token(token)["sub"]
 
     # 2. 5개의 대화쌍 및 사용자의 질문, 드래그한 영역을 전달 및 응답 요청
     response = ""  # 긴 글 챗봇 연결

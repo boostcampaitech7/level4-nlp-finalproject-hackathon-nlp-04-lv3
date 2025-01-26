@@ -78,10 +78,7 @@ def get_text_level_study_record(
     session: Session = Depends(get_session),
 ):
     # 1. 토큰 검증
-    try:
-        user_id = validate_access_token(token)["sub"]
-    except Exception as e:
-        raise HTTPException(status_code=401, detail="토큰이 유효하지 않습니다.")
+    user_id = validate_access_token(token)["sub"]
 
     # 2. 사용자가 푼 퀴즈의 학습 기록 조회
     study_records_statement = select(StudyRecords.quiz_id).where(

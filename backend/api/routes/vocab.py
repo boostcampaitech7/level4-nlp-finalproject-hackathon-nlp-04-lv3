@@ -20,10 +20,7 @@ def fetch_vocab_detail(
     session: Session = Depends(get_session),
 ):
     # 1. 토큰 검증
-    try:
-        validate_access_token(token)["sub"]
-    except Exception as e:
-        raise HTTPException(status_code=401, detail="토큰이 유효하지 않습니다.")
+    validate_access_token(token)
 
     # 2. 단어 조회
     vocab = session.exec(select(Vocabs).where(Vocabs.vocab_id == vocab_id))

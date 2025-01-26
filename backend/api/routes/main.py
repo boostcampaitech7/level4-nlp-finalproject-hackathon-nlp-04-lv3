@@ -28,10 +28,7 @@ def get_random_texts(
     token: str = Depends(oauth2_scheme), session: Session = Depends(get_session)
 ):
     # 1. 토큰 검증
-    try:
-        validate_access_token(token)
-    except Exception as e:
-        raise HTTPException(status_code=401, detail="토큰이 유효하지 않습니다.")
+    validate_access_token(token)
 
     # 2. DB에서 긴 글 데이터 중 임의로 3개 추출 후 반환
     statement = select(Texts).order_by(func.random()).limit(3)
@@ -112,7 +109,7 @@ def search_vocab(
     session: Session = Depends(get_session),
 ):
     # 1. 토큰 검증
-    user_id = validate_access_token(token)["sub"]
+    validate_access_token(token)
 
     # 2. 단어 정보 조회
     vocab = session.exec(select(Vocabs).where(Vocabs.vocab == vocab)).first()

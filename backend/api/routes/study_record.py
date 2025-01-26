@@ -35,7 +35,7 @@ def fetch_record_by_id(
     session: Session = Depends(get_session),
 ):
     # 1. 토큰 검증
-    user_id = validate_access_token(token)["sub"]
+    validate_access_token(token)
 
     study_record = session.get(StudyRecords, record_id)
 
