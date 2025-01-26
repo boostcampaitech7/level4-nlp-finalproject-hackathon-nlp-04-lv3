@@ -1,8 +1,8 @@
 etc/
 .env
+.venv/
 __pycache__
 logs/
-data/
 
 # Logs
 logs
