@@ -15,9 +15,7 @@ router = APIRouter(prefix="/text", tags=["text"])
 
 # 글 목록 조회
 @router.get(
-    "/list/{page_num}",
-    response_model=TextListDTO,
-    status_code=status.HTTP_200_OK,
+    "/list/{page_num}", response_model=TextListDTO, status_code=status.HTTP_200_OK
 )
 def get_text_list(
     page_num: int = Query(1, ge=1),
@@ -41,7 +39,7 @@ def get_text_list(
         total_page_count = ceil(total_count / 16)
 
     # 4. 응답 데이터 생성
-    response_body = TextListDTO(
+    return TextListDTO(
         page_num=page_num,
         texts=[
             TextItemDTO(
@@ -54,15 +52,9 @@ def get_text_list(
         total_page_count=total_page_count if include_total_count else None,
     )
 
-    return response_body
-
 
 # 글 조회(주제, 글 제목, 카테고리)
-@router.get(
-    "/{text_id}",
-    response_model=TextItemDTO,
-    status_code=status.HTTP_200_OK,
-)
+@router.get("/{text_id}", response_model=TextItemDTO, status_code=status.HTTP_200_OK)
 def get_text_item(
     text_id: int,
     token: str = Depends(oauth2_scheme),
@@ -75,19 +67,19 @@ def get_text_item(
     statement = select(Texts).where(Texts.text_id == text_id)
     text = session.exec(statement).first()
 
-    # 데이터가 없을 경우 예외 처리
+    # 2.1 긴 글 데이터가 없을 경우 예외 처리
     if not text:
-        raise HTTPException(status_code=404, detail="해당 글을 찾을 수 없습니다.")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="해당 글을 찾을 수 없습니다."
+        )
 
     # 3. 응답 데이터 생성
-    response_body = TextItemDTO(
+    return TextItemDTO(
         text_id=text.text_id,
         title=text.title,
         category=text.category,
         text=text.content,
     )
-
-    return response_body
 
 
 # 글 설명 요청
@@ -97,8 +89,7 @@ def get_text_item(
     status_code=status.HTTP_200_OK,
 )
 def request_text_account(
-    request_body: TextExplainRequestDTO,
-    token: str = Depends(oauth2_scheme),
+    request_body: TextExplainRequestDTO, token: str = Depends(oauth2_scheme)
 ):
     # 1. 토큰 검증
     validate_access_token(token)
@@ -107,12 +98,10 @@ def request_text_account(
     explain = ""  # 긴 글 설명 요청 연결
 
     # 3. 응답 데이터 생성
-    response_body = TextExplainResponseDTO(
+    return TextExplainResponseDTO(
         text_id=request_body.text_id,
         explain=explain,
     )
-
-    return response_body
 
 
 # 긴 글 챗봇 대화 조회
@@ -143,7 +132,7 @@ def get_chatbot_list(
     chat_list = session.exec(statement).all()
 
     # 3. 응답 데이터 생성
-    response_body = TextChatbotListDTO(
+    return TextChatbotListDTO(
         text_id=text_id,
         page_num=page_num,
         chats=[
@@ -156,14 +145,10 @@ def get_chatbot_list(
         ],
     )
 
-    return response_body
-
 
 # 긴 글 챗봇 대화 요청
 @router.post(
-    "/chatbot",
-    response_model=TextChatbotResponseDTO,
-    status_code=status.HTTP_200_OK,
+    "/chatbot", response_model=TextChatbotResponseDTO, status_code=status.HTTP_200_OK
 )
 def request_text_chatbot_response(
     request_body: TextChatbotRequestDTO,
@@ -177,9 +162,7 @@ def request_text_chatbot_response(
     response = ""  # 긴 글 챗봇 연결
 
     # 3. 응답 데이터 생성
-    response_body = TextChatbotResponseDTO(
+    return TextChatbotResponseDTO(
         chat_id=response.chat_id,
         answer=response.answer,
     )
-
-    return response_body

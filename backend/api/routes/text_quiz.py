@@ -28,9 +28,12 @@ def fetch_text_quiz(
     quiz = session.exec(
         select(TextQuizzes).where(TextQuizzes.quiz_id == quiz_id)
     ).first()
+
+    # 2.1 긴 글 퀴즈 데이터가 없을 경우 예외 처리
     if not quiz:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Quiz not found"
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="해당 퀴즈를 찾을 수 없습니다.",
         )
 
     # 3. 응답 데이터 생성
@@ -51,10 +54,13 @@ def submit_text_quiz(
     user_id = validate_access_token(token)["sub"]
 
     # 2. 퀴즈 정보
-    quiz = session.exec(select(TextQuizzes).where(TextQuizzes.quiz_id == quiz_id))
+    quiz = session.exec(
+        select(TextQuizzes).where(TextQuizzes.quiz_id == quiz_id)
+    ).first()
     if not quiz:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Quiz not found"
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="해당 퀴즈를 찾을 수 없습니다.",
         )
 
     # 3. 사용자가 선택한 답과 정답 비교
@@ -154,10 +160,12 @@ def fetch_text_quiz_solution(
         )
         .order_by(desc(StudyRecords.created_at))  # 최근 푼 퀴즈부터 정렬
     ).first()
+
     # 2.1 퀴즈 기록이 없으면 예외 처리
     if not study_record:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="No quiz record found"
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="해당 퀴즈 기록을 찾을 수 없습니다.",
         )
 
     # 3. 응답 데이터 생성
