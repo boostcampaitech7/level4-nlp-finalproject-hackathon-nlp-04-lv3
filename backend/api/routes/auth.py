@@ -91,6 +91,7 @@ def login(
     return JwToken(access_token=access_token, token_type="bearer")
 
 
+"""
 # 네이버 소셜 로그인
 @router.post(path="/naver_login", description="naver social login")
 async def naver_login(form: SocialLoginDTO, session: Session = Depends(get_session)):
@@ -162,6 +163,7 @@ async def naver_signup(form: SocialSignupDTO, session: Session = Depends(get_ses
 
     response_body = {"message": "oauth register successful", "name": user.username}
     return JSONResponse(status_code=status.HTTP_200_OK, content=response_body)
+"""
 
 
 # 로그아웃
