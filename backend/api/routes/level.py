@@ -1,14 +1,13 @@
 from fastapi import APIRouter, HTTPException, Depends, status
 from sqlmodel import Session, select
 
-from models.text import Texts
-from models.text_quiz import TextQuizzes
-from schemas.level import *
-from schemas.text_quiz import *
-from schemas.vocab import LevelData, VocabLevelDTO
 from models.vocab_quiz import VocabQuizzes
+from models.text_quiz import TextQuizzes
 from models.score import Scores
 from models.study_record import StudyRecords
+from schemas.vocab import LevelData, VocabLevelDTO
+from schemas.text_quiz import *
+from schemas.level import *
 from core.database import get_session
 from core.security import validate_access_token, oauth2_scheme
 
@@ -16,6 +15,7 @@ from core.security import validate_access_token, oauth2_scheme
 router = APIRouter(prefix="/level", tags=["vocab"])
 
 
+# 단어 퀴즈 난이도별 학습기록 조회
 @router.get("/vocab/{vocab_id}", response_model=VocabLevelDTO, status_code=200)
 def fetch_vocab_level(
     vocab_id: int,

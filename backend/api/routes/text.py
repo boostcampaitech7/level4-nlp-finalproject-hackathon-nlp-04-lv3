@@ -1,8 +1,6 @@
 from fastapi import Depends, APIRouter, status, Query, HTTPException
 from sqlmodel import Session, select, func
-from sqlalchemy import Date, cast, desc
-from typing import List
-from datetime import datetime, timedelta
+from sqlalchemy import desc
 from math import ceil
 
 from models.text import Texts
@@ -10,6 +8,7 @@ from models.text_conversation import TextConversations
 from schemas.text import *
 from core.database import get_session
 from core.security import validate_access_token, oauth2_scheme
+
 
 router = APIRouter(prefix="/text", tags=["text"])
 

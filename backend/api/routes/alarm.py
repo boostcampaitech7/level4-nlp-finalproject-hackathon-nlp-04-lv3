@@ -12,6 +12,7 @@ from core.security import validate_access_token, oauth2_scheme
 router = APIRouter(prefix="/alarm", tags=["alarm"])
 
 
+# 알림 삭제
 @router.delete("/delete/{alarm_id}")
 def delete_alarm_by_id(
     alarm_id: int,
@@ -32,9 +33,11 @@ def delete_alarm_by_id(
     session.delete(alarm)
     session.commit()
 
+    # 4. 응답 데이터 생성
     return {"message": "Alarm successfully deleted"}
 
 
+# 알림 리스트 조회
 @router.get("/list", status_code=status.HTTP_200_OK, response_model=List[AlarmDTO])
 def fetch_diary_by_list(
     token: str = Depends(oauth2_scheme),
@@ -51,6 +54,7 @@ def fetch_diary_by_list(
     )
     alarm_list = session.exec(statement).all()
 
+    # 3. 응답 데이터 생성
     return [
         AlarmDTO(alarm_id=alarm.alarm_id, type=alarm.type, created_at=alarm.created_at)
         for alarm in alarm_list

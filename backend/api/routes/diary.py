@@ -4,9 +4,9 @@ from sqlalchemy import desc, cast, Date
 from typing import List
 from datetime import date
 
-from schemas.diary import DiaryDTO, DiaryExtendedDTO, DiaryBookmarkDTO, DiaryDayDTO
 from models.diary import Diaries
 from models.score import Scores
+from schemas.diary import DiaryDTO, DiaryExtendedDTO, DiaryBookmarkDTO, DiaryDayDTO
 from core.database import get_session
 from core.security import validate_access_token, oauth2_scheme
 
@@ -14,6 +14,7 @@ from core.security import validate_access_token, oauth2_scheme
 router = APIRouter(prefix="/diary", tags=["diary"])
 
 
+"""
 @router.get(
     "/date/{date}", response_model=DiaryExtendedDTO, status_code=status.HTTP_200_OK
 )
@@ -37,6 +38,7 @@ def fetch_diary_by_date(
             status_code=status.HTTP_404_NOT_FOUND, detail="diary doesn't exist"
         )
 
+    # 3. 응답 데이터 생성
     return DiaryExtendedDTO(
         diary_id=diary.diary_id,
         text=diary.text,
@@ -44,8 +46,10 @@ def fetch_diary_by_date(
         review=diary.review,
         created_at=diary.created_at,
     )
+"""
 
 
+# 일기, 피드백 조회
 @router.get(
     "/diary_id/{diary_id}",
     response_model=DiaryExtendedDTO,
@@ -68,6 +72,7 @@ def fetch_diary_by_date(
             status_code=status.HTTP_404_NOT_FOUND, detail="diary doesn't exist"
         )
 
+    # 3. 응답 데이터 생성
     return DiaryExtendedDTO(
         diary_id=diary.diary_id,
         text=diary.text,
@@ -77,6 +82,7 @@ def fetch_diary_by_date(
     )
 
 
+# 일기 목록 조회
 @router.get(
     "/page/{page_num}", response_model=List[DiaryDayDTO], status_code=status.HTTP_200_OK
 )
@@ -98,12 +104,14 @@ def fetch_diary_by_page(
     )
     diary_list = session.exec(statement).all()
 
+    # 3. 응답 데이터 생성
     return [
         DiaryDayDTO(diary_id=diary.diary_id, day=diary.created_at, status=diary.status)
         for diary in diary_list
     ]
 
 
+# 일기 즐겨찾기
 @router.patch("/bookmark", status_code=status.HTTP_200_OK)
 def bookmark(
     bookmark: DiaryBookmarkDTO,
@@ -124,14 +132,16 @@ def bookmark(
     diary.bookmark = bookmark.bookmark
     session.commit()
 
+    # 3. 응답 데이터 생성
     return {
         "message": "Diary bookmark successfully changed",
         "diary_id": diary.diary_id,
     }
 
 
+# 일기 즐겨찾기 리스트(페이지) 조회
 @router.get(
-    "/bookmark-page/{page_num}",
+    "/bookmark_page/{page_num}",
     response_model=List[DiaryDayDTO],
     status_code=status.HTTP_200_OK,
 )
@@ -153,12 +163,14 @@ def fetch_diary_by_page(
     )
     diary_list = session.exec(statement).all()
 
+    # 3. 응답 데이터 생성
     return [
         DiaryDayDTO(diary_id=diary.diary_id, day=diary.created_at, status=diary.status)
         for diary in diary_list
     ]
 
 
+# 일기 피드백 요청
 @router.post("/feedback", status_code=status.HTTP_202_ACCEPTED)
 def feedback(
     new_diary: DiaryDTO,
@@ -189,12 +201,14 @@ def feedback(
         diary.status = 1
         session.commit()
 
+    # 3. 응답 데이터 생성
     return {
         "message": "Diary successfully accepted",
         "diary_id": diary.diary_id,
     }
 
 
+# 일기 저장
 @router.post("/save", status_code=status.HTTP_202_ACCEPTED)
 def save(
     new_diary: DiaryDTO,
@@ -224,6 +238,7 @@ def save(
         diary.text = new_diary.text
         session.commit()
 
+    # 3. 응답 데이터 생성
     return {
         "message": "Diary successfully saved",
         "diary_id": diary.diary_id,

@@ -1,14 +1,14 @@
 from fastapi import APIRouter, HTTPException, Depends, status
 from sqlmodel import Session, select, desc
+from typing import List
+from datetime import datetime
 
-from schemas.text_quiz import TextQuizDTO, TextQuizResponseDTO, TextQuizSolutionDTO
 from models.text_quiz import TextQuizzes
 from models.study_record import StudyRecords
 from models.score import Scores
+from schemas.text_quiz import TextQuizDTO, TextQuizResponseDTO, TextQuizSolutionDTO
 from core.database import get_session
 from core.security import validate_access_token, oauth2_scheme
-from datetime import datetime, timedelta
-from typing import List
 
 
 router = APIRouter(prefix="/text_quiz", tags=["text_quiz"])
@@ -79,23 +79,23 @@ def submit_text_quiz(
     if scores:
         # 기존 값에서 업데이트
         scores.text_cnt += 3  # 긴 글 퀴즈 푼 횟수 증가
-        scores.quiz_total_cnt += 3  # 전체 퀴즈 푼 횟수 증가
-        scores.quiz_correct_cnt += sum(correct)  # 맞은 문제 개수 업데이트
+        scores.total_quiz_cnt += 3  # 전체 퀴즈 푼 횟수 증가
+        scores.correct_quiz_cnt += sum(correct)  # 맞은 문제 개수 업데이트
         scores.rating = (
-            scores.quiz_correct_cnt / scores.quiz_total_cnt
+            scores.correct_quiz_cnt / scores.total_quiz_cnt
         ) * 100  # 정답률 업데이트
 
         # 난이도(level) 업데이트
-        if scores.quiz_total_cnt >= 120:
+        if scores.total_quiz_cnt >= 120:
             if scores.rating >= 70:
                 new_level = scores.level + 1
                 level_message = "level has increased by 1"
-                scores.quiz_total_cnt = 100
+                scores.total_quiz_cnt = 100
                 scores.rating = 60
             elif scores.rating <= 50:
                 new_level = scores.level - 1
                 level_message = "level has decreased by 1"
-                scores.quiz_total_cnt = 100
+                scores.total_quiz_cnt = 100
                 scores.rating = 60
             else:
                 new_level = scores.level
@@ -154,7 +154,7 @@ def fetch_text_quiz_solution(
         )
         .order_by(desc(StudyRecords.created_at))  # 최근 푼 퀴즈부터 정렬
     ).first()
-    # 1.1 퀴즈 기록이 없으면 예외 처리
+    # 2.1 퀴즈 기록이 없으면 예외 처리
     if not study_record:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="No quiz record found"

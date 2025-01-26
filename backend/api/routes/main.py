@@ -4,13 +4,16 @@ from sqlalchemy import Date, cast
 from typing import List
 from datetime import datetime, timedelta
 
-from models.vocab import Vocabs, VocabQuizzes
+from models.vocab import Vocabs
+from models.vocab_quiz import VocabQuizzes
 from models.text import Texts
 from models.study_record import StudyRecords
 from schemas.text import TextItemDTO
+from schemas.vocab import VocabDetailDTO
 from schemas.study_record import VocabStudyRecordDTO
 from core.database import get_session
 from core.security import validate_access_token, oauth2_scheme
+
 
 router = APIRouter(prefix="/main", tags=["main"])
 
@@ -48,6 +51,7 @@ def get_random_texts(
     return response_body
 
 
+# 복습 단어 퀴즈 조회
 @router.get(
     "/vocab_review",
     response_model=List[VocabStudyRecordDTO],
@@ -118,6 +122,7 @@ def search_vocab(
             status_code=status.HTTP_404_NOT_FOUND, detail="Vocab not found"
         )
 
+    # 3. 응답 데이터 생성
     return VocabDetailDTO(
         vocab_id=vocab.vocab_id,
         vocab=vocab.vocab,
