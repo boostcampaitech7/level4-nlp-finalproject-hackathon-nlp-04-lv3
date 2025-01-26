@@ -168,9 +168,7 @@ async def naver_signup(form: SocialSignupDTO, session: Session = Depends(get_ses
 
 # 로그아웃
 @router.get(
-    path="/logout",
-    status_code=status.HTTP_200_OK,
-    description="logout and delete_cookie",
+    "/logout", status_code=status.HTTP_200_OK, description="logout and delete_cookie"
 )
 def logout(
     response: Response,  # FastAPI Response 객체
