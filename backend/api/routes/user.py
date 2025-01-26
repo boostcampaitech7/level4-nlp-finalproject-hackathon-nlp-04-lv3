@@ -8,7 +8,6 @@ from models.user import Users
 from models.score import Scores
 from core.database import get_session
 from core.security import validate_access_token, oauth2_scheme, pwd_context
-from services.alarm import reschedule_alarm
 
 
 router = APIRouter(prefix="/user", tags=["user"])
@@ -44,6 +43,7 @@ def profile(
     )
 
 
+"""
 @router.get("/streak", response_model=MonthStreakDTO, status_code=status.HTTP_200_OK)
 def fetch_streak_by_month(
     year: int,
@@ -87,6 +87,7 @@ def fetch_streak_by_month(
             streak.append(first_day_of_month + timedelta(idx))
 
     return MonthStreakDTO(streak=streak)
+"""
 
 
 @router.put("/edit", response_model=UserUpdateDTO, status_code=status.HTTP_200_OK)
@@ -111,8 +112,6 @@ def edit(
         user.password = pwd_context.hash(updated_user.password)
     if updated_user.alarm_time:
         user.alarm_time = updated_user.alarm_time
-        # 알람 재스케줄링
-        reschedule_alarm(user_id=user.user_id, alarm_time=user.alarm_time)
 
     session.commit()
     session.refresh(user)

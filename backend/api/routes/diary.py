@@ -6,6 +6,7 @@ from datetime import date
 
 from schemas.diary import DiaryDTO, DiaryExtendedDTO, DiaryBookmarkDTO, DiaryDayDTO
 from models.diary import Diaries
+from models.score import Scores
 from core.database import get_session
 from core.security import validate_access_token, oauth2_scheme
 
@@ -46,6 +47,37 @@ def fetch_diary_by_date(
 
 
 @router.get(
+    "/diary_id/{diary_id}",
+    response_model=DiaryExtendedDTO,
+    status_code=status.HTTP_200_OK,
+)
+def fetch_diary_by_date(
+    diary_id: int,
+    token: str = Depends(oauth2_scheme),
+    session: Session = Depends(get_session),
+):
+    # 1. 토큰 검증 (username이 존재하는지 확인해야 한다. 회원탈퇴했을 수 있으니, 물론 회원탈퇴 가능은 없지만)
+    validate_access_token(token)
+
+    # 2. diary 찾기
+    diary = session.get(Diaries, diary_id)
+
+    # 2.1. diary가 존재하지 않을 시 예외 처리
+    if not diary:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="diary doesn't exist"
+        )
+
+    return DiaryExtendedDTO(
+        diary_id=diary.diary_id,
+        text=diary.text,
+        feedback=diary.feedback,
+        review=diary.review,
+        created_at=diary.created_at,
+    )
+
+
+@router.get(
     "/page/{page_num}", response_model=List[DiaryDayDTO], status_code=status.HTTP_200_OK
 )
 def fetch_diary_by_page(
@@ -56,12 +88,12 @@ def fetch_diary_by_page(
     # 1. 토큰 검증
     user_id = validate_access_token(token)["sub"]
 
-    # 2. diary created_at 기준으로 정렬 후, n*10 ~ (n+1)*10 일기 뽑기
+    # 2. diary created_at 기준으로 정렬 후, (n-1)*10 ~ n*10 일기 뽑기
     statement = (
         select(Diaries)
         .where(Diaries.user_id == user_id)
         .order_by(desc(Diaries.created_at))
-        .offset(page_num * 10)
+        .offset((page_num - 1) * 10)
         .limit(10)
     )
     diary_list = session.exec(statement).all()
@@ -79,7 +111,7 @@ def bookmark(
     session: Session = Depends(get_session),
 ):
     # 1. 토큰 검증
-    user_id = validate_access_token(token)["sub"]
+    validate_access_token(token)
 
     # 2. diary 정보 추출
     diary = session.get(Diaries, bookmark.diary_id)
@@ -111,12 +143,12 @@ def fetch_diary_by_page(
     # 1. 토큰 검증
     user_id = validate_access_token(token)["sub"]
 
-    # 2. bookmark diary를 created_at 기준으로 정렬 후, n*10 ~ (n+1)*10 일기 뽑기
+    # 2. bookmark diary를 created_at 기준으로 정렬 후, (n-1)*10 ~ n*10 일기 뽑기
     statement = (
         select(Diaries)
         .where(Diaries.user_id == user_id, Diaries.bookmark == True)
         .order_by(desc(Diaries.created_at))
-        .offset(page_num * 10)
+        .offset((page_num - 1) * 10)
         .limit(10)
     )
     diary_list = session.exec(statement).all()
@@ -144,11 +176,12 @@ def feedback(
 
     # 2.1. diary가 존재하지 않을 시 새로 생성
     if not diary:
-        diary = Diaries(
-            user_id=user_id, text=new_diary.text, status=True, bookmark=False
-        )
+        diary = Diaries(user_id=user_id, text=new_diary.text, status=1, bookmark=False)
         session.add(diary)
         # 제출 일기 개수 증가
+        statement = select(Scores).where(Scores.user_id == user_id)
+        score = session.exec(statement).first()
+        score.diary_cnt += 1
         session.commit()
     # 2.2. diary가 존재할 시 수정
     else:
@@ -181,8 +214,11 @@ def save(
     if not diary:
         diary = Diaries(user_id=user_id, text=new_diary.text, status=0, bookmark=False)
         session.add(diary)
-        session.commit()
         # 제출 일기 개수 증가
+        statement = select(Scores).where(Scores.user_id == user_id)
+        score = session.exec(statement).first()
+        score.diary_cnt += 1
+        session.commit()
     # 2.2. diary가 존재할 시 수정
     else:
         diary.text = new_diary.text
