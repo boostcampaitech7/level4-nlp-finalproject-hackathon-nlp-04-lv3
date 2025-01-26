@@ -78,7 +78,7 @@ def get_text_item(
         text_id=text.text_id,
         title=text.title,
         category=text.category,
-        text=text.content,
+        content=text.content,
     )
 
 
