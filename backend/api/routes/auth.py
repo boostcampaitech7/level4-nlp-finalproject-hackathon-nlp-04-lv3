@@ -16,7 +16,6 @@ from core.security import (
     validate_access_token,
     oauth2_scheme,
 )
-from services.alarm import schedule_alarm
 
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -60,9 +59,6 @@ def signup(new_user: UserSignupDTO, session: Session = Depends(get_session)):
     score = Scores(user_id=user.user_id, level=new_user.level)
     session.add(score)
     session.commit()
-
-    # 2.3. 알람 스케줄링
-    schedule_alarm(user_id=user.user_id, alarm_time=user.alarm_time)
 
     return {"message": "User created successfully"}
 
@@ -156,9 +152,6 @@ async def naver_signup(form: SocialSignupDTO, session: Session = Depends(get_ses
     session.add(score)
     session.commit()
 
-    # 3.3. 알람 스케줄링
-    schedule_alarm(user_id=user.user_id, alarm_time=user.alarm_time)
-
     # 4. JwToken 반환
     access_token = create_access_token(data={"sub": user.user_id})
     # return JwToken(access_token=access_token, token_type="bearer")
@@ -177,7 +170,7 @@ def logout(
     token: str = Depends(oauth2_scheme),  # 인증 토큰 의존성
 ):
     # 토큰 검증
-    user_id = validate_access_token(token)["sub"]
+    validate_access_token(token)
 
     # 쿠키 삭제
     response.delete_cookie("access_token")  # 삭제할 쿠키의 이름 지정
