@@ -111,6 +111,7 @@ def fetch_diary_by_page(
     ]
 
 
+"""
 # 일기 즐겨찾기
 @router.patch("/bookmark", status_code=status.HTTP_200_OK)
 def bookmark(
@@ -168,6 +169,7 @@ def fetch_diary_by_page(
         DiaryDayDTO(diary_id=diary.diary_id, day=diary.created_at, status=diary.status)
         for diary in diary_list
     ]
+"""
 
 
 # 일기 피드백 요청
