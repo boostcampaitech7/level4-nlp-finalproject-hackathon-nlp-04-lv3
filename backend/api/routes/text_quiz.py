@@ -42,7 +42,7 @@ def fetch_text_quiz(
 
 # 긴 글 퀴즈 제출
 @router.post(
-    "/{quiz_id}", response_model=TextQuizResponseDTO, status_code=status.HTTP_200_OK
+    "/solve", response_model=TextQuizResponseDTO, status_code=status.HTTP_200_OK
 )
 def submit_text_quiz(
     quiz_id: int,
@@ -95,22 +95,22 @@ def submit_text_quiz(
         if scores.total_quiz_cnt >= 120:
             if scores.rating >= 70:
                 new_level = scores.level + 1
-                level_message = "level has increased by 1"
+                level_message = "난이도가 1 상승했습니다."
                 scores.total_quiz_cnt = 100
                 scores.rating = 60
             elif scores.rating <= 50:
                 new_level = scores.level - 1
-                level_message = "level has decreased by 1"
+                level_message = "난이도가 1 하락했습니다."
                 scores.total_quiz_cnt = 100
                 scores.rating = 60
             else:
                 new_level = scores.level
-                level_message = "level remains the same"
+                level_message = "난이도를 유지합니다."
             scores.level = max(
                 1, min(5, new_level)
             )  # 난이도(level) 업데이트 (반드시 1~5)
         else:
-            level_message = "level remains the same"
+            level_message = "난이도를 유지합니다."
 
         # 업데이트 시간
         scores.updated_at = datetime.now()
@@ -148,11 +148,11 @@ def fetch_text_quiz_solution(
     # 1. 토큰 검증
     user_id = validate_access_token(token)["sub"]
 
+    # 2. 가장 최근 푼 퀴즈 기록 조회
     quiz = session.exec(
         select(TextQuizzes).where(TextQuizzes.quiz_id == quiz_id)
     ).first()
 
-    # 2. 가장 최근 푼 퀴즈 기록 조회
     study_record = session.exec(
         select(StudyRecords)
         .where(

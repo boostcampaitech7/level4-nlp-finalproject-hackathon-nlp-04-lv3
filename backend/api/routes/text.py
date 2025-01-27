@@ -197,7 +197,7 @@ async def request_text_chatbot_response(
     request_text = " ".join(text)
 
     try:
-        # 2. 드래그한 부분, text의 content를 전달하여 챗봇에 응답 요청
+        # 3. 드래그한 부분, text의 content, 사용자의 질문을 전달하여 챗봇에 응답 요청
         async with httpx.AsyncClient() as client:
             ai_chat_response = await client.post(
                 AI_SERVER_URL + "/ai/text/chat",
@@ -206,14 +206,14 @@ async def request_text_chatbot_response(
                 ),
             )
 
-        # 3. 응답 상태 코드 확인
+        # 4. 응답 상태 코드 확인
         if ai_chat_response.status_code != 200:
             raise HTTPException(
                 status_code=ai_chat_response.status_code,
                 detail=f"AI 서버 요청 실패: {ai_chat_response.text}",
             )
 
-        # 4. AI 응답 데이터 처리
+        # 5. AI 응답 데이터 처리
         ai_data = ai_chat_response.json()
         if ai_data["status"]["code"] != "20000":
             raise HTTPException(
