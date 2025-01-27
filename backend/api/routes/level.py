@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends, status
+from fastapi import APIRouter, Depends, status
 from sqlmodel import Session, select
 
 from models.vocab_quiz import VocabQuizzes
@@ -8,23 +8,10 @@ from models.study_record import StudyRecords
 from schemas.level import LevelStudyRecordItemDTO, LevelStudyRecordDTO
 from core.database import get_session
 from core.security import validate_access_token, oauth2_scheme
+from services.level import get_user_level
 
 
 router = APIRouter(prefix="/level", tags=["level"])
-
-
-# 사용자 난이도(레벨) 추출
-def get_user_level(user_id: int, session: Session) -> int:
-    score = session.exec(select(Scores).where(Scores.user_id == user_id)).first()
-    if not score:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="페이지를 찾을 수 없습니다."
-        )
-    if score.level is None or not (1 <= score.level <= 5):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="잘못된 난이도입니다."
-        )
-    return score.level
 
 
 # 단어 퀴즈 난이도별 학습기록 조회

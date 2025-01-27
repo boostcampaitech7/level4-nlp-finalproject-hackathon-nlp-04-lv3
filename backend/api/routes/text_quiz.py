@@ -5,10 +5,10 @@ from datetime import datetime
 
 from models.text_quiz import TextQuizzes
 from models.study_record import StudyRecords
-from models.score import Scores
 from schemas.text_quiz import TextQuizDTO, TextQuizResponseDTO, TextQuizSolutionDTO
 from core.database import get_session
 from core.security import validate_access_token, oauth2_scheme
+from services.level import update_level
 
 
 router = APIRouter(prefix="/text_quiz", tags=["text_quiz"])
@@ -80,45 +80,8 @@ def submit_text_quiz(
     session.add(study_record)
     session.flush()
 
-    # 5. Scores 테이블에 반영
-    scores = session.exec(select(Scores).where(Scores.user_id == user_id)).first()
-    if scores:
-        # 기존 값에서 업데이트
-        scores.text_cnt += 3  # 긴 글 퀴즈 푼 횟수 증가
-        scores.total_quiz_cnt += 3  # 전체 퀴즈 푼 횟수 증가
-        scores.correct_quiz_cnt += sum(correct)  # 맞은 문제 개수 업데이트
-        scores.rating = (
-            scores.correct_quiz_cnt / scores.total_quiz_cnt
-        ) * 100  # 정답률 업데이트
-
-        # 난이도(level) 업데이트
-        if scores.total_quiz_cnt >= 120:
-            if scores.rating >= 70:
-                new_level = scores.level + 1
-                level_message = "난이도가 1 상승했습니다."
-                scores.total_quiz_cnt = 100
-                scores.rating = 60
-            elif scores.rating <= 50:
-                new_level = scores.level - 1
-                level_message = "난이도가 1 하락했습니다."
-                scores.total_quiz_cnt = 100
-                scores.rating = 60
-            else:
-                new_level = scores.level
-                level_message = "난이도를 유지합니다."
-            scores.level = max(
-                1, min(5, new_level)
-            )  # 난이도(level) 업데이트 (반드시 1~5)
-        else:
-            level_message = "난이도를 유지합니다."
-
-        # 업데이트 시간
-        scores.updated_at = datetime.now()
-
-        session.flush()
-        session.refresh(scores)
-
-    # 데이터베이스에 변경사항 반영
+    # 5. 사용자 level 계산 및 Scores 테이블에 반영
+    rating, level_message = update_level(session, user_id, correct)
     session.commit()
 
     # 6. 응답 데이터 생성
@@ -129,7 +92,7 @@ def submit_text_quiz(
         answer_explain=quiz.answer_explain,
         user_answer=user_answer,
         correct=correct,
-        rating=scores.rating,
+        rating=rating,
         level_message=level_message,
     )
 
