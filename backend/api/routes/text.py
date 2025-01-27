@@ -241,7 +241,7 @@ async def request_text_chatbot_response(
         session.commit()
 
         # 8. 응답 데이터를 프론트엔드로 반환
-        return TextChatbotResponseDTO(chat_id=chat_id, content=answer)
+        return TextChatbotResponseDTO(chat_id=chat_id, answer=answer)
 
     except httpx.RequestError as exc:
         # AI 서버와의 요청 중 에러 발생 처리
