@@ -19,7 +19,9 @@ const SignupPage = () => {
   const [isUsernameAvailable, setIsUsernameAvailable] = useState(false)
   const [validationErrors, setValidationErrors] = useState({
     passwordMismatch: false,
-    missingFields: false
+    missingFields: false,
+    usernameLength: false,
+    passwordComplexity: false
   })
 
   const togglePasswordVisibility = () => setShowPassword(!showPassword)
@@ -36,20 +38,39 @@ const SignupPage = () => {
   }
 
   const handleDuplicateCheck = () => {
-    // 더미 중복 확인 API 호출
+    const usernameRegex = /^.{8,}$/
+    if (!usernameRegex.test(formData.username)) {
+      setValidationErrors(prev => ({
+        ...prev,
+        usernameLength: true
+      }))
+      alert('아이디는 8자 이상이어야 합니다.')
+      return
+    }
+  
+    // 유효한 경우에만 중복 확인 진행
     const dummyCheck = formData.username === 'existingUser' ? false : true
     setIsUsernameAvailable(dummyCheck)
     alert(dummyCheck ? '사용 가능한 아이디입니다.' : '이미 사용 중인 아이디입니다.')
   }
+  
 
-  const validateForm = () => {
-    const errors = {
-      passwordMismatch: formData.password !== formData.confirmPassword,
-      missingFields: !formData.name || !formData.username || !formData.password || !formData.confirmPassword
-    }
-    setValidationErrors(errors)
-    return !Object.values(errors).some(v => v)
+  // SignupPage.tsx 내 validateForm 함수 수정
+const validateForm = () => {
+  const usernameRegex = /^.{8,}$/
+  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/
+
+  const errors = {
+    passwordMismatch: formData.password !== formData.confirmPassword,
+    missingFields: !formData.name || !formData.username || !formData.password || !formData.confirmPassword,
+    usernameLength: !usernameRegex.test(formData.username),
+    passwordComplexity: !passwordRegex.test(formData.password)
   }
+  
+  setValidationErrors(errors)
+  return !Object.values(errors).some(v => v)
+}
+
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -134,7 +155,10 @@ const SignupPage = () => {
                   plusClasses={`body-s px-0 w-[120px] ${!formData.username ? 'opacity-50 cursor-not-allowed' : ''}`}
                 />
               </div>
-
+              {/* 아이디 유효성 에러 */}
+              {validationErrors.usernameLength && (
+                <p className="text-red-500 body-s -mt-4">아이디는 8자 이상이어야 합니다.</p>
+              )}
               {/* 비밀번호 입력 */}
               <div className="relative">
                 <input
@@ -174,12 +198,9 @@ const SignupPage = () => {
               </div>
 
               {/* 유효성 검사 에러 메시지 */}
-              {validationErrors.passwordMismatch && (
-                <p className="text-red-500 body-s">비밀번호가 일치하지 않습니다.</p>
-              )}
-              {validationErrors.missingFields && (
-                <p className="text-red-500 body-s">입력 하지 않은 칸이 있습니다.</p>
-              )}
+                {validationErrors.passwordComplexity && (
+                  <p className="text-red-500 body-s">비밀번호는 문자, 숫자, 특수문자를 포함해야 합니다.</p>
+                )}
 
               {/* 회원가입 버튼 */}
               <Button
