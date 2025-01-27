@@ -10,14 +10,3 @@ class VocabDetailDTO(BaseModel):
     easy_explain: str
     correct_example: List[str]
     incorrect_example: List[str]
-
-
-class LevelData(BaseModel):
-    level: int
-    quiz_id: int
-    is_solved: bool
-
-
-class VocabLevelDTO(BaseModel):
-    user_level: int
-    level_data: List[LevelData]
