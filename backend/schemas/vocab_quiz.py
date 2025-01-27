@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from typing import List
 
+
 class VocabQuizDTO(BaseModel):
     question: List[str]
     options: List[str]

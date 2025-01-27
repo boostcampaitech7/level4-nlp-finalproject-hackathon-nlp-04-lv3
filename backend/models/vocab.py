@@ -26,9 +26,15 @@ class Vocabs(SQLModel, table=True):
     vocab: str = Field(sa_column=Column(VARCHAR(100), nullable=False, unique=True))
     hanja: str | None = Field(default=None, sa_column=Column(TEXT))
     dict_mean: str | None = Field(default=None, sa_column=Column(TEXT))
-    easy_explain: List[str] = Field(default=[], sa_column=Column(ARRAY(TEXT), nullable=False))
-    correct_example: List[str] = Field(default=[], sa_column=Column(ARRAY(TEXT), nullable=False))
-    incorrect_example: List[str] = Field(default=[], sa_column=Column(ARRAY(TEXT), nullable=False))
+    easy_explain: List[str] = Field(
+        default=[], sa_column=Column(ARRAY(TEXT), nullable=False)
+    )
+    correct_example: List[str] = Field(
+        default=[], sa_column=Column(ARRAY(TEXT), nullable=False)
+    )
+    incorrect_example: List[str] = Field(
+        default=[], sa_column=Column(ARRAY(TEXT), nullable=False)
+    )
     created_at: datetime = Field(
         default_factory=datetime.now, sa_column=Column(TIMESTAMP, nullable=False)
     )
