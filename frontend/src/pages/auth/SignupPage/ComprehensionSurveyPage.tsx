@@ -78,7 +78,7 @@ const ComprehensionSurveyPage = () => {
           ))}
 
           <Button
-            text="설문 제출하기"
+            text="설문 제출하고 회원 가입하기"
             size="large"
             color="purple"
             plusClasses="w-full text-3xl h-[79px] rounded-[20px] mt-10"
