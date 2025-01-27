@@ -12,8 +12,6 @@ class Config(BaseSettings):
     kakao_callback_uri: str = Field(env="KAKAO_CALLBACK_URI")
     naver_secret: str = Field(env="NAVER_SECRET")
     naver_client_id: str = Field(env="NAVER_CLIENT_ID")
-    # chatbot_api_key: str = Field(env="CHATBOT_API_KEY")
-    # chatbot_api_url: str = Field(env="CHATBOT_API_URL")
 
     class Config:
         env_file = ".env"
