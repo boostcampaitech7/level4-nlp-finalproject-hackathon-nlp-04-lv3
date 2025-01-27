@@ -18,8 +18,6 @@ CREATE TABLE vocabs (
 
 
 class Vocabs(SQLModel, table=True):
-    __tablename__ = "vocabs"
-
     vocab_id: int | None = Field(default=None, primary_key=True)
     vocab: str = Field(sa_column=Column(VARCHAR(100), nullable=False, unique=True))
     hanja: str | None = Field(default=None, sa_column=Column(TEXT))

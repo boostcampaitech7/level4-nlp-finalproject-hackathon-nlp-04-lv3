@@ -18,8 +18,6 @@ CREATE TABLE vocab_quizzes (
 
 
 class VocabQuizzes(SQLModel, table=True):
-    __tablename__ = "vocab_quizzes"
-
     quiz_id: int | None = Field(default=None, primary_key=True)
     vocab_id: int = Field(foreign_key="vocabs.vocab_id")
     level: int = Field(sa_column=Column(INTEGER, nullable=False))
