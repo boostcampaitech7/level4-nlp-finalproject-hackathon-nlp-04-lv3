@@ -28,6 +28,7 @@ class TextExplainResponseDTO(BaseModel):
 
 class TextChatbotItemDTO(BaseModel):
     chat_id: int
+    focused: Optional[str] = None
     question: str
     answer: str
 

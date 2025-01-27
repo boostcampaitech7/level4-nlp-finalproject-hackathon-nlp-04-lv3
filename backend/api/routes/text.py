@@ -168,6 +168,7 @@ def get_chatbot_list(
         chats=[
             TextChatbotItemDTO(
                 chat_id=chat.chat_id,
+                focused=chat.focused,
                 question=chat.question,
                 answer=chat.answer,
             )
