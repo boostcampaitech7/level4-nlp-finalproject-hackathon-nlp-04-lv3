@@ -85,8 +85,8 @@ def fetch_record_by_page(
             quiz_answer_explain=quiz.answer_explain[:1],
         )
         for record in study_records
-        for quiz in [session.get(VocabQuizzes, record.vocab_quiz_id)]
-        for vocab in [session.get(Vocabs, quiz.vocab_id)]
+        if (quiz := session.get(VocabQuizzes, record.vocab_quiz_id))  # 퀴즈 조회
+        if (vocab := session.get(Vocabs, quiz.vocab_id))  # 어휘 조회
     ]
 
 

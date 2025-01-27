@@ -74,7 +74,7 @@ def fetch_vocab_chatbot_list(
         select(VocabConversations)
         .where(
             VocabConversations.user_id == user_id,
-            VocabConversations.text_id == vocab_id,
+            VocabConversations.vocab_id == vocab_id,
         )
         .order_by(desc(VocabConversations.created_at))
         .offset((page_num - 1) * 5)
@@ -153,8 +153,9 @@ async def request_vocab_chatbot_response(
             """,
             conversation,
         )
-        chat_id = result.one()[0]  # 생성된 chat_id 가져오기
+
         session.commit()
+        chat_id = result.one()[0]  # 생성된 chat_id 가져오기
 
         # 8. 응답 데이터를 프론트엔드로 반환
         return VocabChatbotResponseDTO(chat_id=chat_id, answer=answer)

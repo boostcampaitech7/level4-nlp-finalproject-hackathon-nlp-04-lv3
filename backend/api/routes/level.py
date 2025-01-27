@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, status
-from sqlmodel import Session, select
+from sqlmodel import Session, select, desc
 
 from models.vocab_quiz import VocabQuizzes
 from models.text_quiz import TextQuizzes
@@ -39,9 +39,11 @@ def fetch_vocab_level(
     # 4. 사용자 학습 기록 조회
     quiz_ids = [quiz.quiz_id for quiz in quizzes]
     study_records = session.exec(
-        select(StudyRecords).where(
+        select(StudyRecords)
+        .where(
             StudyRecords.user_id == user_id, StudyRecords.vocab_quiz_id.in_(quiz_ids)
         )
+        .order_by(desc(StudyRecords.created_at))
     ).all()
 
     # 5. 레벨별 데이터 생성
@@ -98,9 +100,9 @@ def get_text_level_study_record(
     # 4. 사용자 학습 기록 조회
     quiz_ids = [quiz.quiz_id for quiz in quizzes]
     study_records = session.exec(
-        select(StudyRecords).where(
-            StudyRecords.user_id == user_id, StudyRecords.text_quiz_id.in_(quiz_ids)
-        )
+        select(StudyRecords)
+        .where(StudyRecords.user_id == user_id, StudyRecords.text_quiz_id.in_(quiz_ids))
+        .order_by(desc(StudyRecords.created_at))
     ).all()
 
     # 5. 레벨별 데이터 생성

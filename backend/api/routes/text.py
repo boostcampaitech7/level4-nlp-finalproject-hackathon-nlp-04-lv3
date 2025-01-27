@@ -238,8 +238,9 @@ async def request_text_chatbot_response(
             """,
             conversation,
         )
-        chat_id = result.one()[0]  # 생성된 chat_id 가져오기
+
         session.commit()
+        chat_id = result.one()[0]  # 생성된 chat_id 가져오기
 
         # 8. 응답 데이터를 프론트엔드로 반환
         return TextChatbotResponseDTO(chat_id=chat_id, answer=answer)
