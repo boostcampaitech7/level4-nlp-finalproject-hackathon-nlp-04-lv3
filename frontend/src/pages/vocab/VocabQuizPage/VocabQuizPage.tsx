@@ -136,14 +136,14 @@ const handleProgressClick = (index: number) => {
       <div className="w-full max-w-[960px] px-4">
         <div className="py-8">
           <div className="mb-8">
-            <h1 className="text-[38px] font-bold text-text-primary">퀴즈를 한번 풀어볼까요?</h1>
+            <h1 className="title-m text-text-primary">퀴즈를 한번 풀어볼까요?</h1>
           </div>
           
           <div className="w-full px-5 py-[75px] bg-surface-primary-2 rounded-[32px] flex flex-col justify-center items-center gap-14">
             <div className="w-full flex-col justify-start items-start gap-[50px] flex">
               <div className="w-full justify-center items-start inline-flex">
                 <div className="grow shrink basis-0 px-[33px]">
-                  <div className="text-black text-[34px] font-bold font-['Pretendard']">
+                  <div className="text-text-primary title-m">
                     {quizData.question[currentQuestionIndex]}
                   </div>
                 </div>
@@ -156,10 +156,10 @@ const handleProgressClick = (index: number) => {
                     <button
                       key={index}
                       className={`w-full h-[70px] px-[34px] py-[5px] rounded-[20px] flex items-center gap-[3px] 
-                        ${selectedOption === index ? 'bg-button-primary-1' : 'bg-[#f2f2f2] hover:bg-[#e2e2e2]'}`}
+                        ${selectedOption === index ? 'bg-button-primary-1' : 'bg-background-primary hover:bg-button-secondary-1'}`}
                       onClick={() => handleOptionSelect(index)}
                     >
-                      <div className="text-black text-[32px] font-normal">{option}</div>
+                      <div className="text-text-primary body-m">{option}</div>
                     </button>
                   ))}
               </div>
@@ -171,8 +171,8 @@ const handleProgressClick = (index: number) => {
                   key={index}
                   className={`grow shrink basis-0 h-[9px] rounded-[32px] transition-transform duration-200 transform origin-bottom hover:scale-y-150 cursor-pointer ${
                     currentQuestionIndex === index
-                      ? 'bg-[#ffc9a2] scale-y-110'
-                      : 'bg-[#f2f2f2] hover:bg-[#ffd8b9]'
+                      ? 'bg-accent-highlight scale-y-110'
+                      : 'bg-background-primary hover:bg-accent-highlight'
                   }`}
                   onClick={() => handleProgressClick(index)}
                   aria-label={`문제 ${index + 1}`}
