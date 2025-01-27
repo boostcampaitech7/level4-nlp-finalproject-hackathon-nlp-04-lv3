@@ -33,7 +33,7 @@ const TextContent = () => {
   // 툴팁이 표시되는 드래그 영역을 지정
   const dragRef = useRef<HTMLDivElement>(null)
 
-  // 질문 입력 인풋의 표시 여부부
+  // 질문 입력 인풋의 표시 여부
   const [tooltipExpanded, setTooltipExpanded] = useState<boolean>(false)
 
   // 툴팁 닫기
@@ -43,7 +43,7 @@ const TextContent = () => {
     setInputValue('')
   }
 
-  // 드래그 하이라이트 표시 제거거
+  // 드래그 하이라이트 표시 제거
   const removeHighlight = () => {
     if (highlightSpanRef.current && highlightExtractedRef.current) {
       const span = highlightSpanRef.current
@@ -55,7 +55,7 @@ const TextContent = () => {
     highlightExtractedRef.current = null
   }
 
-  // 드래그 시 툴팁 표시 위치 계산 & 하이라이트를 위한 커스텀 span 영역 만들기기
+  // 드래그 시 툴팁 표시 위치 계산 & 하이라이트를 위한 커스텀 span 영역 만들기
   useEffect(() => {
     // 마우스 드래그가 끝날 때(mouseup) 선택 영역 가져오고 툴팁 표시
     const handleMouseUp = () => {
@@ -137,13 +137,15 @@ const TextContent = () => {
   // 인풋에서 엔터를 누르면 툴팁만 닫음 (하이라이트는 그대로 유지)
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      const questionMessage: ChatMessage = {
-        id: Date.now().toString(),
-        content: `"${highlightSpanRef.current?.innerText}"\n${inputValue}`,
-        type: 'user',
-        timestamp: new Date(),
+      if (highlightSpanRef.current?.innerText && inputValue) {
+        const questionMessage: ChatMessage = {
+          id: Date.now().toString(),
+          content: `"${highlightSpanRef.current?.innerText}"\n${inputValue}`,
+          type: 'user',
+          timestamp: new Date(),
+        }
+        addMessage(questionMessage)
       }
-      addMessage(questionMessage)
       closeTooltip()
     }
   }
@@ -167,7 +169,7 @@ const TextContent = () => {
     }
   }
 
-  // 본문 한 줄에 한 문장 씩 표시되게 합치기기
+  // 본문 한 줄에 한 문장 씩 표시되게 합치기
   const getConcatText = () => {
     return textData?.text.join('\n')
   }
