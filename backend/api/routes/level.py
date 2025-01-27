@@ -56,18 +56,33 @@ def fetch_vocab_level(
             StudyRecords.user_id == user_id, StudyRecords.vocab_quiz_id.in_(quiz_ids)
         )
     ).all()
-    solved_quiz_ids = {record.vocab_quiz_id for record in study_records}
 
-    # 5. 응답 데이터 생성
+    # 5. 레벨별 데이터 생성
+    level_data_map = {
+        level: {"quiz_id": None, "is_solved": False} for level in range(1, 6)
+    }
+
+    # 6. 가장 최근의 학습 기록을 기반으로 레벨별 데이터 저장
+    for record in study_records:
+        quiz = session.get(VocabQuizzes, record.vocab_quiz_id)
+        if (
+            quiz
+            and quiz.level in level_data_map
+            and not level_data_map[quiz.level]["is_solved"]
+        ):
+            level_data_map[quiz.level] = {"quiz_id": quiz.quiz_id, "is_solved": True}
+
+    # 7. 모든 레벨 데이터 생성
     level_data = [
         LevelStudyRecordItemDTO(
-            level=quiz.level,
-            quiz_id=quiz.quiz_id,
-            is_solved=(quiz.quiz_id in solved_quiz_ids),
+            level=level,
+            quiz_id=level_data_map[level]["quiz_id"],
+            is_solved=level_data_map[level]["is_solved"],
         )
-        for quiz in quizzes
+        for level in range(1, 6)
     ]
 
+    # 8. 응답 데이터 반환
     return LevelStudyRecordDTO(user_level=user_level, level_data=level_data)
 
 
@@ -100,16 +115,31 @@ def get_text_level_study_record(
             StudyRecords.user_id == user_id, StudyRecords.text_quiz_id.in_(quiz_ids)
         )
     ).all()
-    solved_quiz_ids = {record.text_quiz_id for record in study_records}
 
-    # 5. 응답 데이터 생성
+    # 5. 레벨별 데이터 생성
+    level_data_map = {
+        level: {"quiz_id": None, "is_solved": False} for level in range(1, 6)
+    }
+
+    # 6. 가장 최근의 학습 기록을 기반으로 레벨별 데이터 저장
+    for record in study_records:
+        quiz = session.get(TextQuizzes, record.text_quiz_id)
+        if (
+            quiz
+            and quiz.level in level_data_map
+            and not level_data_map[quiz.level]["is_solved"]
+        ):
+            level_data_map[quiz.level] = {"quiz_id": quiz.quiz_id, "is_solved": True}
+
+    # 7. 모든 레벨 데이터 생성
     level_data = [
         LevelStudyRecordItemDTO(
-            level=quiz.level,
-            quiz_id=quiz.quiz_id,
-            is_solved=(quiz.quiz_id in solved_quiz_ids),
+            level=level,
+            quiz_id=level_data_map[level]["quiz_id"],
+            is_solved=level_data_map[level]["is_solved"],
         )
-        for quiz in quizzes
+        for level in range(1, 6)
     ]
 
+    # 8. 응답 데이터 반환
     return LevelStudyRecordDTO(user_level=user_level, level_data=level_data)

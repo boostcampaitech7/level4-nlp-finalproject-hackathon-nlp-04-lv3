@@ -4,8 +4,8 @@ from typing import List
 
 class LevelStudyRecordItemDTO(BaseModel):
     level: int
-    is_solved: bool
     quiz_id: int
+    is_solved: bool
 
 
 class LevelStudyRecordDTO(BaseModel):
