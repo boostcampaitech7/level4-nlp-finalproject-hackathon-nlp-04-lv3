@@ -1,14 +1,14 @@
 from fastapi import APIRouter, HTTPException, Depends, status
-from sqlmodel import Session, select
+from sqlmodel import Session, select, desc
+from typing import List
+from datetime import datetime
 
-from schemas.vocab_quiz import VocabQuizDTO, VocabQuizResponseDTO, VocabQuizSolutionDTO
 from models.vocab_quiz import VocabQuizzes
 from models.study_record import StudyRecords
-from models.score import Scores
+from schemas.vocab_quiz import VocabQuizDTO, VocabQuizResponseDTO, VocabQuizSolutionDTO
 from core.database import get_session
 from core.security import validate_access_token, oauth2_scheme
-from datetime import datetime, timedelta
-from typing import List
+from services.level import update_level
 
 
 router = APIRouter(prefix="/vocab_quiz", tags=["vocab_quiz"])
@@ -22,23 +22,27 @@ def fetch_vocab_quiz(
     session: Session = Depends(get_session),
 ):
     # 1. 토큰 검증
-    validate_access_token(token)["sub"]
+    validate_access_token(token)
 
     # 2. 퀴즈 조회
     quiz = session.exec(
         select(VocabQuizzes).where(VocabQuizzes.quiz_id == quiz_id)
     ).first()
+
+    # 2.1 단어 퀴즈 데이터가 없을 경우 예외 처리
     if not quiz:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Quiz not found"
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="해당 퀴즈를 찾을 수 없습니다.",
         )
 
+    # 3. 응답 데이터 생성
     return VocabQuizDTO(question=quiz.question[1:], options=quiz.options[4:])
 
 
 # 단어 퀴즈 제출
 @router.post(
-    "/{quiz_id}", response_model=VocabQuizResponseDTO, status_code=status.HTTP_200_OK
+    "/solve", response_model=VocabQuizResponseDTO, status_code=status.HTTP_200_OK
 )
 def submit_vocab_quiz(
     quiz_id: int,
@@ -50,10 +54,15 @@ def submit_vocab_quiz(
     user_id = validate_access_token(token)["sub"]
 
     # 2. 퀴즈 정보
-    quiz = session.exec(select(VocabQuizzes).where(VocabQuizzes.quiz_id == quiz_id))
+    quiz = session.exec(
+        select(VocabQuizzes).where(VocabQuizzes.quiz_id == quiz_id)
+    ).first()
+
+    # 2.1 단어 퀴즈 데이터가 없을 경우 예외 처리
     if not quiz:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Quiz not found"
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="해당 퀴즈를 찾을 수 없습니다.",
         )
 
     # 3. 사용자가 선택한 답과 정답 비교
@@ -73,45 +82,11 @@ def submit_vocab_quiz(
     session.add(study_record)
     session.flush()
 
-    # 4. Scores 테이블에 반영
-    scores = session.exec(select(Scores).where(Scores.user_id == user_id)).first()
-    if scores:
-        # 기존 값에서 업데이트
-        scores.vocab_cnt += 3  # 단어 퀴즈 푼 횟수 증가
-        scores.quiz_total_cnt += 3  # 전체 퀴즈 푼 횟수 증가
-        scores.quiz_correct_cnt += sum(correct)  # 맞은 문제 개수 업데이트
-        scores.rating = (
-            scores.quiz_correct_cnt / scores.quiz_total_cnt
-        ) * 100  # 정답률 업데이트
+    # 5. 사용자 level 계산 및 Scores 테이블에 반영
+    rating, level_message = update_level(session, user_id, correct)
+    session.commit()
 
-        # 난이도(level) 업데이트
-        if scores.quiz_total_cnt >= 120:
-            if scores.rating >= 70:
-                new_level = scores.level + 1
-                level_message = "level has increased by 1"
-                scores.quiz_total_cnt = 100
-                scores.rating = 60
-            elif scores.rating <= 50:
-                new_level = scores.level - 1
-                level_message = "level has decreased by 1"
-                scores.quiz_total_cnt = 100
-                scores.rating = 60
-            else:
-                new_level = scores.level
-                level_message = "level remains the same"
-            scores.level = max(
-                1, min(5, new_level)
-            )  # 난이도(level) 업데이트 (반드시 1~5)
-        else:
-            level_message = "level remains the same"
-
-        # 업데이트 시간
-        scores.updated_at = datetime.now()
-
-        session.flush()
-        session.refresh(scores)
-
-    # 5. 퀴즈 문제, 보기, 정답, 풀이 등을 반환
+    # 6. 응답 데이터 생성
     return VocabQuizResponseDTO(
         question=quiz.question[1:],
         options=quiz.options[4:],
@@ -119,7 +94,7 @@ def submit_vocab_quiz(
         answer_explain=quiz.answer_explain[4:],
         user_answer=user_answer,
         correct=correct,
-        rating=scores.rating,
+        rating=rating,
         level_message=level_message,
     )
 
@@ -138,25 +113,27 @@ def fetch_vocab_quiz_solution(
     # 1. 토큰 검증
     user_id = validate_access_token(token)["sub"]
 
+    # 2. 가장 최근 푼 퀴즈 기록 조회
     quiz = session.exec(
         select(VocabQuizzes).where(VocabQuizzes.quiz_id == quiz_id)
     ).first()
 
-    # 1. 가장 최근 푼 퀴즈 기록 조회
     study_record = session.exec(
         select(StudyRecords)
         .where(
             StudyRecords.user_id == user_id, StudyRecords.vocab_quiz_id == quiz.quiz_id
         )
-        .order_by(StudyRecords.created_at.desc())  # 최근 푼 퀴즈부터 정렬
+        .order_by(desc(StudyRecords.created_at))  # 최근 푼 퀴즈부터 정렬
     ).first()
-    # 1.1 퀴즈 기록이 없으면 예외 처리
+
+    # 2.1 퀴즈 기록이 없으면 예외 처리
     if not study_record:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="No quiz record found"
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="해당 퀴즈 기록을 찾을 수 없습니다.",
         )
 
-    # 2. 결과 반환
+    # 3. 응답 데이터 생성
     return VocabQuizSolutionDTO(
         question=quiz.question[1:],
         options=quiz.options[4:],

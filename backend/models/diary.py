@@ -2,7 +2,6 @@ from sqlmodel import SQLModel, Field
 from sqlalchemy import Column, TEXT, BOOLEAN, DATE, INTEGER
 from datetime import date
 
-
 """
 CREATE TABLE  diaries (
     diary_id SERIAL PRIMARY KEY,                        -- 일기 ID

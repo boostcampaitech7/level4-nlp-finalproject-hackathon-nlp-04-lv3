@@ -1,8 +1,6 @@
-from typing import List
-from datetime import datetime
 from sqlmodel import SQLModel, Field
-from sqlalchemy import Column, ARRAY, INTEGER, TIMESTAMP
-
+from sqlalchemy import Column, INTEGER, TIMESTAMP
+from datetime import datetime
 
 """
 CREATE TABLE scores (
@@ -15,6 +13,8 @@ CREATE TABLE scores (
     text_cnt INTEGER DEFAULT 0,                             -- 긴 글 문제 푼 개수
     vocab_cnt INTEGER DEFAULT 0,                            -- 단어 문제 푼 횟수
     diary_cnt INTEGER DEFAULT 0,                            -- 일기 작성 횟수
+    correct_quiz_cnt INTEGER DEFAULT 60,                    -- 정답율 분자
+    total_quiz_cnt INTEGER DEFAULT 100,                     -- 정답율 분모
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP          -- 최근 수정 시간
 );
 """
@@ -29,6 +29,8 @@ class Scores(SQLModel, table=True):
     text_cnt: int = Field(default=0, sa_column=Column(INTEGER, nullable=False))
     vocab_cnt: int = Field(default=0, sa_column=Column(INTEGER, nullable=False))
     diary_cnt: int = Field(default=0, sa_column=Column(INTEGER, nullable=False))
+    correct_quiz_cnt: int = Field(default=60, sa_column=Column(INTEGER, nullable=False))
+    total_quiz_cnt: int = Field(default=100, sa_column=Column(INTEGER, nullable=False))
     updated_at: datetime = Field(
         default_factory=datetime.now, sa_column=Column(TIMESTAMP, nullable=False)
     )

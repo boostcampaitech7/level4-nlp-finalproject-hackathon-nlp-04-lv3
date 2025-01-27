@@ -3,6 +3,11 @@ from sqlmodel import Session, select
 from sqlalchemy import desc
 from typing import List
 
+from models.vocab import Vocabs
+from models.vocab_quiz import VocabQuizzes
+from models.text import Texts
+from models.text_quiz import TextQuizzes
+from models.study_record import StudyRecords
 from schemas.study_record import (
     VocabStudyRecordSummaryDTO,
     TextStudyRecordSummaryDTO,
@@ -11,11 +16,6 @@ from schemas.study_record import (
     TextStudyRecordDTO,
     StudyRecordDTO,
 )
-from models.vocab import Vocabs
-from models.vocab_quiz import VocabQuizzes
-from models.text import Texts
-from models.text_quiz import TextQuizzes
-from models.study_record import StudyRecords
 from core.database import get_session
 from core.security import validate_access_token, oauth2_scheme
 
@@ -23,6 +23,7 @@ from core.security import validate_access_token, oauth2_scheme
 router = APIRouter(prefix="/study_record", tags=["study_record"])
 
 
+# 학습 기록 조회
 @router.get(
     "/record_id/{record_id}",
     response_model=StudyRecordDTO,
@@ -34,10 +35,11 @@ def fetch_record_by_id(
     session: Session = Depends(get_session),
 ):
     # 1. 토큰 검증
-    user_id = validate_access_token(token)["sub"]
+    validate_access_token(token)
 
     study_record = session.get(StudyRecords, record_id)
 
+    # 2. 학습 기록 퀴즈 종류(단어, 긴 글)별 조회
     if study_record.vocab_quiz_id:
         vocab_quiz = session.get(VocabQuizzes, study_record.vocab_quiz_id)
         vocab = session.get(Vocabs, vocab_quiz.vocab_id)
@@ -84,9 +86,11 @@ def fetch_record_by_id(
             )
         )
 
+    # 3. 응답 데이터 생성
     return response_body.model_dump(exclude_none=True)
 
 
+# 학습 기록 조회(학습 기록 페이지)
 @router.get(
     "/page/{page_num}",
     response_model=List[StudyRecordSummaryDTO],
@@ -143,11 +147,13 @@ def fetch_record_by_page(
                 )
             )
 
+    # 4. 응답 데이터 생성
     return [
         study_record.model_dump(exclude_none=True) for study_record in response_body
     ]
 
 
+# 학습 기록 조회(단어 학습 기록 페이지)
 @router.get(
     "/vocab_page/{page_num}",
     response_model=List[VocabStudyRecordSummaryDTO],
@@ -190,6 +196,7 @@ def fetch_vocab_record_by_page(
     return response_body
 
 
+# 학습 기록 조회(긴 글 학습 기록 페이지)
 @router.get(
     "/text_page/{page_num}",
     response_model=List[TextStudyRecordSummaryDTO],
@@ -216,7 +223,7 @@ def fetch_vocab_record_by_page(
     )
     study_records = session.exec(statement).all()
 
-    # 3. 긴 글 학습 기록 정보 주출
+    # 3. 긴 글 학습 기록 정보 추출
     response_body = list()
     for study_record in study_records:
         text_quiz = session.get(TextQuizzes, study_record.text_quiz_id)

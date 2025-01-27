@@ -4,9 +4,9 @@ from sqlmodel import Session, select, exists
 import requests
 from starlette.responses import JSONResponse
 
-from schemas.auth import UserSignupDTO, SocialLoginDTO, SocialSignupDTO, JwToken
 from models.user import Users
 from models.score import Scores
+from schemas.auth import UserSignupDTO, SocialLoginDTO, SocialSignupDTO, JwToken
 from core.config import config
 from core.database import get_session
 from core.security import (
@@ -21,7 +21,8 @@ from core.security import (
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
-@router.post("/check-username", status_code=status.HTTP_200_OK)
+# 아이디 중복체크
+@router.post("/check_username", status_code=status.HTTP_200_OK)
 def check_username(username: str, session: Session = Depends(get_session)):
     # 1. username 중복 여부 확인
     statement = select(exists().where(Users.username == username))
@@ -34,6 +35,7 @@ def check_username(username: str, session: Session = Depends(get_session)):
     return {"is_available": True}
 
 
+# 회원가입
 @router.post("/signup", status_code=status.HTTP_201_CREATED)
 def signup(new_user: UserSignupDTO, session: Session = Depends(get_session)):
     # 1. username 중복 여부 확인
@@ -63,12 +65,12 @@ def signup(new_user: UserSignupDTO, session: Session = Depends(get_session)):
     return {"message": "User created successfully"}
 
 
+# 로그인
 @router.post("/login", response_model=JwToken, status_code=status.HTTP_200_OK)
 def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
     session: Session = Depends(get_session),
 ) -> JwToken:
-
     # 1. username 존재 여부 확인
     statement = select(Users).where(Users.username == form_data.username)
     user = session.exec(statement).first()
@@ -89,7 +91,9 @@ def login(
     return JwToken(access_token=access_token, token_type="bearer")
 
 
-@router.post(path="/naver-login", description="naver social login")
+"""
+# 네이버 소셜 로그인
+@router.post(path="/naver_login", description="naver social login")
 async def naver_login(form: SocialLoginDTO, session: Session = Depends(get_session)):
     try:
         # 1. naver에 access token 요청
@@ -127,7 +131,8 @@ async def naver_login(form: SocialLoginDTO, session: Session = Depends(get_sessi
     return JSONResponse(status_code=status.HTTP_200_OK, content=response_body)
 
 
-@router.post(path="/naver-signup", description="naver social signup")
+# 네이버 소셜 회원가입
+@router.post(path="/naver_signup", description="naver social signup")
 async def naver_signup(form: SocialSignupDTO, session: Session = Depends(get_session)):
     statement = select(exists().where(Users.username == form.email))
     result = session.exec(statement).first()
@@ -158,20 +163,20 @@ async def naver_signup(form: SocialSignupDTO, session: Session = Depends(get_ses
 
     response_body = {"message": "oauth register successful", "name": user.username}
     return JSONResponse(status_code=status.HTTP_200_OK, content=response_body)
+"""
 
 
+# 로그아웃
 @router.get(
-    path="/logout",
-    status_code=status.HTTP_200_OK,
-    description="logout and delete_cookie",
+    "/logout", status_code=status.HTTP_200_OK, description="logout and delete_cookie"
 )
 def logout(
     response: Response,  # FastAPI Response 객체
     token: str = Depends(oauth2_scheme),  # 인증 토큰 의존성
 ):
-    # 토큰 검증
+    # 1. 토큰 검증
     validate_access_token(token)
 
-    # 쿠키 삭제
+    # 2. 쿠키 삭제
     response.delete_cookie("access_token")  # 삭제할 쿠키의 이름 지정
     return {"message": "User logged out successfully"}

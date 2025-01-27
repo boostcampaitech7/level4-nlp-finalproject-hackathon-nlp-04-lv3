@@ -28,6 +28,7 @@ class TextExplainResponseDTO(BaseModel):
 
 class TextChatbotItemDTO(BaseModel):
     chat_id: int
+    focused: Optional[str] = None
     question: str
     answer: str
 
@@ -45,14 +46,8 @@ class TextChatbotRequestDTO(BaseModel):
 
 
 class TextChatbotResponseDTO(BaseModel):
-    status: str = Field(description="HCX 응답 내부 상태 코드 (예: '20000')")
-    response: str
-
-    @model_validator(mode="before")
-    def extract_code(cls, values):
-        if isinstance(values.get("status"), dict) and "code" in values["status"]:
-            values["status"] = int(values["status"]["code"])
-        return values
+    chat_id: int
+    answer: str
 
 
 class TextBookmarkRequestDTO(BaseModel):

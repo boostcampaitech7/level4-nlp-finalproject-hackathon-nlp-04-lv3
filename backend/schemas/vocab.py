@@ -1,6 +1,5 @@
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field
 from typing import List, Optional
-from datetime import datetime
 
 
 class VocabDetailDTO(BaseModel):
@@ -11,17 +10,6 @@ class VocabDetailDTO(BaseModel):
     easy_explain: str
     correct_example: List[str]
     incorrect_example: List[str]
-
-
-class LevelData(BaseModel):
-    level: int
-    quiz_id: int
-    is_solved: bool
-
-
-class VocabLevelDTO(BaseModel):
-    user_level: int
-    level_data: List[LevelData]
 
 
 class VocabChatbotItemDTO(BaseModel):
