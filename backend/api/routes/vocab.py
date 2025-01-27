@@ -1,7 +1,9 @@
 from fastapi import APIRouter, HTTPException, Depends, status
-from sqlmodel import Session, select, func
+from sqlmodel import Session, select
 import httpx
 
+from models.vocab import Vocabs
+from models.vocab_conversation import VocabConversations
 from schemas.vocab import (
     VocabDetailDTO,
     VocabChatbotListDTO,
@@ -9,9 +11,6 @@ from schemas.vocab import (
     VocabChatbotResponseDTO,
     VocabChatbotRequestDTO,
 )
-from models.vocab import Vocabs
-from models.vocab_conversation import VocabConversations
-from core.config import config
 from core.database import get_session
 from core.security import validate_access_token, oauth2_scheme
 
@@ -26,9 +25,6 @@ AI_SERVER_URL = "http://ai-server.com"
 @router.get(
     "/{vocab_id}", response_model=VocabDetailDTO, status_code=status.HTTP_200_OK
 )
-@router.get(
-    "/{vocab_id}", response_model=VocabDetailDTO, status_code=status.HTTP_200_OK
-)
 def fetch_vocab_detail(
     vocab_id: int,
     token: str = Depends(oauth2_scheme),
@@ -38,22 +34,22 @@ def fetch_vocab_detail(
     validate_access_token(token)
 
     # 2. 단어 조회
-    vocab = session.exec(select(Vocabs).where(Vocabs.vocab_id == vocab_id))
+    vocab_data = session.exec(select(Vocabs).where(Vocabs.vocab_id == vocab_id)).first()
     # 2.1 단어가 존재하지 않을 시 예외 처리
-    if not vocab:
+    if not vocab_data:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Vocab not found"
         )
 
     # 3. 응답 데이터 생성
     return VocabDetailDTO(
-        vocab_id=vocab.vocab_id,
-        vocab=vocab.vocab,
-        hanja=vocab.hanja,
-        dict_mean=vocab.dict_mean,
-        easy_explain=vocab.easy_explain,
-        correct_example=vocab.correct_example,
-        incorrect_example=vocab.incorrect_example,
+        vocab_id=vocab_data.vocab_id,
+        vocab=vocab_data.vocab,
+        hanja=vocab_data.hanja,
+        dict_mean=vocab_data.dict_mean,
+        easy_explain=vocab_data.easy_explain,
+        correct_example=vocab_data.correct_example,
+        incorrect_example=vocab_data.incorrect_example,
     )
 
 
@@ -83,7 +79,7 @@ def fetch_vocab_chatbot_list(
     ).all()
 
     # 3. 응답 데이터 생성
-    response_body = VocabChatbotListDTO(
+    return VocabChatbotListDTO(
         vocab_id=vocab_id,
         chats=[
             VocabChatbotItemDTO(
@@ -94,8 +90,6 @@ def fetch_vocab_chatbot_list(
             for chat in chat_list
         ],
     )
-
-    return response_body
 
 
 # 단어 챗봇 대화 요청
@@ -126,7 +120,7 @@ async def request_vocab_chatbot_response(
         if ai_chat_response.status_code != 200:
             raise HTTPException(
                 status_code=ai_chat_response.status_code,
-                detail=f"AI 서버 요청 실패: {ai_chat_response.vocab}",
+                detail=f"AI 서버 요청 실패: {ai_chat_response.text}",
             )
 
         # 4. AI 응답 데이터 처리
