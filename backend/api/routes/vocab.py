@@ -1,16 +1,31 @@
 from fastapi import APIRouter, HTTPException, Depends, status
-from sqlmodel import Session, select
+from sqlmodel import Session, select, func
+import httpx
 
+from schemas.vocab import (
+    VocabDetailDTO,
+    VocabChatbotListDTO,
+    VocabChatbotItemDTO,
+    VocabChatbotResponseDTO,
+    VocabChatbotRequestDTO,
+)
 from models.vocab import Vocabs
-from schemas.vocab import VocabDetailDTO
+from models.vocab_conversation import VocabConversations
+from core.config import config
 from core.database import get_session
 from core.security import validate_access_token, oauth2_scheme
 
 
 router = APIRouter(prefix="/vocab", tags=["vocab"])
 
+# AI 서버 URL - 임시
+AI_SERVER_URL = "http://ai-server.com"
+
 
 # 단어 설명 조회
+@router.get(
+    "/{vocab_id}", response_model=VocabDetailDTO, status_code=status.HTTP_200_OK
+)
 @router.get(
     "/{vocab_id}", response_model=VocabDetailDTO, status_code=status.HTTP_200_OK
 )
@@ -40,3 +55,114 @@ def fetch_vocab_detail(
         correct_example=vocab.correct_example,
         incorrect_example=vocab.incorrect_example,
     )
+
+
+# 단어 챗봇 대화 조회
+@router.get(
+    "/chatbot/{vocab_id}",
+    response_model=VocabChatbotListDTO,
+    status_code=status.HTTP_200_OK,
+)
+def fetch_vocab_chatbot_list(
+    vocab_id: int,
+    token: str = Depends(oauth2_scheme),
+    session: Session = Depends(get_session),
+):
+    # 1. 토큰 검증
+    user_id = validate_access_token(token)["sub"]
+
+    # 2. DB에서 5개의 챗봇 데이터 추출
+    chat_list = session.exec(
+        select(VocabConversations)
+        .where(
+            VocabConversations.user_id == user_id,
+            VocabConversations.vocab_id == vocab_id,
+        )
+        .order_by(VocabConversations.created_at.desc())
+        .limit(5)
+    ).all()
+
+    # 3. 응답 데이터 생성
+    response_body = VocabChatbotListDTO(
+        vocab_id=vocab_id,
+        chats=[
+            VocabChatbotItemDTO(
+                chat_id=chat.chat_id,
+                question=chat.question,
+                answer=chat.answer,
+            )
+            for chat in chat_list
+        ],
+    )
+
+    return response_body
+
+
+# 단어 챗봇 대화 요청
+@router.post(
+    "/chatbot", response_model=VocabChatbotResponseDTO, status_code=status.HTTP_200_OK
+)
+async def request_vocab_chatbot_response(
+    vocab_id: int,
+    question: str,
+    token: str = Depends(oauth2_scheme),
+    session: Session = Depends(get_session),
+):
+    # 1. 토큰 검증
+    user_id = validate_access_token(token)["sub"]
+
+    # 2. 챗봇에게 요청할 단어
+    vocab = select(Vocabs).where(Vocabs.vocab_id == vocab_id)
+
+    # 2. 단어와 사용자의 질문을 전달 및 응답 요청
+    try:
+        async with httpx.AsyncClient() as client:
+            ai_chat_response = await client.post(
+                AI_SERVER_URL + "/ai/vocab/chat",
+                json=VocabChatbotRequestDTO(vocab=vocab, question=question),
+            )
+
+        # 3. 응답 상태 코드 확인
+        if ai_chat_response.status_code != 200:
+            raise HTTPException(
+                status_code=ai_chat_response.status_code,
+                detail=f"AI 서버 요청 실패: {ai_chat_response.vocab}",
+            )
+
+        # 4. AI 응답 데이터 처리
+        ai_data = ai_chat_response.json()
+        if ai_data["status"]["code"] != "20000":
+            raise HTTPException(
+                status_code=500,
+                detail=f"AI 서버 응답 오류: {ai_data['status']['message']}",
+            )
+
+        # 5. 응답 데이터를 추출
+        answer = ai_data["result"]["message"]["content"]
+
+        # 6. 응답 데이터를 데이터베이스에 저장하고 chat_id 가져오기
+        conversation = {
+            "user_id": user_id,
+            "vocab_id": vocab_id,
+            "question": question,
+            "answer": answer,
+        }
+        result = session.exec(
+            """
+            INSERT INTO vocab_conversations (user_id, vocab_id, question, answer)
+            VALUES (:user_id, :vocab_id, :question, :answer)
+            """,
+            conversation,
+        )
+        chat_id = result.one()[0]  # 생성된 chat_id 가져오기
+        session.commit()
+
+        # 7. 응답 데이터를 프론트엔드로 반환
+        return VocabChatbotResponseDTO(chat_id=chat_id, answer=answer)
+
+    except httpx.RequestError as exc:
+        # AI 서버와의 요청 중 에러 발생 처리
+        raise HTTPException(
+            status_code=500,
+            detail=f"AI 서버와의 연결 중 오류 발생: {exc}",
+        )
