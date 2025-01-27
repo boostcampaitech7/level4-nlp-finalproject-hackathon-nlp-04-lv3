@@ -1,8 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends, status
-from sqlmodel import Session, select
-from sqlalchemy import func
+from sqlmodel import Session, select, func
 from chatbot_sender import ChatbotMessageSender
-import requests
+import httpx
 
 from schemas.vocab import (
     VocabDetailDTO,
@@ -20,6 +19,9 @@ from datetime import datetime
 
 
 router = APIRouter(prefix="/vocab", tags=["vocab"])
+
+# AI 서버 URL - 임시
+AI_SERVER_URL = "http://ai-server.com"
 
 
 # 단어 설명 조회
@@ -104,64 +106,67 @@ def fetch_vocab_chatbot_list(
 @router.post(
     "/chatbot", response_model=VocabChatbotResponseDTO, status_code=status.HTTP_200_OK
 )
-def request_vocab_chatbot_response(
-    request_body: VocabChatbotRequestDTO,
+async def request_vocab_chatbot_response(
+    vocab_id: int,
+    question: str,
     token: str = Depends(oauth2_scheme),
     session: Session = Depends(get_session),
 ):
     # 1. 토큰 검증
+    user_id = validate_access_token(token)["sub"]
+
+    # 2. 챗봇에게 요청할 단어
+    vocab = select(Vocabs).where(Vocabs.vocab_id == vocab_id)
+
+    # 2. 단어와 사용자의 질문을 전달 및 응답 요청
     try:
-        user_id = validate_access_token(token)["sub"]
-    except Exception as e:
-        raise HTTPException(status_code=401, detail="토큰이 유효하지 않습니다.")
-
-    # 2. NCP 단어 챗봇 API 호출 준비
-    chatbot_sender = ChatbotMessageSender(
-        config.chatbot_api_url, config.chatbot_api_key
-    )
-
-    # 3. 챗봇에게 요청할 데이터 구성
-    chat_list = session.exec(
-        select(VocabConversations)
-        .where(
-            VocabConversations.user_id == user_id,
-            VocabConversations.vocab_id == request_body.vocab_id,
-        )
-        .order_by(VocabConversations.created_at.desc())
-        .limit(5)
-    ).all
-
-    previous_chats = [
-        {"question": chat.question, "answer": chat.answer} for chat in chat_list
-    ]
-
-    payload = {  # 전달할 내용
-        "user_id": user_id,  # 필요한지 검토해야함
-        "vocab": request_body.vocab,  # 단어
-        "previous_chats": previous_chats,  # 과거 5개의 대화쌍
-        "question": request_body.question,  # 질문
-    }
-
-    # 2. 5개의 대화쌍 및 사용자의 질문을 전달 및 응답 요청
-    # 참고한 Python 기반의 API 예제 코드 : https://api.ncloud-docs.com/docs/ai-application-service-chatbot-chatbotexample#python
-    try:
-        response = chatbot_sender.req_message_send(payload)
-        response.raise_for_status()  # 상태 코드 확인
-
-        # 챗봇 응답 처리
-        chatbot_response = response.json()
-
-        # 챗봇 응답에서 필요한 데이터 추출
-        status = chatbot_response.get("status", "unknown")
-
-        bubbles = chatbot_response.get("bubbles", [])
-        if not bubbles or "description" not in bubbles[0]["data"]:
-            raise HTTPException(
-                status_code=500, detail="응답 데이터에 'description'이 없습니다."
+        async with httpx.AsyncClient() as client:
+            ai_chat_response = await client.post(
+                AI_SERVER_URL + "/ai/vocab/chat",
+                json=VocabChatbotRequestDTO(vocab=vocab, question=question),
             )
-        answer = bubbles[0]["data"]["description"]
 
-        return VocabChatbotResponseDTO(status=status, answer=answer)
+        # 3. 응답 상태 코드 확인
+        if ai_chat_response.status_code != 200:
+            raise HTTPException(
+                status_code=ai_chat_response.status_code,
+                detail=f"AI 서버 요청 실패: {ai_chat_response.vocab}",
+            )
 
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"챗봇 요청 처리 중 오류: {str(e)}")
+        # 4. AI 응답 데이터 처리
+        ai_data = ai_chat_response.json()
+        if ai_data["status"]["code"] != "20000":
+            raise HTTPException(
+                status_code=500,
+                detail=f"AI 서버 응답 오류: {ai_data['status']['message']}",
+            )
+
+        # 5. 응답 데이터를 추출
+        answer = ai_data["result"]["message"]["content"]
+
+        # 6. 응답 데이터를 데이터베이스에 저장하고 chat_id 가져오기
+        conversation = {
+            "user_id": user_id,
+            "vocab_id": vocab_id,
+            "question": question,
+            "answer": answer,
+        }
+        result = session.exec(
+            """
+            INSERT INTO vocab_conversations (user_id, vocab_id, question, answer)
+            VALUES (:user_id, :vocab_id, :question, :answer)
+            """,
+            conversation,
+        )
+        chat_id = result.one()[0]  # 생성된 chat_id 가져오기
+        session.commit()
+
+        # 7. 응답 데이터를 프론트엔드로 반환
+        return VocabChatbotResponseDTO(chat_id=chat_id, answer=answer)
+
+    except httpx.RequestError as exc:
+        # AI 서버와의 요청 중 에러 발생 처리
+        raise HTTPException(
+            status_code=500,
+            detail=f"AI 서버와의 연결 중 오류 발생: {exc}",
+        )

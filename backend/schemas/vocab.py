@@ -41,5 +41,5 @@ class VocabChatbotRequestDTO(BaseModel):
 
 
 class VocabChatbotResponseDTO(BaseModel):
-    status: str = Field(description="HCX 응답 상태 코드 (예: '20000')")
-    answer: str = Field(description="챗봇의 응답 텍스트")
+    chat_id: int
+    answer: str
