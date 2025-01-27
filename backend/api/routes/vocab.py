@@ -34,10 +34,7 @@ def fetch_vocab_detail(
     session: Session = Depends(get_session),
 ):
     # 1. 토큰 검증
-    try:
-        validate_access_token(token)["sub"]
-    except Exception as e:
-        raise HTTPException(status_code=401, detail="토큰이 유효하지 않습니다.")
+    validate_access_token(token)["sub"]
 
     # 2. 단어 조회
     vocab = session.exec(select(Vocabs).where(Vocabs.vocab_id == vocab_id))
@@ -70,10 +67,7 @@ def fetch_vocab_chatbot_list(
     session: Session = Depends(get_session),
 ):
     # 1. 토큰 검증
-    try:
-        user_id = validate_access_token(token)["sub"]
-    except Exception as e:
-        raise HTTPException(status_code=401, detail="토큰이 유효하지 않습니다.")
+    user_id = validate_access_token(token)["sub"]
 
     # 2. DB에서 5개의 챗봇 데이터 추출
     chat_list = session.exec(
