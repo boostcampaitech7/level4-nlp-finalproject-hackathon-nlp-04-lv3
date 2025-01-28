@@ -19,8 +19,8 @@ CREATE TABLE study_records (
 class StudyRecords(SQLModel, table=True):
     record_id: int | None = Field(default=None, primary_key=True)
     user_id: int = Field(foreign_key="users.user_id", nullable=False)
-    vocab_quiz_id: int = Field(foreign_key="vocab_quizzes.quiz_id", nullable=True)
-    text_quiz_id: int = Field(foreign_key="text_quizzes.quiz_id", nullable=True)
+    vocab_quiz_id: int = Field(foreign_key="vocabquizzes.quiz_id", nullable=True)
+    text_quiz_id: int = Field(foreign_key="textquizzes.quiz_id", nullable=True)
     correct: List[bool] = Field(sa_column=Column(ARRAY(BOOLEAN), nullable=False))
     user_answer: List[int] = Field(sa_column=Column(ARRAY(INTEGER), nullable=False))
     created_at: datetime = Field(

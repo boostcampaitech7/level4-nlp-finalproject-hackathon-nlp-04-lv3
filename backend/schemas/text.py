@@ -63,7 +63,8 @@ class TextInputRequestDTO(BaseModel):
     text_image: Optional[str] = Field(None, description="Base64 인코딩된 이미지 데이터")
     text_pdf: Optional[str] = Field(None, description="Base64 인코딩된 PDF 데이터")
 
-    @model_validator
+    @model_validator(mode="before")
+    @classmethod
     def validate_input(cls, values):
         inputs = [values.get("text"), values.get("text_image"), values.get("text_pdf")]
         if sum(bool(input) for input in inputs) != 1:

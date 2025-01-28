@@ -14,6 +14,7 @@ class Config(BaseSettings):
     naver_client_id: str = Field(env="NAVER_CLIENT_ID")
 
     class Config:
+        extra = "allow"
         env_file = ".env"
 
 

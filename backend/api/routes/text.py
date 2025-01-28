@@ -1,4 +1,4 @@
-from fastapi import Depends, APIRouter, status, Query, HTTPException
+from fastapi import Depends, APIRouter, status, Path, HTTPException
 from sqlmodel import Session, select, func
 from sqlalchemy import desc
 from math import ceil
@@ -22,8 +22,7 @@ AI_SERVER_URL = "http://ai-server.com"
     "/list/{page_num}", response_model=TextListDTO, status_code=status.HTTP_200_OK
 )
 def get_text_list(
-    page_num: int = Query(1, ge=1),
-    include_total_count: bool = Query(False),
+    page_num: int = Path(..., ge=1),
     token: str = Depends(oauth2_scheme),
     session: Session = Depends(get_session),
 ):
@@ -38,6 +37,8 @@ def get_text_list(
 
     # 3. 총 페이지 수 계산
     total_count = None
+    include_total_count = False
+    include_total_count = True if page_num == 1 else False
     if include_total_count:
         total_count = session.exec(select(func.count(Texts.text_id))).scalar()
         total_page_count = ceil(total_count / 16)
@@ -142,7 +143,7 @@ async def request_text_account(
 )
 def get_chatbot_list(
     text_id: int,
-    page_num: int = Query(1, ge=1),
+    page_num: int = Path(..., ge=1),
     token: str = Depends(oauth2_scheme),
     session: Session = Depends(get_session),
 ):

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends, status, Query
+from fastapi import APIRouter, HTTPException, Depends, status, Path
 from sqlmodel import Session, select, desc
 import httpx
 
@@ -62,7 +62,7 @@ def fetch_vocab_detail(
 )
 def fetch_vocab_chatbot_list(
     vocab_id: int,
-    page_num: int = Query(1, ge=1),
+    page_num: int = Path(..., ge=1),
     token: str = Depends(oauth2_scheme),
     session: Session = Depends(get_session),
 ):
