@@ -47,7 +47,7 @@ def get_random_texts(
     response_model=List[VocabStudyRecordDTO],
     status_code=status.HTTP_200_OK,
 )
-def fetch_record_by_page(
+def fetch_review_quiz(
     token: str = Depends(oauth2_scheme), session: Session = Depends(get_session)
 ):
     # 1. 토큰 검증
