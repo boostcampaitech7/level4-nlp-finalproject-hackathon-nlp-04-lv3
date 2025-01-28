@@ -21,10 +21,10 @@ class Diaries(SQLModel, table=True):
     diary_id: int | None = Field(default=None, primary_key=True)
     user_id: int = Field(foreign_key="users.user_id", nullable=False)
     text: str = Field(sa_column=Column(TEXT, nullable=False))
-    feedback: List[Tuple[int, int, str, str]] = Field(
+    feedback: Optional[List[Tuple[int, int, str, str]]] = Field(
         sa_column=Column(JSON, nullable=True)
     )
-    review: str = Field(sa_column=Column(TEXT, nullable=True))
+    review: Optional[str] = Field(sa_column=Column(TEXT, nullable=True))
     status: int = Field(sa_column=Column(INTEGER, nullable=False))
     bookmark: bool = Field(sa_column=Column(BOOLEAN, nullable=False))
     created_at: date = Field(
