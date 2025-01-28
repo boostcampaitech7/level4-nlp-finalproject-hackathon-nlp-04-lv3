@@ -44,14 +44,14 @@ export const VocabCard: React.FC<VocabCardProps> = ({ data, type, onBookmarkTogg
   const renderDefinitionCard = () => (
     <div className="w-[390px] h-[363px] px-[50px] py-[30px] bg-surface-primary-2 rounded-[32px] shadow-[0px_0px_13.199999809265137px_0px_rgba(178,148,250,1.00)] flex-col justify-start items-start inline-flex">
       <div className="w-[303px] h-[60px] justify-end items-start inline-flex">
-        <button 
+        {/* <button 
           onClick={onBookmarkToggle}
           className="w-[60px] h-[60px] relative cursor-pointer"
         >
           <span className={`text-3xl ${data.bookmark ? 'text-accent-highlight' : 'text-button-secondary-2'}`}>
             ★
           </span>
-        </button>
+        </button> */}
       </div>
       <div className="self-stretch h-[76px] flex-col justify-start items-start gap-2.5 flex">
         <div 
@@ -61,19 +61,19 @@ export const VocabCard: React.FC<VocabCardProps> = ({ data, type, onBookmarkTogg
         >
           {showTooltip && (
             <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 z-50">
-              <div className="h-[92px] p-2.5 bg-[#909090] rounded-xl shadow-[0px_0px_12.899999618530273px_0px_rgba(0,0,0,0.25)] justify-center items-center gap-2.5 inline-flex whitespace-nowrap">
+              <div className="h-[92px] p-2.5 bg-text-secondary rounded-xl shadow-[0px_0px_12.899999618530273px_0px_rgba(0,0,0,0.25)] justify-center items-center gap-2.5 inline-flex whitespace-nowrap">
                 <div className="text-text-inverse body-m">독: 두텁다, 진실되다<br/>실: 참되다, 실제</div>
               </div>
             </div>
           )}
-          <div className="text-[#202020] text-[64px] font-black font-['Pretendard']">
+          <div className="text-text-primary display-l">
             {data.vocab}
           </div>
           <div className="h-[38px] py-[7px]" />
         </div>
       </div>
       <div className="self-stretch grow shrink basis-0 pt-3 px-2.5 justify-center items-center gap-2.5 inline-flex">
-        <div className="grow shrink basis-0 self-stretch text-[#707070] text-2xl font-medium font-['Pretendard']">
+        <div className="grow shrink basis-0 self-stretch text-text-secondary caption-l">
           {data.dict_mean}
         </div>
       </div>
@@ -81,15 +81,15 @@ export const VocabCard: React.FC<VocabCardProps> = ({ data, type, onBookmarkTogg
   );
 
   const renderExplanationCard = () => (
-    <div className="w-[390px] h-[363px] bg-surface-primary-2 rounded-[32px] border-4 border-[#e8e8e8] overflow-hidden">
+    <div className="w-[390px] h-[363px] bg-surface-primary-2 rounded-[32px] border-4 border-button-secondary-1 overflow-hidden">
       <div className="w-full h-full flex flex-col">
         <div className="px-8 pt-6 pb-4">
-          <h3 className="self-stretch text-[#202020] text-[28px] font-semibold font-['Pretendard']">
+          <h3 className="self-stretch text-text-primary body-l">
             쉬운 설명
           </h3>
         </div>
         <div className="relative z-10 flex flex-col items-start px-8 w-full">
-          <div className="self-stretch text-[#202020] text-[20px] font-normal font-['Pretendard'] tracking-tight">
+          <div className="self-stretch text-text-primary body-s tracking-tight">
             {data.easy_explain}
           </div>
         </div>
@@ -98,10 +98,10 @@ export const VocabCard: React.FC<VocabCardProps> = ({ data, type, onBookmarkTogg
   );
 
   const renderCorrectCard = () => (
-    <div className="w-[390px] h-[363px] bg-surface-primary-2 rounded-[32px] border-4 border-[#e8e8e8] overflow-hidden">
+    <div className="w-[390px] h-[363px] bg-surface-primary-2 rounded-[32px] border-4 border-button-secondary-1 overflow-hidden">
       <div className="w-full h-full flex flex-col">
         <div className="px-8 pt-6 pb-4">
-          <h3 className="text-[28px] font-semibold text-[#202020]">
+          <h3 className="body-l text-text-primary">
             옳은 사용
           </h3>
         </div>
@@ -124,7 +124,7 @@ export const VocabCard: React.FC<VocabCardProps> = ({ data, type, onBookmarkTogg
                   x: { type: "spring", stiffness: 300, damping: 30 },
                   opacity: { duration: 0.2 }
                 }}
-                className="text-2xl text-[#202020] font-medium w-full"
+                className="body-m text-text-primary w-full"
               >
                 {data.correct_example[difficultyLevel]}
               </motion.p>
@@ -152,10 +152,10 @@ export const VocabCard: React.FC<VocabCardProps> = ({ data, type, onBookmarkTogg
   );
 
   const renderIncorrectCard = () => (
-    <div className="w-[390px] h-[363px] bg-surface-primary-2 rounded-[32px] border-4 border-[#e8e8e8] overflow-hidden">
+    <div className="w-[390px] h-[363px] bg-surface-primary-2 rounded-[32px] border-4 border-button-secondary-1 overflow-hidden">
       <div className="w-full h-full flex flex-col">
         <div className="px-8 pt-6">
-          <h3 className="text-[28px] font-semibold text-[#202020]">
+          <h3 className="body-l text-text-primary">
             틀린 사용
           </h3>
         </div>
@@ -166,10 +166,10 @@ export const VocabCard: React.FC<VocabCardProps> = ({ data, type, onBookmarkTogg
             </div>
           </div>
           <div className="relative z-10 flex flex-col items-start px-8 w-full">
-            <p className="text-2xl text-[#202020] font-medium">
+            <p className="body-m text-text-primary">
               {data.incorrect_example[0]}
             </p>
-            <p className="text-[#707070] text-xl font-normal mt-2">
+            <p className="caption-s text-text-secondary mt-2">
               {data.incorrect_example[1]}
             </p>
           </div>

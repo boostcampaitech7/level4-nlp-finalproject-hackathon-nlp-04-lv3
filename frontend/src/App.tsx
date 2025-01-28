@@ -1,9 +1,17 @@
-import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom'
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  Outlet,
+} from 'react-router-dom'
 import { useEffect } from 'react'
 import * as Pages from './pages'
 import { useAuthStore } from './stores/authStore'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 function App() {
+  const queryClient = new QueryClient()
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
 
   useEffect(() => {
@@ -12,30 +20,41 @@ function App() {
   }, [])
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route element={<Pages.MainLayout />}>
-          <Route
-            path="/"
-            element={
-              isAuthenticated ? <Pages.MainPage /> : <Pages.GuestMainPage />
-            }
-          />
-
-          {/* 인증이 필요하지 않은 라우트들 */}
-          <Route path="auth">
-          <Route
-              path="login"
-              element={
-                isAuthenticated ? <Navigate to="/" replace /> : <Pages.LoginPage />
-              }
-            />
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <Routes>
+          <Route element={<Pages.MainLayout />}>
             <Route
-              path="signup"
+              path="/"
               element={
-                isAuthenticated ? <Navigate to="/" replace /> : <Pages.SignupPage />
+                isAuthenticated ? <Pages.MainPage /> : <Pages.GuestMainPage />
               }
             />
+
+            {/* 인증이 필요하지 않은 라우트들 */}
+            <Route path="auth">
+              <Route
+                path="login"
+                element={
+                  isAuthenticated ? (
+                    <Navigate to="/" replace />
+                  ) : (
+                    <Pages.LoginPage />
+                  )
+                }
+              />
+              <Route
+                path="signup"
+                element={
+                  isAuthenticated ? (
+                    <Navigate to="/" replace />
+                  ) : (
+                    <Pages.SignupPage />
+                  )
+                }
+              />
+            </Route>
+
             <Route
               path="comprehension"
               element={
@@ -54,20 +73,29 @@ function App() {
             {/* 1. text */}
             <Route path="text">
               <Route
-                path=":text_id/quiz/:level/result"
-                element={<Pages.TextQuizResultPage />}
+                path="list"
+                element={<Pages.TextListPage />}
+              />
+              <Route
+                path=":text_id"
+                element={<Pages.TextDetailPage />}
+              />
+              <Route
+                path=":text_id/quiz"
+                element={<Pages.QuizLevelSelectionPage section="text" />}
               />
               <Route
                 path=":text_id/quiz/:level"
                 element={<Pages.TextQuizPage />}
               />
               <Route
-                path=":text_id/quiz"
-                element={<Pages.QuizLevelSelectionPage section="text" />}
+                path=":text_id/quiz/:level/result"
+                element={<Pages.TextQuizResultPage />}
               />
-              <Route path=":text_id" element={<Pages.TextDetailPage />} />
-              <Route path="list" element={<Pages.TextListPage />} />
-              <Route path="add" element={<Pages.TextAddPage />} />
+              <Route
+                path="add"
+                element={<Pages.TextAddPage />}
+              />
             </Route>
 
             {/* 2. vocab */}
@@ -85,36 +113,50 @@ function App() {
                 element={<Pages.QuizLevelSelectionPage section="vocab" />}
               />
               <Route path=":vocab_id" element={<Pages.VocabDetailPage />} />
-              <Route
-                path=":vocab_id/quiz/:level"
-                element={<Pages.VocabQuizPage />}
-              />
             </Route>
 
             {/* 3. diary */}
             <Route path="diary">
-              <Route path=":diary_id" element={<Pages.DiaryDetailPage />} />
-              <Route path="list" element={<Pages.DiaryListPage />} />
-              <Route path="write" element={<Pages.DiaryWritePage />} />
+              <Route
+                path="list"
+                element={<Pages.DiaryListPage />}
+              />
+              <Route
+                path=":diary_id"
+                element={<Pages.DiaryDetailPage />}
+              />
+              <Route
+                path="write"
+                element={<Pages.DiaryWritePage />}
+              />
             </Route>
 
             {/* 4. user */}
             <Route path="user">
               <Route
+                path="profile"
+                element={<Pages.ProfilePage />}
+              />
+              <Route
+                path="study-record"
+                element={<Pages.StudyRecordListPage />}
+              />
+              <Route
                 path="study-record/:record_id"
                 element={<Pages.StudyRecordDetailPage />}
               />
               <Route
-                path="study-record/list"
-                element={<Pages.StudyRecordListPage />}
+                path="bookmark"
+                element={<Pages.BookmarkListPage />}
               />
-              <Route path="profile" element={<Pages.ProfilePage />} />
-              <Route path="bookmark" element={<Pages.BookmarkListPage />} />
             </Route>
           </Route>
-        </Route>
-      </Routes>
-    </BrowserRouter>
+
+          {/* 404 페이지 */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </BrowserRouter>
+    </QueryClientProvider>
   )
 }
 

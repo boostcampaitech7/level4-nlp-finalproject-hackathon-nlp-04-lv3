@@ -64,19 +64,19 @@ const handleNextQuiz = () => {
       <div className="w-full max-w-[960px] px-4">
         <div className="py-8">
           <div className="mb-8">
-            <h1 className="text-[38px] font-bold text-text-primary">퀴즈 결과를 확인해보세요!</h1>
+            <h1 className="title-m text-text-primary">퀴즈 결과를 확인해보세요!</h1>
           </div>
 
-          <div className="w-full px-5 py-[60px] bg-surface-primary-2 rounded-[32px] flex flex-col justify-center items-center gap-14">
+          <div className="w-full px-5 py-[30px] bg-surface-primary-2 rounded-[32px] flex flex-col justify-center items-center gap-14">
             <div className="w-full flex-col justify-start items-start gap-7 flex">
               <div className="w-full px-[33px] flex-col justify-center items-center gap-2.5 inline-flex">
-                <h2 className="w-full text-black text-[34px] font-bold">
+                <h2 className="w-full text-text-primary body-l font-bold">
                   {quizResult.question[currentQuestionIndex]}
                 </h2>
-                <p className={`w-full text-[34px] font-bold ${
-                  isCorrect ? 'text-[#5e82ff]' : 'text-[#ff5757]'
+                <p className={`w-full body-l ${
+                  isCorrect ? 'text-accent-blue' : 'text-accent-red-1'
                 }`}>
-                  {isCorrect ? '맞았어요!' : '틀렸어요!'}
+                  {isCorrect ? '맞았어요!' : '다시 한번 볼까요?'}
                 </p>
               </div>
 
@@ -86,19 +86,19 @@ const handleNextQuiz = () => {
                     <div key={index} className="flex items-center gap-6">
                       <div className="w-20 h-20 flex items-center justify-center">
                         <div className={`text-[78px] font-semibold ${
-                          index === correctAnswerIndex ? 'text-[#5e82ff]' :
-                          index === userAnswerIndex ? 'text-[#ff5757]' : 'text-[#e0e0e0]'
+                          index === correctAnswerIndex ? 'text-accent-blue' :
+                          index === userAnswerIndex ? 'text-accent-red-1' : 'text-[#e0e0e0]'
                         }`}>
                           {index === correctAnswerIndex ? 'O' : index === userAnswerIndex ? 'X' : ''}
                         </div>
                       </div>
                       <div className="flex-1">
-                        <p className={`text-[32px] ${
+                        <p className={`body-m ${
                           index === userAnswerIndex ? 'font-bold' : 'font-normal'
                         }`}>
                           {option}
                         </p>
-                        <p className="text-2xl text-[#707070] mt-2">
+                        <p className="body-s text-text-secondary mt-2">
                           {currentExplanations[index]}
                         </p>
                       </div>

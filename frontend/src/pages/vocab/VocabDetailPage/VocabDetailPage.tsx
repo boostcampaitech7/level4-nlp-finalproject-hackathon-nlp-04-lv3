@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { VocabCard } from './VocabCard';
 import { VocabDetailType } from './types';
 import Button from 'components/Button';
-import {ChatInterface} from 'components/ChatInterface'; // Import ChatInterface component
+import {VocabChatInterface} from 'components/VocabChatInterface'; // Import VocabChatInterface component
 import { useNavigate, useParams } from 'react-router-dom'
 
 export const VocabDetailPage: React.FC = () => {
@@ -115,7 +115,7 @@ export const VocabDetailPage: React.FC = () => {
           </div>
 
           {/* Right section with chat UI */}
-          <ChatInterface vocabId={String(vocabData.vocab_id)} />
+          <VocabChatInterface vocabId={String(vocabData.vocab_id)} />
         </div>
       </main>
     </div>
