@@ -4,50 +4,44 @@ from sqlalchemy import Date, cast
 from typing import List
 from datetime import datetime, timedelta
 
-from models.vocab import Vocabs, VocabQuizzes
+from models.vocab import Vocabs
+from models.vocab_quiz import VocabQuizzes
 from models.text import Texts
 from models.study_record import StudyRecords
 from schemas.text import TextItemDTO
+from schemas.vocab import VocabDetailDTO
 from schemas.study_record import VocabStudyRecordDTO
 from core.database import get_session
 from core.security import validate_access_token, oauth2_scheme
+
 
 router = APIRouter(prefix="/main", tags=["main"])
 
 
 # 오늘의 글 조회
-@router.get(
-    "/text",
-    response_model=List[TextItemDTO],
-    status_code=status.HTTP_200_OK,
-)
+@router.get("/text", response_model=List[TextItemDTO], status_code=status.HTTP_200_OK)
 def get_random_texts(
     token: str = Depends(oauth2_scheme), session: Session = Depends(get_session)
 ):
     # 1. 토큰 검증
-    try:
-        validate_access_token(token)
-    except Exception as e:
-        raise HTTPException(status_code=401, detail="토큰이 유효하지 않습니다.")
+    validate_access_token(token)
 
     # 2. DB에서 긴 글 데이터 중 임의로 3개 추출 후 반환
-    statement = select(Texts).order_by(func.random()).limit(3)
-    texts = session.exec(statement).all()
+    texts = session.exec(select(Texts).order_by(func.random()).limit(3)).all()
 
     # 3. 응답 데이터 생성
-    response_body = [
+    return [
         TextItemDTO(
             text_id=text.text_id,
             title=text.title,
             category=text.category,
-            text=text.content[0],
+            content=text.content[0],
         )
         for text in texts
     ]
 
-    return response_body
 
-
+# 복습 단어 퀴즈 조회
 @router.get(
     "/vocab_review",
     response_model=List[VocabStudyRecordDTO],
@@ -71,31 +65,29 @@ def fetch_record_by_page(
     study_records = session.exec(statement).all()
 
     # 3. 복습할 단어 퀴즈 추출
-    response_body = list()
-    for study_record in study_records:
-        vocab_quiz = session.get(VocabQuizzes, study_record.vocab_quiz_id)
-        vocab = session.get(Vocabs, vocab_quiz.vocab_id)
-        response_body.append(
-            VocabStudyRecordDTO(
-                record_id=study_record.record_id,
-                vocab_id=vocab.vocab_id,
-                vocab=vocab.vocab,
-                hanja=vocab.hanja,
-                dict_mean=vocab.dict_mean,
-                easy_explain=vocab.easy_explain,
-                correct_example=vocab.correct_example,
-                incorrect_example=vocab.incorrect_example,
-                quiz_id=vocab_quiz.quiz_id,
-                quiz_question=vocab_quiz.question[:1],
-                quiz_level=vocab_quiz.level,
-                quiz_options=vocab_quiz.options[:4],
-                quiz_correct=study_record.correct[:1],
-                quiz_user_answer=study_record.user_answer[:1],
-                quiz_answer=vocab_quiz.answer[:1],
-                quiz_answer_explain=vocab_quiz.answer_explain[:1],
-            )
+    return [
+        VocabStudyRecordDTO(
+            record_id=record.record_id,
+            vocab_id=vocab.vocab_id,
+            vocab=vocab.vocab,
+            hanja=vocab.hanja,
+            dict_mean=vocab.dict_mean,
+            easy_explain=vocab.easy_explain,
+            correct_example=vocab.correct_example,
+            incorrect_example=vocab.incorrect_example,
+            quiz_id=quiz.quiz_id,
+            quiz_question=quiz.question[:1],
+            quiz_level=quiz.level,
+            quiz_options=quiz.options[:4],
+            quiz_correct=record.correct[:1],
+            quiz_user_answer=record.user_answer[:1],
+            quiz_answer=quiz.answer[:1],
+            quiz_answer_explain=quiz.answer_explain[:1],
         )
-    return response_body
+        for record in study_records
+        if (quiz := session.get(VocabQuizzes, record.vocab_quiz_id))  # 퀴즈 조회
+        if (vocab := session.get(Vocabs, quiz.vocab_id))  # 어휘 조회
+    ]
 
 
 # 단어 검색
@@ -108,22 +100,23 @@ def search_vocab(
     session: Session = Depends(get_session),
 ):
     # 1. 토큰 검증
-    user_id = validate_access_token(token)["sub"]
+    validate_access_token(token)
 
     # 2. 단어 정보 조회
-    vocab = session.exec(select(Vocabs).where(Vocabs.vocab == vocab)).first()
+    vocab_data = session.exec(select(Vocabs).where(Vocabs.vocab == vocab)).first()
     # 2.1 단어가 존재하지 않을 시 예외 처리
-    if not vocab:
+    if not vocab_data:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Vocab not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="단어가 존재하지 않습니다."
         )
 
+    # 3. 응답 데이터 생성
     return VocabDetailDTO(
-        vocab_id=vocab.vocab_id,
-        vocab=vocab.vocab,
-        hanja=vocab.hanja,
-        dict_mean=vocab.dict_mean,
-        easy_explain=vocab.easy_explain,
-        correct_example=vocab.correct_example,
-        incorrect_example=vocab.incorrect_example,
+        vocab_id=vocab_data.vocab_id,
+        vocab=vocab_data.vocab,
+        hanja=vocab_data.hanja,
+        dict_mean=vocab_data.dict_mean,
+        easy_explain=vocab_data.easy_explain,
+        correct_example=vocab_data.correct_example,
+        incorrect_example=vocab_data.incorrect_example,
     )

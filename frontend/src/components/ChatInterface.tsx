@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { ChatMessage as ChatMessageType, ChatAction } from '../types/chat'
-import { ChatMessage } from '../pages/MainPage/ChatMessage'
+import { ChatMessage } from './ChatMessage'
+import 'styles/scrollbar.css'
 
 interface ChatInterfaceProps {
   messages: ChatMessageType[]
@@ -22,15 +23,14 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
   messageSize = 'text-[22px]',
 }) => {
   const [inputValue, setInputValue] = useState('')
-  const messagesEndRef = useRef<HTMLDivElement>(null)
+  const chatContainerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }
-
   useEffect(() => {
-    scrollToBottom()
+    // 메시지가 업데이트될 때마다, 스크롤을 가장 아래로 이동
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
+    }
   }, [messages])
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -43,10 +43,13 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
 
   return (
     <div
-      className={`flex flex-col bg-surface-primary-2 rounded-[32px] shadow-lg ${width} ${height} ${className}`}
+      className={`flex flex-col rounded-[32px] bg-surface-primary-2 shadow-lg ${width} ${height} ${className}`}
     >
       {/* 채팅 메시지 영역 */}
-      <div className="flex-1 p-6 overflow-y-auto space-y-4">
+      <div
+        className="custom-scrollbar-small flex-1 space-y-4 overflow-y-auto scroll-smooth p-6"
+        ref={chatContainerRef}
+      >
         {messages.map((message, index) => (
           <ChatMessage
             key={message.id}
@@ -55,18 +58,17 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
             index={index}
           />
         ))}
-        <div ref={messagesEndRef} />
       </div>
 
       {/* 액션 버튼 영역 */}
       {actions.length > 0 && (
-        <div className="py-2">
-          <div className="flex gap-2 justify-center">
+        <div className="px-6 py-2">
+          <div className="flex flex-wrap justify-end gap-2">
             {actions.map((action) => (
               <button
                 key={action.id}
                 onClick={action.onClick}
-                className="px-4 py-2 bg-button-secondary-1 rounded-[14px] text-text-secondary text-base font-medium hover:bg-[#d8d8d8] transition-colors"
+                className="rounded-[14px] bg-button-secondary-1 px-4 py-2 text-base font-medium text-text-secondary transition-colors hover:bg-[#d8d8d8]"
               >
                 {action.label}
               </button>
@@ -76,7 +78,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
       )}
 
       {/* 입력 영역 */}
-      <div className="p-4 ">
+      <div className="p-4">
         <form onSubmit={handleSubmit} className="flex gap-2">
           <input
             ref={inputRef}
@@ -84,11 +86,11 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             placeholder="메시지를 입력해 주세요"
-            className="button-s flex-1 p-1.5 bg-surface-secondary rounded-2xl text-text-intermidiate outline-none focus:ring-2 focus:ring-accent-purple"
+            className="text-text-intermidiate flex-1 rounded-2xl bg-surface-secondary p-1.5 outline-none button-s focus:ring-2 focus:ring-accent-purple"
           />
           <button
             type="submit"
-            className="w-10 h-10 bg-button-primary-1 rounded-full flex items-center justify-center hover:bg-[#b89dff] transition-colors"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-button-primary-1 transition-colors hover:bg-[#b89dff]"
           >
             <svg
               width="20"

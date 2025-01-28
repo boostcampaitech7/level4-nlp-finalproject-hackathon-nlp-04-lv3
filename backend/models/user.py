@@ -1,7 +1,6 @@
-from datetime import datetime, time
 from sqlmodel import SQLModel, Field
 from sqlalchemy import Column, TIME, VARCHAR, TIMESTAMP
-
+from datetime import datetime, time
 
 """
 CREATE TABLE users (

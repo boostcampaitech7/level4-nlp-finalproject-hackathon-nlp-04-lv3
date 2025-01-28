@@ -1,6 +1,5 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import List, Optional
-from datetime import datetime
 
 
 class VocabDetailDTO(BaseModel):
@@ -13,12 +12,22 @@ class VocabDetailDTO(BaseModel):
     incorrect_example: List[str]
 
 
-class LevelData(BaseModel):
-    level: int
-    quiz_id: int
-    is_solved: bool
+class VocabChatbotItemDTO(BaseModel):
+    chat_id: int
+    question: str
+    answer: str
 
 
-class VocabLevelDTO(BaseModel):
-    user_level: int
-    level_data: List[LevelData]
+class VocabChatbotListDTO(BaseModel):
+    vocab_id: int
+    chats: List[VocabChatbotItemDTO] = Field(default_factory=list)
+
+
+class VocabChatbotRequestDTO(BaseModel):
+    vocab: str
+    question: str
+
+
+class VocabChatbotResponseDTO(BaseModel):
+    chat_id: int
+    answer: str

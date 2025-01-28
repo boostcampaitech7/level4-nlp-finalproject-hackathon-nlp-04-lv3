@@ -2,12 +2,12 @@ from pydantic import BaseModel, Field
 from typing import List
 
 
-class TextLevelStudyRecordItemDTO(BaseModel):
+class LevelStudyRecordItemDTO(BaseModel):
     level: int
-    is_solved: bool
     quiz_id: int
+    is_solved: bool
 
 
-class TextLevelStudyRecordDTO(BaseModel):
+class LevelStudyRecordDTO(BaseModel):
     user_level: int
-    level_data: List[TextLevelStudyRecordItemDTO] = Field(default_factory=list)
+    level_data: List[LevelStudyRecordItemDTO] = Field(default_factory=list)

@@ -3,9 +3,9 @@ from sqlmodel import Session, select
 from datetime import datetime, timedelta
 from calendar import monthrange
 
-from schemas.user import UserDetailDTO, MonthStreakDTO, UserUpdateDTO
 from models.user import Users
 from models.score import Scores
+from schemas.user import UserDetailDTO, MonthStreakDTO, UserUpdateDTO
 from core.database import get_session
 from core.security import validate_access_token, oauth2_scheme, pwd_context
 
@@ -13,6 +13,8 @@ from core.security import validate_access_token, oauth2_scheme, pwd_context
 router = APIRouter(prefix="/user", tags=["user"])
 
 
+"""
+# 회원 정보 조회
 @router.get("/profile", response_model=UserDetailDTO, status_code=status.HTTP_200_OK)
 def profile(
     token: str = Depends(oauth2_scheme), session: Session = Depends(get_session)
@@ -27,9 +29,10 @@ def profile(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="user doesn't exist"
         )
-
     statement = select(Scores).where(Scores.user_id == user.user_id)
     score = session.exec(statement).first()
+
+    # 3. 응답 데이터 생성
     return UserDetailDTO(
         username=user.username,
         name=user.name,
@@ -43,7 +46,7 @@ def profile(
     )
 
 
-"""
+# 학습 기록 스트릭 조회
 @router.get("/streak", response_model=MonthStreakDTO, status_code=status.HTTP_200_OK)
 def fetch_streak_by_month(
     year: int,
@@ -87,15 +90,11 @@ def fetch_streak_by_month(
             streak.append(first_day_of_month + timedelta(idx))
 
     return MonthStreakDTO(streak=streak)
-"""
 
 
+# 회원 정보 수정
 @router.put("/edit", response_model=UserUpdateDTO, status_code=status.HTTP_200_OK)
-def edit(
-    updated_user: UserUpdateDTO,
-    token: str = Depends(oauth2_scheme),
-    session: Session = Depends(get_session),
-):
+def edit(updated_user: UserUpdateDTO, token: str = Depends(oauth2_scheme), session: Session = Depends(get_session)):
     # 1. 토큰 검증
     user_id = validate_access_token(token)["sub"]
 
@@ -108,6 +107,7 @@ def edit(
             status_code=status.HTTP_404_NOT_FOUND, detail="user doesn't exist"
         )
 
+    # 3. 비밀번호 | 알림시간 수정
     if updated_user.password:
         user.password = pwd_context.hash(updated_user.password)
     if updated_user.alarm_time:
@@ -116,4 +116,6 @@ def edit(
     session.commit()
     session.refresh(user)
 
+    # 4. 응답 데이터 생성
     return UserUpdateDTO(password=None, alarm_time=user.alarm_time)
+"""
