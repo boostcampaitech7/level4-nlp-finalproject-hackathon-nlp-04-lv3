@@ -49,7 +49,10 @@ const Sidebar = () => {
           <IconButton
             icon={FaRegFileWord}
             text="단어 학습"
-            onClick={() => closeSidebarWithNavigate('/vocab/list')}
+            onClick={() => {
+              const randomVocabId = Math.floor(Math.random() * 100) + 1; // 1부터 100 사이의 랜덤 숫자
+              closeSidebarWithNavigate(`/vocab/${randomVocabId}`);
+            }}
           />
           <IconButton
             icon={CgNotes}

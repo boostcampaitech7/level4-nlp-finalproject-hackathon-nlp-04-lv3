@@ -3,12 +3,10 @@ import { Header, Sidebar } from '../components'
 
 const MainLayout = () => {
   return (
-    <div>
+    <div className="flex min-h-screen min-w-[1440px] flex-col">
       <Header />
       <Sidebar />
-      <main>
-        <Outlet />
-      </main>
+      <Outlet />
       <footer />
     </div>
   )

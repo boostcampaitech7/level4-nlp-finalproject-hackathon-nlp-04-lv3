@@ -1,5 +1,3 @@
-import React from 'react'
-
 const Footer = () => {
   return (
     <div className="w-full py-[23px] bg-button-inverse justify-center items-center gap-2.5 inline-flex">

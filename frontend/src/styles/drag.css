@@ -1,0 +1,4 @@
+::selection {
+  background-color: rgba(178, 148, 250, 0.4);
+  color: var(--custom-text-primary);
+}
