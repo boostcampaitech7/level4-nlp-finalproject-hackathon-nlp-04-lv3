@@ -2,7 +2,11 @@
 name = "backend-fastapi"
 version = "0.1.0"
 description = "Backend for fastapi project"
-authors = ["minseon <alstjs4739@gmail.com>"]
+authors = [
+    {name = "GJ98", email = "gangjeong22@gmail.com"},
+    {name = "minseon", email = "alstjs4739@gmail.com"},
+    {name = "seon03", email = "seonaseo1@ewhain.net"},
+]
 
 [tool.poetry.dependencies]
 python = ">=3.10,<4.0"
@@ -21,6 +25,9 @@ typing-extensions = ">=4.12.2,<5.0.0"
 email-validator = ">=2.0,<3.0"
 apscheduler = "^3.11.0"
 pre-commit = ">=4.1.0,<5.0.0"
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^4.1.0"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
