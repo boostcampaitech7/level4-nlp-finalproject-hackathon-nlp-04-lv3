@@ -1,5 +1,4 @@
 from sqlmodel import select
-from core.security import pwd_context
 from models.user import Users
 
 
@@ -61,12 +60,6 @@ def test_login(client, test_user, test_db):
     3. 존재하지 않는 username 입력 시 404 Not Found 응답이 와야 한다.
     """
     password = "securepass"
-    hashed_password = pwd_context.hash(password)
-
-    # 기존 test_user의 비밀번호를 설정
-    test_user.password = hashed_password
-    test_db.add(test_user)
-    test_db.commit()
 
     # 정상 로그인
     response = client.post(

@@ -2,7 +2,7 @@ import sys
 import os
 from dotenv import load_dotenv
 import pytest
-from sqlmodel import SQLModel, Session, create_engine
+from sqlmodel import SQLModel, Session, create_engine, select
 from fastapi.testclient import TestClient
 from datetime import datetime
 
@@ -18,7 +18,7 @@ from models.text_quiz import TextQuizzes
 from models.text_conversation import TextConversations
 from models.study_record import StudyRecords
 from core.database import get_session
-from core.security import create_access_token
+from core.security import pwd_context, create_access_token
 from app import app
 
 # PostgreSQL 테스트 DB 설정
@@ -32,15 +32,15 @@ def test_db():
     session = Session(engine)
 
     try:
-        # 테이블 초기화 (필요 시 기존 데이터 삭제)
+        # 테이블 초기화
         SQLModel.metadata.drop_all(engine)
         SQLModel.metadata.create_all(engine)
 
         # 테스트 데이터 삽입
         user1 = Users(
-            username="existing_user",
+            username="user1",
             name="Test User",
-            password="hashedpass",
+            password=pwd_context.hash("securepass"),
             alarm_time="21:00:00",
             level=1,
             created_at=datetime.now(),
@@ -90,6 +90,7 @@ def test_db():
             vocab_id=vocab1.vocab_id,
             question="문맥 예제",
             answer="반응 예제",
+            created_at=datetime.now(),
         )
         session.add(vocab_conversation1)
         session.flush()
@@ -99,6 +100,7 @@ def test_db():
             text_id=text1.text_id,
             question="대화 문맥",
             answer="대화 반응",
+            created_at=datetime.now(),
         )
         session.add(text_conversation1)
         session.flush()
@@ -109,11 +111,17 @@ def test_db():
             text_quiz_id=text_quiz1.quiz_id,
             correct=[True],
             user_answer=[1],
+            created_at=datetime.now(),
         )
         session.add(study_record1)
         session.flush()
 
         session.commit()
+
+        # 삽입된 데이터 출력
+        print(
+            f"Test User ID: {user1.user_id}, Vocab ID: {vocab1.vocab_id}, VocabConversation ID: {vocab_conversation1.chat_id}"
+        )
 
     except Exception as e:
         session.rollback()
@@ -123,20 +131,18 @@ def test_db():
     session.close()
 
 
-# 테스트용 사용자 추가 및 반환
+# 테스트용 사용자 반환
 @pytest.fixture(scope="module")
 def test_user(test_db):
-    user = Users(username="testuser", name="Test User", password="hashedpass", level=1)
-    test_db.add(user)
-    test_db.commit()
+    user = test_db.exec(select(Users).where(Users.username == "user1")).first()
+    assert user is not None, "Test user should exist"
     return user
 
 
 # 테스트용 인증 헤더 생성
 @pytest.fixture(scope="module")
 def auth_headers(test_user):
-    token = create_access_token(data={"sub": test_user.user_id})
-    print(f"Generated Token for User {test_user.user_id}: {token}")
+    token = create_access_token(data={"sub": str(test_user.user_id)})
     return {"Authorization": f"Bearer {token}"}
 
 

@@ -39,7 +39,8 @@ def fetch_vocab_detail(
     # 2.1 단어가 존재하지 않을 시 예외 처리
     if not vocab_data:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Vocab not found"
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="해당 단어를 찾을 수 없습니다.",
         )
 
     # 3. 응답 데이터 생성
@@ -102,33 +103,37 @@ def fetch_vocab_chatbot_list(
     "/chatbot", response_model=VocabChatbotResponseDTO, status_code=status.HTTP_200_OK
 )
 async def request_vocab_chatbot_response(
-    vocab_id: int,
-    question: str,
+    request: VocabChatbotRequestDTO,
     token: str = Depends(oauth2_scheme),
     session: Session = Depends(get_session),
 ):
     # 1. 토큰 검증
     user_id = validate_access_token(token)["sub"]
 
-    # 2. 챗봇에게 요청할 단어
-    vocab = select(Vocabs).where(Vocabs.vocab_id == vocab_id)
+    # 2. 요청 데이터 추출
+    vocab_id = request.vocab_id
+    question = request.question
+
+    # 3. 챗봇에게 요청할 단어
+    statement = select(Vocabs).where(Vocabs.vocab_id == vocab_id)
+    vocab_data = session.exec(statement).first()
 
     try:
-        # 3. 단어, 사용자의 질문을 전달 및 응답 요청
+        # 4. 단어, 사용자의 질문을 전달 및 응답 요청
         async with httpx.AsyncClient() as client:
             ai_chat_response = await client.post(
                 AI_SERVER_URL + "/ai/vocab/chat",
-                json=VocabChatbotRequestDTO(vocab=vocab, question=question),
+                json={"vocab": vocab_data.vocab, "question": question},
             )
 
-        # 4. 응답 상태 코드 확인
+        # 5. 응답 상태 코드 확인
         if ai_chat_response.status_code != 200:
             raise HTTPException(
                 status_code=ai_chat_response.status_code,
                 detail=f"AI 서버 요청 실패: {ai_chat_response.text}",
             )
 
-        # 5. AI 응답 데이터 처리
+        # 6. AI 응답 데이터 처리
         ai_data = ai_chat_response.json()
         if ai_data["status"]["code"] != "20000":
             raise HTTPException(
@@ -136,29 +141,19 @@ async def request_vocab_chatbot_response(
                 detail=f"AI 서버 응답 오류: {ai_data['status']['message']}",
             )
 
-        # 6. 응답 데이터를 추출
+        # 7. 응답 데이터를 추출
         answer = ai_data["result"]["message"]["content"]
 
-        # 7. 응답 데이터를 데이터베이스에 저장하고 chat_id 가져오기
-        conversation = {
-            "user_id": user_id,
-            "vocab_id": vocab_id,
-            "question": question,
-            "answer": answer,
-        }
-        result = session.exec(
-            """
-            INSERT INTO vocab_conversations (user_id, vocab_id, question, answer)
-            VALUES (:user_id, :vocab_id, :question, :answer)
-            """,
-            conversation,
+        # 8. 응답 데이터를 데이터베이스에 저장하고 chat_id 가져오기
+        conversation = VocabConversations(
+            user_id=user_id, vocab_id=vocab_id, question=question, answer=answer
         )
-
+        session.add(conversation)
         session.commit()
-        chat_id = result.one()[0]  # 생성된 chat_id 가져오기
+        session.refresh(conversation)
 
-        # 8. 응답 데이터를 프론트엔드로 반환
-        return VocabChatbotResponseDTO(chat_id=chat_id, answer=answer)
+        # 9. 응답 반환
+        return VocabChatbotResponseDTO(chat_id=conversation.chat_id, answer=answer)
 
     except httpx.RequestError as exc:
         # AI 서버와의 요청 중 에러 발생 처리
