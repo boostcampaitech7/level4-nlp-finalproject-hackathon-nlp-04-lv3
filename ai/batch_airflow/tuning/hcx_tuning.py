@@ -38,6 +38,7 @@ def construct_instruction_dataset(data_file, save_file):
         writer.writeheader()
         writer.writerows(records)
 
+    # .jsonl 파일에 저장하기
     with open(f"{save_file}.jsonl", "w", encoding="utf-8") as file:
         for record in records:
             file.write(json.dumps(record, ensure_ascii=False) + "\n")

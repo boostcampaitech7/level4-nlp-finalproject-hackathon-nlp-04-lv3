@@ -1,19 +1,25 @@
 import json
-from openai import OpenAI
+from llm_api import OpenAIApi, HcxApi
 
 
 class FeedbackGenerator:
 
-    def __init__(self, api_key, diaries, base_url=None):
+    def __init__(self, api_keys, model_name, diaries):
 
-        self.api = OpenAIApi(api_key, base_url)
+        if "deepseek" in model_name:
+            self.api = OpenAIApi(api_keys["deepseek"], base_url="https://api.deepseek.com")
+        elif "o1" in model_name or "gpt" in model_name:
+            self.api = OpenAIApi(api_keys["openai"])
+        else:
+            self.api = HcxApi(api_keys["naver"])
+
+        self.model_name = model_name
         self.diaries = diaries
-        self.running_batch = dict()
 
-    def test(self, instruction, idx, model_name, structured_output):
+    def test(self, instruction, idx, structured_output=None):
 
         # 1. 프롬프트 생성
-        if model_name == "o1-mini" or model_name == "o1":
+        if "o1" in self.model_name:
             prompt = [
                 {"role": "assistant", "content": instruction},
                 {
@@ -33,44 +39,18 @@ class FeedbackGenerator:
         print(prompt)
 
         # 2. API 호출
-        response = self.api.call(prompt, model_name, structured_output)
-        return prompt, response
+        feedback = self.api.call(prompt, self.model_name, structured_output)
+        return prompt, feedback
 
-    def run(self, save_file, instruction, model_name, start_idx, end_idx):
+    def run(self, save_file, instruction, start_idx, end_idx):
 
         for index, diary in self.diaries.iterrows():
             if start_idx > index:
                 continue
             if end_idx < index:
                 break
-            prompt, response = self.test(instruction, index, model_name, None)
+            prompt, feedback = self.test(instruction, index)
 
-            new_record = {"id": diary["id"], "prompt": prompt, "feedback": response}
+            new_record = {"id": diary["id"], "model": self.model_name, "prompt": prompt, "feedback": feedback}
             with open(save_file, "a", encoding="utf-8") as file:
                 file.write(json.dumps(new_record, ensure_ascii=False) + "\n")
-
-
-class OpenAIApi:
-
-    def __init__(self, api_key, base_url):
-        super().__init__()
-        if not base_url:
-            self.client = OpenAI(api_key=api_key)
-        else:
-            self.client = OpenAI(api_key=api_key, base_url="https://api.deepseek.com")
-
-    def call(self, prompt, model_name, structured_output=None):
-
-        response = self.client.beta.chat.completions.parse(
-            model=model_name,
-            messages=prompt,
-            **({"response_format": structured_output} if structured_output else {}),
-        )
-        try:
-            response_data = json.loads(
-                response.choices[0].to_dict()["message"]["content"]
-            )
-        except:
-            response_data = response.choices[0].to_dict()["message"]["content"]
-
-        return response_data
