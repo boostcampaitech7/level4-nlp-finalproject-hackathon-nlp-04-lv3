@@ -55,6 +55,26 @@ function App() {
               />
             </Route>
 
+            {/* 2. vocab */}
+            <Route path="vocab">
+              <Route
+                path=":vocab_id/quiz/:level/result"
+                element={<Pages.VocabQuizResultPage />}
+              />
+              <Route
+                path=":vocab_id/quiz/:level"
+                element={<Pages.VocabQuizPage />}
+              />
+              <Route
+                path=":vocab_id/quiz"
+                element={<Pages.QuizLevelSelectionPage section="vocab" />}
+              />
+              <Route path=":vocab_id" element={<Pages.VocabDetailPage />} />
+              <Route
+                path=":vocab_id/quiz/:level"
+                element={<Pages.VocabQuizPage />}
+              />
+            </Route>
             {/* 인증이 필요한 라우트들 */}
             <Route
               path="/*"
@@ -81,22 +101,6 @@ function App() {
                 <Route path="add" element={<Pages.TextAddPage />} />
               </Route>
 
-              {/* 2. vocab */}
-              <Route path="vocab">
-                <Route
-                  path=":vocab_id/quiz/:level/result"
-                  element={<Pages.VocabQuizResultPage />}
-                />
-                <Route
-                  path=":vocab_id/quiz/:level"
-                  element={<Pages.VocabQuizPage />}
-                />
-                <Route
-                  path=":vocab_id/quiz"
-                  element={<Pages.QuizLevelSelectionPage section="vocab" />}
-                />
-                <Route path=":vocab_id" element={<Pages.VocabDetailPage />} />
-              </Route>
 
               {/* 3. diary */}
               <Route path="diary">

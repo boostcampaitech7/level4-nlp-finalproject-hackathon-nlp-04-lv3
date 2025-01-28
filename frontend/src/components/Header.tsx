@@ -1,9 +1,8 @@
 import { FaRegBell, FaBars } from 'react-icons/fa6'
 import Button from './Button'
-import { Link, useNavigate } from 'react-router'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useSidebarStore } from '../stores/sidebarStore'
 import useIsAuthenticated from '../hooks/useIsAuthenticated'
-import { useLocation } from 'react-router'
 
 const Header = () => {
   const { openSidebar } = useSidebarStore()
