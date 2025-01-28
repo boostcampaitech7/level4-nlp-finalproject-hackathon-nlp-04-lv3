@@ -57,10 +57,14 @@ def fetch_record_by_page(
     today = datetime.now().date()
     review_date = today - timedelta(days=7)
 
-    statement = select(StudyRecords).where(
-        StudyRecords.user_id == user_id,
-        cast(StudyRecords.created_at, Date) == review_date,
-        StudyRecords.vocab_quiz_id.isnot(None),  # None 비교 수정
+    statement = (
+        select(StudyRecords)
+        .where(
+            StudyRecords.user_id == user_id,
+            cast(StudyRecords.created_at, Date) == review_date,
+            StudyRecords.vocab_quiz_id.isnot(None),  # None 비교 수정
+        )
+        .limit(3)
     )
     study_records = session.exec(statement).all()
 
