@@ -6,6 +6,7 @@ interface ButtonProps {
   color?: 'purple' | 'grey' | 'white' | 'black' | 'orange' | 'purple2'
   showFrontIcon?: boolean
   showBackIcon?: boolean
+  alignCenter?: boolean
   onClick: React.MouseEventHandler<HTMLButtonElement>
   plusClasses?: string
 }
@@ -16,15 +17,15 @@ const Button = ({
   color = 'purple',
   showFrontIcon = false,
   showBackIcon = false,
+  alignCenter = true,
   onClick,
   plusClasses = '',
 }: ButtonProps) => {
-  const baseStyles =
-    'inline-flex items-center content-center justify-center transition-all duration-200 px-[10px] py-[5px] gap-x-[3px] m-0 select-none'
+  const baseStyles = `inline-flex items-center content-center ${alignCenter ? 'justify-center' : 'justify-start'} transition-all duration-200 px-[10px] py-[5px] gap-x-[3px] m-0 select-none`
 
   const sizeStyles = {
-    xsmall: 'button-s min-w-[106px] h-[25px] rounded-[12px]',
-    small: 'button-m min-w-[106px] h-[39px] rounded-[16px]',
+    xsmall: 'button-s min-w-[106px] min-h-[25px] rounded-[12px]',
+    small: 'button-m min-w-[106px] min-h-[39px] rounded-[16px]',
     medium: 'title-s h-[64px] rounded-[20px]',
     large: 'button-l w-[510px] h-[79px] rounded-[20px]',
   }
@@ -58,7 +59,7 @@ const Button = ({
     <button className={buttonStyles} onClick={onClick}>
       {showBackIcon && <FaChevronLeft size={iconSize[size]} />}
       <span className="w-[3px]"></span>
-      <div className={`${size === 'large' ? 'flex-1' : 'w-fit'} text-center`}>
+      <div className={`${size === 'large' ? 'flex-1' : 'w-fit'} text-start`}>
         {text}
       </div>
       <span className="w-[3px]"></span>
