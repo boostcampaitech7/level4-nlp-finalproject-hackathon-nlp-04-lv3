@@ -85,11 +85,11 @@ function App() {
               {/* 1. text */}
               <Route path="text">
                 <Route
-                  path=":text_id/quiz/:level/result"
+                  path=":text_id/quiz/:quiz_id/result"
                   element={<Pages.TextQuizResultPage />}
                 />
                 <Route
-                  path=":text_id/quiz/:level"
+                  path=":text_id/quiz/:quiz_id"
                   element={<Pages.TextQuizPage />}
                 />
                 <Route
