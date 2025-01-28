@@ -12,8 +12,7 @@ import { useSidebarStore } from '../stores/sidebarStore'
 // import useIsAuthenticated from '../hooks/useIsAuthenticated'
 import { useAuthStore } from '../stores/authStore'
 const Sidebar = () => {
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
-  const setIsAuthenticated = useAuthStore((state) => state.setIsAuthenticated)
+  const { isAuthenticated, logout } = useAuthStore()
   const { isSidebarOpen, closeSidebar } = useSidebarStore()
   const navigate = useNavigate()
 
@@ -24,7 +23,7 @@ const Sidebar = () => {
   }
 
   const handleLogout = () => {
-    setIsAuthenticated(false)
+    logout()
     closeSidebar()
     navigate('/auth/login')
   }

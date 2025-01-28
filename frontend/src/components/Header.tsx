@@ -3,13 +3,13 @@ import Button from './Button'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useSidebarStore } from '../stores/sidebarStore'
 import { useAuthStore } from '../stores/authStore'
-import { useMemo } from 'react'
 
 const Header = () => {
   const { openSidebar } = useSidebarStore()
   const navigate = useNavigate()
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
+  const { isAuthenticated } = useAuthStore()
   const location = useLocation()
+
 
   const handleClickUserButton = () => {
     if (isAuthenticated) {

@@ -8,7 +8,7 @@ import { useAuthStore } from '../../../stores/authStore'
 
 const LoginPage = () => {
   const navigate = useNavigate()
-  const setIsAuthenticated = useAuthStore((state) => state.setIsAuthenticated)
+  const setAuth = useAuthStore((state) => state.setAuth)
   const [showPassword, setShowPassword] = useState(false)
   const [credentials, setCredentials] = useState({
     username: '',
@@ -33,7 +33,9 @@ const LoginPage = () => {
     
     // 더미 로그인 검증
     if (credentials.username === 'admin' && credentials.password === 'admin') {
-      setIsAuthenticated(true)
+      // 더미 토큰 생성 (실제로는 서버에서 받아야 함)
+      const dummyToken = 'dummy_token_' + Date.now()
+      setAuth(dummyToken)
       navigate('/')
     } else {
       setError('잘못된 아이디 또는 비밀번호입니다')
