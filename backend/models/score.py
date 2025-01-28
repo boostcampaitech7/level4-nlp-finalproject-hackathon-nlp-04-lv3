@@ -23,7 +23,7 @@ CREATE TABLE scores (
 class Scores(SQLModel, table=True):
     score_id: int | None = Field(default=None, primary_key=True)
     user_id: int = Field(foreign_key="users.user_id", nullable=False)
-    level: int = Field(sa_column=Column(INTEGER, nullable=True))
+    level: int = Field(sa_column=Column(INTEGER, nullable=False))
     tier: int = Field(default=0, sa_column=Column(INTEGER, nullable=False))
     rating: int = Field(default=0, sa_column=Column(INTEGER, nullable=False))
     text_cnt: int = Field(default=0, sa_column=Column(INTEGER, nullable=False))

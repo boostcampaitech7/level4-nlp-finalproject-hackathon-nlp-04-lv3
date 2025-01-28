@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List, Tuple
 from datetime import date
 
 
@@ -15,12 +15,12 @@ class DiaryBookmarkDTO(BaseModel):
 class DiaryDayDTO(BaseModel):
     diary_id: int
     day: date
-    status: bool
+    status: int
 
 
 class DiaryExtendedDTO(BaseModel):
     diary_id: int
     text: str
-    feedback: Optional[str] = None
+    feedback: Optional[List[Tuple[int, int, str, str]]] = None
     review: Optional[str] = None
     created_at: date
