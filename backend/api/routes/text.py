@@ -37,11 +37,9 @@ def get_text_list(
 
     # 3. 총 페이지 수 계산
     total_count = None
-    include_total_count = False
-    include_total_count = True if page_num == 1 else False
-    if include_total_count:
-        total_count = session.exec(select(func.count(Texts.text_id))).scalar()
-        total_page_count = ceil(total_count / 16)
+    if page_num == 1:
+        total_count = session.exec(select(func.count(Texts.text_id))).one()
+        total_page_count = max(ceil(total_count / 16), 1)
 
     # 4. 응답 데이터 생성
     return TextListDTO(
@@ -54,7 +52,7 @@ def get_text_list(
             )
             for text in text_list
         ],
-        total_page_count=total_page_count if include_total_count else None,
+        total_page_count=total_page_count,
     )
 
 
@@ -94,27 +92,38 @@ def get_text_item(
     status_code=status.HTTP_200_OK,
 )
 async def request_text_account(
-    text_id: int, focused: str, token: str = Depends(oauth2_scheme)
+    request: TextExplainRequestDTO,
+    token: str = Depends(oauth2_scheme),
+    session: Session = Depends(get_session),
 ):
     # 1. 토큰 검증
     validate_access_token(token)
 
+    # 2. 요청 데이터 추출
+    text_id = request.text_id
+    focused = request.focused
+
+    # 3. 챗봇에게 요청할 긴 글
+    statement = select(Texts).where(Texts.text_id == text_id)
+    text_data = session.exec(statement).first()
+    request_text = " ".join(text_data.content)
+
     try:
-        # 2. 드래그한 부분을 전달하여 설명 요청
+        # 4. 드래그한 부분을 전달하여 설명 요청
         async with httpx.AsyncClient() as client:
             ai_explain_response = await client.post(
                 AI_SERVER_URL + "/ai/text/explain",
-                json=TextExplainRequestDTO(text_id=text_id, focused=focused),
+                json={"text": request_text, "focused": focused},
             )
 
-        # 3. 응답 상태 코드 확인
+        # 5. 응답 상태 코드 확인
         if ai_explain_response.status_code != 200:
             raise HTTPException(
                 status_code=ai_explain_response.status_code,
                 detail=f"AI 서버 요청 실패: {ai_explain_response.text}",
             )
 
-        # 4. AI 응답 데이터 처리
+        # 6. AI 응답 데이터 처리
         ai_data = ai_explain_response.json()
         if ai_data["status"]["code"] != "20000":
             raise HTTPException(
@@ -122,10 +131,11 @@ async def request_text_account(
                 detail=f"AI 서버 응답 오류: {ai_data['status']['message']}",
             )
 
-        # 5. 결과를 프론트엔드에 전달할 형식으로 변환
-        return TextExplainResponseDTO(
-            text_id=text_id, explain=ai_data["result"]["message"]["content"]
-        )
+        # 7. 응답 데이터를 추출
+        explain = ai_data["result"]["message"]["content"]
+
+        # 8. 결과를 프론트엔드에 전달할 형식으로 변환
+        return TextExplainResponseDTO(text_id=text_id, explain=explain)
 
     except httpx.RequestError as exc:
         # AI 서버와의 요청 중 에러 발생 처리
@@ -183,38 +193,39 @@ def get_chatbot_list(
     "/chatbot", response_model=TextChatbotResponseDTO, status_code=status.HTTP_200_OK
 )
 async def request_text_chatbot_response(
-    text_id: int,
-    focused: str,
-    question: str,
+    request: TextChatbotRequestDTO,
     token: str = Depends(oauth2_scheme),
     session: Session = Depends(get_session),
 ):
     # 1. 토큰 검증
     user_id = validate_access_token(token)["sub"]
 
-    # 2. 해당 text의 content 추출
+    # 2. 요청 데이터 추출
+    text_id = request.text_id
+    focused = request.focused
+    question = request.question
+
+    # 3. 챗봇에게 요청할 긴 글
     statement = select(Texts).where(Texts.text_id == text_id)
-    text = session.exec(statement).first()
-    request_text = " ".join(text)
+    text_data = session.exec(statement).first()
+    request_text = " ".join(text_data.content)
 
     try:
-        # 3. 드래그한 부분, text의 content, 사용자의 질문을 전달하여 챗봇에 응답 요청
+        # 4. 드래그한 부분, text의 content, 사용자의 질문을 전달하여 챗봇에 응답 요청
         async with httpx.AsyncClient() as client:
             ai_chat_response = await client.post(
                 AI_SERVER_URL + "/ai/text/chat",
-                json=TextChatbotRequestDTO(
-                    text=request_text, focused=focused, question=question
-                ),
+                json={"text": request_text, "focused": focused, "question": question},
             )
 
-        # 4. 응답 상태 코드 확인
+        # 5. 응답 상태 코드 확인
         if ai_chat_response.status_code != 200:
             raise HTTPException(
                 status_code=ai_chat_response.status_code,
                 detail=f"AI 서버 요청 실패: {ai_chat_response.text}",
             )
 
-        # 5. AI 응답 데이터 처리
+        # 6. AI 응답 데이터 처리
         ai_data = ai_chat_response.json()
         if ai_data["status"]["code"] != "20000":
             raise HTTPException(
@@ -222,29 +233,19 @@ async def request_text_chatbot_response(
                 detail=f"AI 서버 응답 오류: {ai_data['status']['message']}",
             )
 
-        # 6. 응답 데이터를 추출
+        # 7. 응답 데이터를 추출
         answer = ai_data["result"]["message"]["content"]
 
-        # 7. 응답 데이터를 데이터베이스에 저장하고 chat_id 가져오기
-        conversation = {
-            "user_id": user_id,
-            "text_id": text_id,
-            "question": question,
-            "answer": answer,
-        }
-        result = session.exec(
-            """
-            INSERT INTO text_conversations (user_id, text_id, question, answer)
-            VALUES (:user_id, :text_id, :question, :answer)
-            """,
-            conversation,
+        # 8. 응답 데이터를 데이터베이스에 저장하고 chat_id 가져오기
+        conversation = TextConversations(
+            user_id=user_id, text_id=text_id, question=question, answer=answer
         )
-
+        session.add(conversation)
         session.commit()
-        chat_id = result.one()[0]  # 생성된 chat_id 가져오기
+        session.refresh(conversation)
 
-        # 8. 응답 데이터를 프론트엔드로 반환
-        return TextChatbotResponseDTO(chat_id=chat_id, answer=answer)
+        # 9. 응답 반환
+        return TextChatbotResponseDTO(chat_id=conversation.chat_id, answer=answer)
 
     except httpx.RequestError as exc:
         # AI 서버와의 요청 중 에러 발생 처리

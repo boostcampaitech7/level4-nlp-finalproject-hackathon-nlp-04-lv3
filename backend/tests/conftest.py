@@ -59,7 +59,9 @@ def test_db():
         session.add(vocab1)
         session.flush()
 
-        text1 = Texts(title="연금술사", content=["내용"], type=False, category="소설")
+        text1 = Texts(
+            title="연금술사", content=["내용1", "내용2"], type=False, category="소설"
+        )
         session.add(text1)
         session.flush()
 

@@ -13,7 +13,7 @@ class TextItemDTO(BaseModel):
 class TextListDTO(BaseModel):
     page_num: int
     texts: List[TextItemDTO] = Field(default_factory=list)
-    total_count: Optional[int] = Field(default=None)
+    total_page_count: Optional[int] = Field(default=None)
 
 
 class TextExplainRequestDTO(BaseModel):
@@ -40,7 +40,7 @@ class TextChatbotListDTO(BaseModel):
 
 
 class TextChatbotRequestDTO(BaseModel):
-    text: str
+    text_id: int
     focused: str
     question: str
 
