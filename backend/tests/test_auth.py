@@ -4,18 +4,14 @@ from models.user import Users
 
 
 # 아이디 중복 체크 테스트
-def test_check_username(client, test_db):
+def test_check_username(client, test_user):
     """
     1. 이미 존재하는 유저명을 요청하면 {"is_available": False} 응답을 받아야 한다.
     2. 존재하지 않는 유저명을 요청하면 {"is_available": True} 응답을 받아야 한다.
     """
-    user = Users(username="existing_user", name="Test User", password="hashedpass")
-    test_db.add(user)
-    test_db.commit()
-
     # 기존 유저 체크
     response = client.post(
-        "/api/auth/check_username", params={"username": "existing_user"}
+        "/api/auth/check_username", params={"username": test_user.username}
     )
     assert response.status_code == 200
     assert response.json() == {"is_available": False}
@@ -33,8 +29,8 @@ def test_signup(client, test_db):
     2. 동일한 username을 다시 회원가입하면 409 Conflict 응답이 와야 한다.
     """
     new_user_data = {
-        "username": "testuser",
-        "name": "Test User",
+        "username": "testuser_signup",
+        "name": "Test User Signup",
         "password": "securepass",
         "level": 1,
     }
@@ -45,9 +41,11 @@ def test_signup(client, test_db):
     assert response.json() == {"message": "User created successfully"}
 
     # 회원가입 직후 DB에서 데이터 확인
-    user = test_db.exec(select(Users).where(Users.username == "testuser")).first()
+    user = test_db.exec(
+        select(Users).where(Users.username == "testuser_signup")
+    ).first()
     assert user is not None
-    assert user.username == "testuser"
+    assert user.username == "testuser_signup"
 
     # 중복 회원가입 시도
     response = client.post("/api/auth/signup", json=new_user_data)
@@ -56,7 +54,7 @@ def test_signup(client, test_db):
 
 
 # 로그인 테스트
-def test_login(client, test_db):
+def test_login(client, test_user, test_db):
     """
     1. 올바른 username, password 입력 시 로그인 성공 (200 OK)
     2. 잘못된 password 입력 시 401 Unauthorized 응답이 와야 한다.
@@ -65,21 +63,22 @@ def test_login(client, test_db):
     password = "securepass"
     hashed_password = pwd_context.hash(password)
 
-    # 테스트용 사용자 추가
-    user = Users(username="testuser", name="Test User", password=hashed_password)
-    test_db.add(user)
+    # 기존 test_user의 비밀번호를 설정
+    test_user.password = hashed_password
+    test_db.add(test_user)
     test_db.commit()
 
     # 정상 로그인
     response = client.post(
-        "/api/auth/login", data={"username": "testuser", "password": password}
+        "/api/auth/login", data={"username": test_user.username, "password": password}
     )
     assert response.status_code == 200
     assert "access_token" in response.json()
 
     # 잘못된 비밀번호
     response = client.post(
-        "/api/auth/login", data={"username": "testuser", "password": "wrongpass"}
+        "/api/auth/login",
+        data={"username": test_user.username, "password": "wrongpass"},
     )
     assert response.status_code == 401
     assert response.json() == {"detail": "Password mismatch"}
@@ -92,16 +91,32 @@ def test_login(client, test_db):
     assert response.json() == {"detail": "User doesn't exist"}
 
 
-# 로그아웃 테스트
-def test_logout(client):
-    """
-    1. 유효한 토큰으로 로그아웃 요청 시 정상 응답 (200 OK)
-    2. 로그아웃 요청 후 access_token을 삭제해야 한다.
-    """
-    access_token = create_access_token(data={"sub": "testuser"})
-    headers = {"Authorization": f"Bearer {access_token}"}
+from core.security import validate_access_token
+from sqlmodel import select
 
-    # 정상 로그아웃
-    response = client.get("/api/auth/logout", headers=headers)
+
+def test_logout(client, auth_headers, test_db):
+    """
+    1. 유효한 토큰으로 로그아웃 요청 시 정상 응답 (200 OK).
+    2. 로그아웃 요청 후 access_token을 삭제해야 한다.
+    3. 현재 로그인된 사용자의 username을 확인한다.
+    """
+    # 토큰에서 사용자 ID(sub) 추출
+    token = auth_headers["Authorization"].split(" ")[
+        1
+    ]  # "Bearer <token>"에서 토큰만 분리
+    decoded_token = validate_access_token(token)
+    user_id = decoded_token.get("sub")
+
+    # 데이터베이스에서 사용자 정보 조회
+    statement = select(Users).where(Users.user_id == user_id)
+    user = test_db.exec(statement).first()
+
+    # 현재 로그인된 사용자의 username 확인
+    assert user is not None
+    print(f"현재 로그인된 사용자: {user.username}")
+
+    # 정상 로그아웃 요청
+    response = client.get("/api/auth/logout", headers=auth_headers)
     assert response.status_code == 200
     assert response.json() == {"message": "User logged out successfully"}

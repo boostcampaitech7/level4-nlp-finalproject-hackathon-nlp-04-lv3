@@ -18,6 +18,7 @@ from models.text_quiz import TextQuizzes
 from models.text_conversation import TextConversations
 from models.study_record import StudyRecords
 from core.database import get_session
+from core.security import create_access_token
 from app import app
 
 # PostgreSQL 테스트 DB 설정
@@ -41,6 +42,7 @@ def test_db():
             name="Test User",
             password="hashedpass",
             alarm_time="21:00:00",
+            level=1,
             created_at=datetime.now(),
         )
         session.add(user1)
@@ -121,6 +123,23 @@ def test_db():
     session.close()
 
 
+# 테스트용 사용자 추가 및 반환
+@pytest.fixture(scope="module")
+def test_user(test_db):
+    user = Users(username="testuser", name="Test User", password="hashedpass", level=1)
+    test_db.add(user)
+    test_db.commit()
+    return user
+
+
+# 테스트용 인증 헤더 생성
+@pytest.fixture(scope="module")
+def auth_headers(test_user):
+    token = create_access_token(data={"sub": test_user.user_id})
+    print(f"Generated Token for User {test_user.user_id}: {token}")
+    return {"Authorization": f"Bearer {token}"}
+
+
 # FastAPI 클라이언트 및 DB 세션 오버라이드
 @pytest.fixture(scope="function")
 def client(test_db):
@@ -128,4 +147,6 @@ def client(test_db):
         yield test_db
 
     app.dependency_overrides[get_session] = override_get_session
-    return TestClient(app)
+    client = TestClient(app)
+    yield client
+    client.app.dependency_overrides.clear()

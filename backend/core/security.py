@@ -15,6 +15,11 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
 
 def create_access_token(data: dict, expires_delta: timedelta = None):
     to_encode = data.copy()
+
+    # 'sub' 값을 문자열로 변환
+    if "sub" in to_encode:
+        to_encode["sub"] = str(to_encode["sub"])
+
     expire = datetime.utcnow() + (
         expires_delta or timedelta(minutes=config.expire_minutes)
     )
