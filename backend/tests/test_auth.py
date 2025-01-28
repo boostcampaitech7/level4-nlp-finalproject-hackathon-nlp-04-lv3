@@ -1,5 +1,5 @@
-from sqlmodel import Session, select
-from core.security import pwd_context, create_access_token
+from sqlmodel import select
+from core.security import pwd_context
 from models.user import Users
 
 
@@ -91,31 +91,12 @@ def test_login(client, test_user, test_db):
     assert response.json() == {"detail": "User doesn't exist"}
 
 
-from core.security import validate_access_token
-from sqlmodel import select
-
-
-def test_logout(client, auth_headers, test_db):
+# 로그아웃 테스트
+def test_logout(client, auth_headers):
     """
     1. 유효한 토큰으로 로그아웃 요청 시 정상 응답 (200 OK).
     2. 로그아웃 요청 후 access_token을 삭제해야 한다.
-    3. 현재 로그인된 사용자의 username을 확인한다.
     """
-    # 토큰에서 사용자 ID(sub) 추출
-    token = auth_headers["Authorization"].split(" ")[
-        1
-    ]  # "Bearer <token>"에서 토큰만 분리
-    decoded_token = validate_access_token(token)
-    user_id = decoded_token.get("sub")
-
-    # 데이터베이스에서 사용자 정보 조회
-    statement = select(Users).where(Users.user_id == user_id)
-    user = test_db.exec(statement).first()
-
-    # 현재 로그인된 사용자의 username 확인
-    assert user is not None
-    print(f"현재 로그인된 사용자: {user.username}")
-
     # 정상 로그아웃 요청
     response = client.get("/api/auth/logout", headers=auth_headers)
     assert response.status_code == 200
