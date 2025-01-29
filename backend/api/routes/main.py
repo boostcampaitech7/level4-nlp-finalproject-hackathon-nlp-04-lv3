@@ -35,7 +35,7 @@ def get_random_texts(
             text_id=text.text_id,
             title=text.title,
             category=text.category,
-            content=text.content[0],
+            content=[text.content[0]],
         )
         for text in texts
     ]

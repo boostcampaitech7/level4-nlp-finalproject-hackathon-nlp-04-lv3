@@ -58,7 +58,7 @@ def test_db():
             dict_mean="사전적인 뜻",
             easy_explain=["난이도 1"],
             correct_example=["예문 1"],
-            incorrect_example=["틀린 예문 1"],
+            incorrect_example=["틀린 예문 1", "틀린 이유"],
         )
         session.add(vocab1)
         session.flush()
@@ -67,6 +67,27 @@ def test_db():
             title="연금술사", content=["내용1", "내용2"], type=False, category="소설"
         )
         session.add(text1)
+        session.flush()
+
+        text2 = Texts(
+            title="이방인", content=["내용1", "내용2"], type=False, category="소설"
+        )
+        session.add(text2)
+        session.flush()
+
+        text3 = Texts(
+            title="가면산장살인사건",
+            content=["내용1", "내용2"],
+            type=False,
+            category="소설",
+        )
+        session.add(text3)
+        session.flush()
+
+        text4 = Texts(
+            title="윤동주 시집", content=["내용1", "내용2"], type=False, category="시"
+        )
+        session.add(text4)
         session.flush()
 
         vocab_quiz1 = VocabQuizzes(

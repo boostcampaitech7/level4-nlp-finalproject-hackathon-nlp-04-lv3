@@ -1,6 +1,5 @@
 from models.vocab_quiz import VocabQuizzes
 from models.text_quiz import TextQuizzes
-from models.study_record import StudyRecords
 from sqlmodel import select
 
 
@@ -123,6 +122,6 @@ def test_fetch_text_level(client, auth_headers, test_db):
     assert response.status_code == 200
     data = response.json()
 
-    # ✅ 새 퀴즈가 추가되었지만 기존에 풀이한 적 없으면 해당 레벨은 False 유지
+    # 새 퀴즈가 추가되었지만 기존에 풀이한 적 없으면 해당 레벨은 False 유지
     level_3_data = next(item for item in data["level_data"] if item["level"] == 3)
     assert level_3_data["is_solved"] is False
