@@ -6,7 +6,7 @@ from models.vocab_quiz import VocabQuizzes
 
 
 # 오늘의 글 조회 테스트
-def test_get_random_texts(client, auth_headers, test_db):
+def test_get_random_texts(client, auth_headers):
     """
     1. 정상 요청 시 최대 3개의 텍스트 데이터가 반환되어야 한다. (200 OK)
     """
