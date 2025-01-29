@@ -5,7 +5,7 @@ from datetime import datetime
 
 from models.vocab_quiz import VocabQuizzes
 from models.study_record import StudyRecords
-from schemas.vocab_quiz import VocabQuizDTO, VocabQuizResponseDTO, VocabQuizSolutionDTO
+from schemas.vocab_quiz import *
 from core.database import get_session
 from core.security import validate_access_token, oauth2_scheme
 from services.level import update_level
@@ -45,20 +45,23 @@ def fetch_vocab_quiz(
     "/solve", response_model=VocabQuizResponseDTO, status_code=status.HTTP_200_OK
 )
 def submit_vocab_quiz(
-    quiz_id: int,
-    user_answer: List[int],
+    request: VocabQuizRequestDTO,
     token: str = Depends(oauth2_scheme),
     session: Session = Depends(get_session),
 ):
     # 1. 토큰 검증 및 user_id 추출
     user_id = validate_access_token(token)["sub"]
 
-    # 2. 퀴즈 정보
+    # 2. 요청 데이터 추출
+    quiz_id = request.quiz_id
+    user_answer = request.user_answer
+
+    # 3. 퀴즈 추출
     quiz = session.exec(
         select(VocabQuizzes).where(VocabQuizzes.quiz_id == quiz_id)
     ).first()
 
-    # 2.1 단어 퀴즈 데이터가 없을 경우 예외 처리
+    # 3.1 단어 퀴즈 데이터가 없을 경우 예외 처리
     if not quiz:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -83,7 +86,7 @@ def submit_vocab_quiz(
     session.flush()
 
     # 5. 사용자 level 계산 및 Scores 테이블에 반영
-    rating, level_message = update_level(session, user_id, correct)
+    rating, level_message = update_level(user_id, session, correct)
     session.commit()
 
     # 6. 응답 데이터 생성
@@ -118,6 +121,14 @@ def fetch_vocab_quiz_solution(
         select(VocabQuizzes).where(VocabQuizzes.quiz_id == quiz_id)
     ).first()
 
+    # 2.1 단어 퀴즈 데이터가 없을 경우 예외 처리
+    if not quiz:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="해당 퀴즈를 찾을 수 없습니다.",
+        )
+
+    # 3. 사용자가 푼 퀴즈 기록 조회
     study_record = session.exec(
         select(StudyRecords)
         .where(
@@ -126,7 +137,7 @@ def fetch_vocab_quiz_solution(
         .order_by(desc(StudyRecords.created_at))  # 최근 푼 퀴즈부터 정렬
     ).first()
 
-    # 2.1 퀴즈 기록이 없으면 예외 처리
+    # 3.1 퀴즈 기록이 없으면 예외 처리
     if not study_record:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

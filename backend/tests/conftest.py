@@ -10,6 +10,7 @@ from datetime import datetime
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from models.user import Users
+from models.score import Scores
 from models.vocab import Vocabs
 from models.vocab_quiz import VocabQuizzes
 from models.vocab_conversation import VocabConversations
@@ -42,10 +43,13 @@ def test_db():
             name="Test User",
             password=pwd_context.hash("securepass"),
             alarm_time="21:00:00",
-            level=1,
             created_at=datetime.now(),
         )
         session.add(user1)
+        session.flush()
+
+        score1 = Scores(user_id=user1.user_id, level=1)
+        session.add(score1)
         session.flush()
 
         vocab1 = Vocabs(
@@ -68,10 +72,27 @@ def test_db():
         vocab_quiz1 = VocabQuizzes(
             vocab_id=vocab1.vocab_id,
             level=1,
-            question=["문제 1"],
-            answer=[1],
-            answer_explain=["이유"],
-            options=["보기 1"],
+            question=["문제 1", "문제 2", "문제 3", "문제 4"],
+            answer=[1, 1, 2, 4],
+            answer_explain=["이유 1", "이유 2", "이유 3", "이유 4"],
+            options=[
+                "보기 1-1",
+                "보기 1-2",
+                "보기 1-3",
+                "보기 1-4",
+                "보기 2-1",
+                "보기 2-2",
+                "보기 2-3",
+                "보기 2-4",
+                "보기 3-1",
+                "보기 3-2",
+                "보기 3-3",
+                "보기 3-4",
+                "보기 4-1",
+                "보기 4-2",
+                "보기 4-3",
+                "보기 4-4",
+            ],
         )
         session.add(vocab_quiz1)
         session.flush()
