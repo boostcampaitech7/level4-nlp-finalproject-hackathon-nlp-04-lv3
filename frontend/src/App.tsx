@@ -59,7 +59,7 @@ function App() {
                 }
               />
               <Route
-                path="comprehension"
+                path="signup/survey"
                 element={
                   isAuthenticated ? (
                     <Navigate to="/" replace />
