@@ -9,6 +9,7 @@ interface ButtonProps {
   onClick: React.MouseEventHandler<HTMLButtonElement>
   plusClasses?: string
   disabled?: boolean
+  type?: 'button' | 'submit' | 'reset'
 }
 
 const Button = ({
@@ -20,6 +21,7 @@ const Button = ({
   onClick,
   plusClasses = '',
   disabled = false,
+  type = 'button',
 }: ButtonProps) => {
   const baseStyles =
     'inline-flex items-center content-center justify-center transition-all duration-200 px-[10px] py-[5px] gap-x-[3px] m-0 select-none'
@@ -57,7 +59,7 @@ const Button = ({
   const buttonStyles = `${baseStyles} ${sizeStyles[size]} ${colorStyles[color]} ${hoverColorStyles[color]} ${plusClasses} ${disabled ? 'cursor-not-allowed opacity-50' : ''}`
 
   return (
-    <button className={buttonStyles} onClick={onClick} disabled={disabled}>
+    <button className={buttonStyles} onClick={onClick} disabled={disabled} type={type}>
       {showBackIcon && <FaChevronLeft size={iconSize[size]} />}
       <span className="w-[3px]"></span>
       <div className={`${size === 'large' ? 'flex-1' : 'w-fit'} text-center`}>
