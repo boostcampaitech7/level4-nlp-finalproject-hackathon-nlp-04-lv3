@@ -19,7 +19,6 @@ class OpenAIApi:
             response_data = json.loads(
                 response.choices[0].to_dict()["message"]["content"]
             )
-            reasoning_content = response.choices[0].message.reasoning_content
         except:
             response_data = response.choices[0].to_dict()["message"]["content"]
 

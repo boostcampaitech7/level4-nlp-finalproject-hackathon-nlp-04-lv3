@@ -241,12 +241,12 @@ if __name__ == "__main__":
         "deepseek": os.getenv("DEEPSEEK_API_KEY"),
         "naver": os.getenv("NAVER_API_KEY"),
     }
-    diary_file = "/data/ephemeral/home/gj/level4-nlp-finalproject-hackathon-nlp-04-lv3/ai/batch_airflow/tuning/data/test_diary.csv"
-    feedback_save_file = "/data/ephemeral/home/gj/level4-nlp-finalproject-hackathon-nlp-04-lv3/ai/batch_airflow/tuning/data/feedback.jsonl"
-    feedback_file1 = "/data/ephemeral/home/gj/level4-nlp-finalproject-hackathon-nlp-04-lv3/ai/batch_airflow/tuning/data/HCX-003_feedback.jsonl"
-    feedback_file2 = "/data/ephemeral/home/gj/level4-nlp-finalproject-hackathon-nlp-04-lv3/ai/batch_airflow/tuning/data/lmh7w4qy_feedback.jsonl"
-    evaluate_file = "/data/ephemeral/home/gj/level4-nlp-finalproject-hackathon-nlp-04-lv3/ai/batch_airflow/tuning/data/HCX-003_evaluate.jsonl"
-    evaluate_file = "/data/ephemeral/home/gj/level4-nlp-finalproject-hackathon-nlp-04-lv3/ai/batch_airflow/tuning/data/lmh7w4qy_evaluate.jsonl"
+    diary_file = f"{os.getenv('DIR_PATH')}/data/test_diary.csv"
+    feedback_save_file = f"{os.getenv('DIR_PATH')}/data/feedback.jsonl"
+    feedback_file1 = f"{os.getenv('DIR_PATH')}/data/HCX-003_feedback.jsonl"
+    feedback_file2 = f"{os.getenv('DIR_PATH')}/data/lmh7w4qy_feedback.jsonl"
+    evaluate_file = f"{os.getenv('DIR_PATH')}/data/HCX-003_evaluate.jsonl"
+    evaluate_file = f"{os.getenv('DIR_PATH')}/data/lmh7w4qy_evaluate.jsonl"
 
     main(
         api_keys=api_keys,

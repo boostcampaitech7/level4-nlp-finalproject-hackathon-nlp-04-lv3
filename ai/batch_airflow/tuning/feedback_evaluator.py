@@ -1,6 +1,10 @@
+import os
 import re
 import json
+from dotenv import load_dotenv
 from llm_api import OpenAIApi, HcxApi
+
+load_dotenv()
 
 
 class FeedbackComparator:
@@ -157,7 +161,7 @@ if __name__ == "__main__":
     # HCX-003:        22          22          23
     # Tuning:         27          27          27
     # -----------------------------------------------------------------
-    hcx_003 = "/data/ephemeral/home/gj/level4-nlp-finalproject-hackathon-nlp-04-lv3/ai/batch_airflow/tuning/data/HCX-003_evaluate.jsonl"
-    tuning = "/data/ephemeral/home/gj/level4-nlp-finalproject-hackathon-nlp-04-lv3/ai/batch_airflow/tuning/data/lmh7w4qy_evaluate.jsonl"
+    hcx_003 = f"{os.getenv('TUNING_PATH')}/data/HCX-003_evaluate.jsonl"
+    tuning = f"{os.getenv('TUNING_PATH')}/data/lmh7w4qy_evaluate.jsonl"
     calculate_score(hcx_003)
     calculate_score(tuning)
