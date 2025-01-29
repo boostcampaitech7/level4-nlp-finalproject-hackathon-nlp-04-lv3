@@ -144,12 +144,21 @@ def test_db():
         study_record1 = StudyRecords(
             user_id=user1.user_id,
             vocab_quiz_id=vocab_quiz1.quiz_id,
-            text_quiz_id=text_quiz1.quiz_id,
-            correct=[True],
-            user_answer=[1],
+            correct=[True, True, True, True],
+            user_answer=[1, 2, 3, 1],
             created_at=datetime.now(),
         )
         session.add(study_record1)
+        session.flush()
+
+        study_record2 = StudyRecords(
+            user_id=user1.user_id,
+            text_quiz_id=text_quiz1.quiz_id,
+            correct=[True, True, True],
+            user_answer=[1, 2, 3],
+            created_at=datetime.now(),
+        )
+        session.add(study_record2)
         session.flush()
 
         session.commit()
