@@ -100,10 +100,23 @@ def test_db():
         text_quiz1 = TextQuizzes(
             text_id=text1.text_id,
             level=1,
-            question=["문제"],
-            answer=[1],
-            answer_explain=["이유"],
-            options=["보기"],
+            question=["문제 1", "문제 2", "문제 3"],
+            answer=[1, 1, 2, 4],
+            answer_explain=["이유 1", "이유 2", "이유 3"],
+            options=[
+                "보기 1-1",
+                "보기 1-2",
+                "보기 1-3",
+                "보기 1-4",
+                "보기 2-1",
+                "보기 2-2",
+                "보기 2-3",
+                "보기 2-4",
+                "보기 3-1",
+                "보기 3-2",
+                "보기 3-3",
+                "보기 3-4",
+            ],
         )
         session.add(text_quiz1)
         session.flush()

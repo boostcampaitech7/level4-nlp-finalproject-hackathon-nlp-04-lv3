@@ -1,6 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends, status
 from sqlmodel import Session, select, desc
-from typing import List
 from datetime import datetime
 
 from models.vocab_quiz import VocabQuizzes
@@ -68,13 +67,13 @@ def submit_vocab_quiz(
             detail="해당 퀴즈를 찾을 수 없습니다.",
         )
 
-    # 3. 사용자가 선택한 답과 정답 비교
+    # 4. 사용자가 선택한 답과 정답 비교
     correct = []
     for i, answer in enumerate(user_answer):
         correct_answer = quiz.answer[i + 1]
         correct.append(answer == correct_answer)
 
-    # 4. StudyRecords에 사용자 퀴즈 제출 기록 저장
+    # 5. StudyRecords에 사용자 퀴즈 제출 기록 저장
     study_record = StudyRecords(
         user_id=user_id,
         vocab_quiz_id=quiz_id,
@@ -85,11 +84,11 @@ def submit_vocab_quiz(
     session.add(study_record)
     session.flush()
 
-    # 5. 사용자 level 계산 및 Scores 테이블에 반영
+    # 6. 사용자 level 계산 및 Scores 테이블에 반영
     rating, level_message = update_level(user_id, session, correct)
     session.commit()
 
-    # 6. 응답 데이터 생성
+    # 7. 응답 데이터 생성
     return VocabQuizResponseDTO(
         question=quiz.question[1:],
         options=quiz.options[4:],
