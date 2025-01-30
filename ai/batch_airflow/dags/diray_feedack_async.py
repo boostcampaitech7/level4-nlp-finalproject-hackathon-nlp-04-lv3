@@ -242,7 +242,7 @@ with DAG(
         sql="""
             SELECT diary_id, text
             FROM DIARIES
-            WHERE created_at::date = '{{ macros.ds_add(ds, -1) }}'::date AND status = 2
+            WHERE created_at::date = '{{ macros.ds_add(ds, -1) }}'::date AND status = 1
         """,
         do_xcom_push=True,
     )
