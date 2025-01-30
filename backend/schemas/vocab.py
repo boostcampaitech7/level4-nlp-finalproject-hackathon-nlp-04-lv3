@@ -7,7 +7,7 @@ class VocabDetailDTO(BaseModel):
     vocab: str
     hanja: Optional[str]
     dict_mean: Optional[str]
-    easy_explain: str
+    easy_explain: List[str]
     correct_example: List[str]
     incorrect_example: List[str]
 
@@ -24,8 +24,9 @@ class VocabChatbotListDTO(BaseModel):
 
 
 class VocabChatbotRequestDTO(BaseModel):
-    vocab: str
+    vocab_id: int
     question: str
+    previous: List[VocabChatbotItemDTO]
 
 
 class VocabChatbotResponseDTO(BaseModel):

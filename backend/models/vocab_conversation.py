@@ -21,9 +21,9 @@ class VocabConversations(SQLModel, table=True):
 
     chat_id: int | None = Field(default=None, primary_key=True)
     user_id: int = Field(foreign_key="users.user_id", nullable=False)
-    vocab_id: int = Field(foreign_key="vocab.vocab_id", nullable=False)
-    question: str = Field(sa_column=Column(TEXT), nullable=False)
-    answer: str = Field(sa_column=Column(TEXT), nullable=False)
+    vocab_id: int = Field(foreign_key="vocabs.vocab_id", nullable=False)
+    question: str = Field(sa_column=Column(TEXT, nullable=False))
+    answer: str = Field(sa_column=Column(TEXT, nullable=False))
     created_at: datetime = Field(
         default_factory=datetime.now, sa_column=Column(TIMESTAMP, nullable=False)
     )

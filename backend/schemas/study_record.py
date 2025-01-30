@@ -8,16 +8,16 @@ class VocabStudyRecordDTO(BaseModel):
     vocab: str
     hanja: str
     dict_mean: str
-    explanation: List[str]
+    easy_explain: List[str]
     correct_example: List[str]
-    incorrect_example: str
+    incorrect_example: List[str]
     quiz_id: int
     quiz_level: int
     quiz_question: List[str]
     quiz_options: List[str]
     quiz_correct: List[bool]
     quiz_user_answer: List[int]
-    quiz_answer: List[str]
+    quiz_answer: List[int]
     quiz_answer_explain: List[str]
 
 
@@ -34,7 +34,7 @@ class TextStudyRecordDTO(BaseModel):
     quiz_correct: List[bool]
     quiz_user_answer: List[int]
     quiz_options: List[str]
-    quiz_answer: List[str]
+    quiz_answer: List[int]
     quiz_answer_explain: List[str]
 
 

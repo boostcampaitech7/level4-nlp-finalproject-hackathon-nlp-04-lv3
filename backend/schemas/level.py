@@ -1,10 +1,10 @@
 from pydantic import BaseModel, Field
-from typing import List
+from typing import List, Optional
 
 
 class LevelStudyRecordItemDTO(BaseModel):
     level: int
-    quiz_id: int
+    quiz_id: Optional[int]
     is_solved: bool
 
 

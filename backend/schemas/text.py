@@ -13,7 +13,7 @@ class TextItemDTO(BaseModel):
 class TextListDTO(BaseModel):
     page_num: int
     texts: List[TextItemDTO] = Field(default_factory=list)
-    total_count: Optional[int] = Field(default=None)
+    total_page_count: Optional[int] = Field(default=None)
 
 
 class TextExplainRequestDTO(BaseModel):
@@ -40,9 +40,10 @@ class TextChatbotListDTO(BaseModel):
 
 
 class TextChatbotRequestDTO(BaseModel):
-    text: str
+    text_id: int
     focused: str
     question: str
+    previous: List[TextChatbotItemDTO] = Field(default_factory=list)
 
 
 class TextChatbotResponseDTO(BaseModel):
@@ -63,7 +64,8 @@ class TextInputRequestDTO(BaseModel):
     text_image: Optional[str] = Field(None, description="Base64 인코딩된 이미지 데이터")
     text_pdf: Optional[str] = Field(None, description="Base64 인코딩된 PDF 데이터")
 
-    @model_validator
+    @model_validator(mode="before")
+    @classmethod
     def validate_input(cls, values):
         inputs = [values.get("text"), values.get("text_image"), values.get("text_pdf")]
         if sum(bool(input) for input in inputs) != 1:
