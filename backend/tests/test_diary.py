@@ -52,7 +52,7 @@ def test_fetch_diary_by_page(client, auth_headers, test_db):
 
 
 # 일기, 피드백 조회 테스트
-def test_fetch_diary_by_date(client, auth_headers, test_db):
+def test_fetch_diary_by_id(client, auth_headers, test_db):
     """
     특정 diary_id의 일기를 정상적으로 조회해야 한다. (200 OK)
     존재하지 않는 diary_id를 조회할 경우 404 오류가 발생해야 한다.
