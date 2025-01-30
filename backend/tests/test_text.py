@@ -137,10 +137,48 @@ def test_request_text_chatbot_response(client, auth_headers, mocker, test_db):
         ),
     )
 
+    previous = [
+        {
+            "chat_id": 4,
+            "focused": "단어 의미",
+            "question": "이 단어의 뜻은 무엇인가요?",
+            "answer": "이 단어는 A를 의미합니다.",
+        },
+        {
+            "chat_id": 3,
+            "focused": "문맥 이해",
+            "question": "이 단어는 어떤 상황에서 사용되나요?",
+            "answer": "이 단어는 문장에서 B와 같이 사용됩니다.",
+        },
+        {
+            "chat_id": 2,
+            "focused": "단어 의미",
+            "question": "이 단어의 뜻은 무엇인가요?",
+            "answer": "이 단어는 A를 의미합니다.",
+        },
+        {
+            "chat_id": 1,
+            "focused": "문맥 이해",
+            "question": "이 단어는 어떤 상황에서 사용되나요?",
+            "answer": "이 단어는 문장에서 B와 같이 사용됩니다.",
+        },
+        {
+            "chat_id": 0,
+            "focused": "단어 의미",
+            "question": "이 단어의 뜻은 무엇인가요?",
+            "answer": "이 단어는 A를 의미합니다.",
+        },
+    ]
+
     # 정상 대화 요청
     response = client.post(
         "/text/chatbot",
-        json={"text_id": text_data.text_id, "focused": "내용", "question": "질문 내용"},
+        json={
+            "text_id": text_data.text_id,
+            "focused": "내용",
+            "question": "질문 내용",
+            "previous": previous,
+        },
         headers=auth_headers,
     )
 

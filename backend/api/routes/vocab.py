@@ -113,6 +113,7 @@ async def request_vocab_chatbot_response(
     # 2. 요청 데이터 추출
     vocab_id = request.vocab_id
     question = request.question
+    previous = request.previous
 
     # 3. 챗봇에게 요청할 단어
     statement = select(Vocabs).where(Vocabs.vocab_id == vocab_id)
@@ -123,7 +124,11 @@ async def request_vocab_chatbot_response(
         async with httpx.AsyncClient() as client:
             ai_chat_response = await client.post(
                 AI_SERVER_URL + "/ai/vocab/chat",
-                json={"vocab": vocab_data.vocab, "question": question},
+                json={
+                    "vocab": vocab_data.vocab,
+                    "question": question,
+                    "previous": previous,
+                },
             )
 
         # 5. 응답 상태 코드 확인

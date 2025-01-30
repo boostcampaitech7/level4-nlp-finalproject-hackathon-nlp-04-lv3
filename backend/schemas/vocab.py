@@ -26,6 +26,7 @@ class VocabChatbotListDTO(BaseModel):
 class VocabChatbotRequestDTO(BaseModel):
     vocab_id: int
     question: str
+    previous: List[VocabChatbotItemDTO]
 
 
 class VocabChatbotResponseDTO(BaseModel):

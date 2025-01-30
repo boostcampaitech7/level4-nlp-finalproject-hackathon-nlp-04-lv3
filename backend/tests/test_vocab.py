@@ -94,10 +94,42 @@ def test_request_vocab_chatbot_response(client, auth_headers, mocker, test_db):
         ),
     )
 
+    previous = [
+        {
+            "chat_id": 4,
+            "question": "이 단어 뜻은?",
+            "answer": "이 단어는 A를 의미합니다.",
+        },
+        {
+            "chat_id": 3,
+            "question": "어떤 의미인가요?",
+            "answer": "그것은 B라는 뜻입니다.",
+        },
+        {
+            "chat_id": 2,
+            "question": "이 단어 뜻은?",
+            "answer": "이 단어는 A를 의미합니다.",
+        },
+        {
+            "chat_id": 1,
+            "question": "어떤 의미인가요?",
+            "answer": "그것은 B라는 뜻입니다.",
+        },
+        {
+            "chat_id": 0,
+            "question": "이 단어 뜻은?",
+            "answer": "이 단어는 A를 의미합니다.",
+        },
+    ]
+
     # 정상 대화 요청
     response = client.post(
         "/vocab/chatbot",
-        json={"vocab_id": vocab_data.vocab_id, "question": "이 단어 뜻은?"},
+        json={
+            "vocab_id": vocab_data.vocab_id,
+            "question": "이 단어 뜻은?",
+            "previous": previous,
+        },
         headers=auth_headers,
     )
 

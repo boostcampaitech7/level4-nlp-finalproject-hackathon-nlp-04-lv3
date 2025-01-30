@@ -43,6 +43,7 @@ class TextChatbotRequestDTO(BaseModel):
     text_id: int
     focused: str
     question: str
+    previous: List[TextChatbotItemDTO] = Field(default_factory=list)
 
 
 class TextChatbotResponseDTO(BaseModel):

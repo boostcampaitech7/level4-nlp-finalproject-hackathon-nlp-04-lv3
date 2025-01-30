@@ -204,6 +204,7 @@ async def request_text_chatbot_response(
     text_id = request.text_id
     focused = request.focused
     question = request.question
+    previous = request.previous
 
     # 3. 챗봇에게 요청할 긴 글
     statement = select(Texts).where(Texts.text_id == text_id)
@@ -215,7 +216,12 @@ async def request_text_chatbot_response(
         async with httpx.AsyncClient() as client:
             ai_chat_response = await client.post(
                 AI_SERVER_URL + "/ai/text/chat",
-                json={"text": request_text, "focused": focused, "question": question},
+                json={
+                    "text": request_text,
+                    "focused": focused,
+                    "question": question,
+                    "previous": previous,
+                },
             )
 
         # 5. 응답 상태 코드 확인
