@@ -1,5 +1,4 @@
 from pydantic import BaseModel
-from typing import Optional
 
 
 class JwToken(BaseModel):
@@ -21,4 +20,4 @@ class SocialLoginDTO(BaseModel):
 class SocialSignupDTO(BaseModel):
     name: str
     email: str
-    level: Optional[int] = None
+    level: int
