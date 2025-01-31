@@ -75,6 +75,7 @@ def fetch_diary_by_id(
     # 3. 응답 데이터 생성
     return DiaryExtendedDTO(
         diary_id=diary.diary_id,
+        status=diary.status,
         text=diary.text,
         feedback=diary.feedback,
         review=diary.review,
