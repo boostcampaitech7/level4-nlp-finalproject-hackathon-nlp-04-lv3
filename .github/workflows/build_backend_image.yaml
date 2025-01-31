@@ -29,19 +29,19 @@ jobs:
     # Docker 이미지 빌드 (캐시 적용)
     - name: Build Docker Image
       run: |
-        docker build --build-arg DB_URL=${{ secrets.DB_URL }} \
+        docker build --build-arg DB_HOST=${{ secrets.DB_HOST }} \
                      --build-arg ALGORITHM=${{ secrets.ALGORITHM }} \
                      --build-arg SECRET_KEY=${{ secrets.SECRET_KEY }} \
                      --build-arg EXPIRE_MINUTES=${{ secrets.EXPIRE_MINUTES }} \
-                     --tag ${{ secrets.DOCKER_REPO }}:${{ github.sha }} ./backend
+                     --tag ${{ secrets.DOCKER_REPO }}:backend-${{ github.sha }} ./backend
 
     # Docker 이미지 태깅 (latest 태그 추가)
     - name: Tag Docker Image
       run: |
-        docker tag ${{ secrets.DOCKER_REPO }}:${{ github.sha }} ${{ secrets.DOCKER_REPO }}:latest
+        docker tag ${{ secrets.DOCKER_REPO }}:backend-${{ github.sha }} ${{ secrets.DOCKER_REPO }}:backend-latest
 
     # Docker Hub로 이미지 푸시
     - name: Push Docker Image
       run: |
-        docker push ${{ secrets.DOCKER_REPO }}:${{ github.sha }}
-        docker push ${{ secrets.DOCKER_REPO }}:latest
+        docker push ${{ secrets.DOCKER_REPO }}:backend-${{ github.sha }}
+        docker push ${{ secrets.DOCKER_REPO }}:backend-latest

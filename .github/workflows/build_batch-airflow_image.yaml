@@ -1,0 +1,40 @@
+name: Build * Push Arabugi Backend Docker
+
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - ai/dags/**
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        ref: develop
+
+    # Docker Hub 로그인 (보안 강화)
+    - name: Login to Docker Hub
+      run: |
+        echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+    # Docker 이미지 빌드 (캐시 적용)
+    - name: Build Docker Image
+      run: |
+        docker build --build-arg NAVER_API_KEY=${{ secrets.NAVER_API_KEY }} \
+                     --build-arg DB_HOST=${{ secrets.DB_HOST }} \
+                     --tag ${{ secrets.DOCKER_REPO }}:batch-airflow-${{ github.sha }} ./ai/batch_airflow
+
+    # Docker 이미지 태깅 (latest 태그 추가)
+    - name: Tag Docker Image
+      run: |
+        docker tag ${{ secrets.DOCKER_REPO }}:batch-airflow-${{ github.sha }} ${{ secrets.DOCKER_REPO }}:batch-airflow-latest
+
+    # Docker Hub로 이미지 푸시
+    - name: Push Docker Image
+      run: |
+        docker push ${{ secrets.DOCKER_REPO }}:batch-airflow-${{ github.sha }}
+        docker push ${{ secrets.DOCKER_REPO }}:batch-airflow-latest
