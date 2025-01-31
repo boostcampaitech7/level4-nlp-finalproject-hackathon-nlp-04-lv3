@@ -1,4 +1,4 @@
-name: Build * Push Arabugi Backend Docker
+name: Build * Push Arabugi Backend Image
 
 on:
   push:
