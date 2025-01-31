@@ -7,11 +7,6 @@ class Config(BaseSettings):
     algorithm: str = Field(env="ALGORITHM")
     secret_key: str = Field(env="SECRET_KEY")
     expire_minutes: int = Field(env="EXPIRE_MINUTES")
-    kakao_secret: str = Field(env="KAKAO_SECRET")
-    kakao_client_id: str = Field(env="KAKAO_CLIENT_ID")
-    kakao_callback_uri: str = Field(env="KAKAO_CALLBACK_URI")
-    naver_secret: str = Field(env="NAVER_SECRET")
-    naver_client_id: str = Field(env="NAVER_CLIENT_ID")
 
     class Config:
         extra = "allow"
