@@ -10,6 +10,8 @@ from airflow.providers.postgres.operators.postgres import PostgresOperator
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 from airflow.operators.python import PythonOperator
 from dotenv import load_dotenv, find_dotenv
+from loguru import logger
+
 
 load_dotenv(find_dotenv())
 
@@ -53,6 +55,7 @@ class CompletionExecutor:
         }
         self.prompt[1]["content"] = f"**일기**:  \n{diary}"
         self.request_data["messages"] = self.prompt
+        logger.info(f"request body: {self.request_data}")
 
         async with session.post(
             self._host, headers=headers, json=self.request_data
@@ -98,8 +101,6 @@ def parse_feedback_review(diary, feedback):
     # 3. feedbacks JSON으로 저장하기 위해 직렬화
     feedbacks = json.dumps(feedbacks, ensure_ascii=False)
     review = data["review"][0] if data["review"] else ""
-    print(f"feedback: {feedbacks}")
-    print(f"review: {review}")
     return feedbacks, review
 
 
@@ -108,8 +109,11 @@ async def generate_save_feedback(api, session, conn, diary_id, text):
 
     # 1. (비동기) HCX로 일기 피드백 생성
     feedback = await api.execute(session, text)  # 피드백 생성
+    logger.info(f"Generated Feedback for Diary {diary_id}: {feedback}")
     # 2. (동기) 일기 피드백과 리뷰 파싱하기
     feedbacks, review = parse_feedback_review(text, feedback)
+    logger.info(f"feedbacks: {feedbacks}")
+    logger.info(f"review: {review}")
     # 3. (비동기) 일기 피드백과 리뷰 DB 저장하기
     await conn.execute(
         "UPDATE DIARIES SET FEEDBACK = $1, REVIEW = $2, STATUS = 2 WHERE DIARY_ID = $3",
@@ -118,7 +122,7 @@ async def generate_save_feedback(api, session, conn, diary_id, text):
         diary_id,
     )
 
-    print(f"✅ Diary {diary_id} 업데이트 완료.")
+    logger.info(f"✅ Diary {diary_id} 업데이트 완료.")
 
 
 async def generate_save_feedbacks(api, t1):
@@ -143,7 +147,7 @@ async def generate_save_feedbacks(api, t1):
 
     # 5. 비동기적으로 PostgreSQL 데이터베이스에 연결 해제
     await conn.close()
-    print("🎯 모든 피드백 생성 및 저장 완료.")
+    logger.info("🎯 모든 피드백 생성 및 저장 완료.")
 
 
 def trigger_feedback_generation(api, **kwargs):

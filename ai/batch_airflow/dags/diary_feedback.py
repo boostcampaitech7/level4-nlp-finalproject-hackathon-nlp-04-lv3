@@ -8,6 +8,8 @@ from airflow.operators.python import PythonOperator
 from airflow.providers.postgres.operators.postgres import PostgresOperator
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 from dotenv import load_dotenv, find_dotenv
+from loguru import logger
+
 
 load_dotenv(find_dotenv())
 
@@ -51,7 +53,7 @@ class CompletionExecutor:
         }
         self.prompt[1]["content"] = f"**일기**:  \n{diary}"
         self.request_data["messages"] = self.prompt
-        print(self.request_data)
+        logger.info(f"request body: {self.request_data}")
 
         response = requests.post(
             self._host,
@@ -121,14 +123,14 @@ def generate_save_diary_feedback(api, **kwargs):
 
         # 1. HCX로 일기 피드백 생성
         feedback = api.execute(text)
-        print(f"Generated Feedback for Diary {diary_id}: {feedback}")
+        logger.info(f"Generated Feedback for Diary {diary_id}: {feedback}")
 
         # 2. 생성한 content에서 일기 피드백과 리뷰 파싱하기
         feedbacks, review = parse_feedback_review(text, feedback)
         if isinstance(feedbacks, (list, dict)):
             feedbacks = json.dumps(feedbacks, ensure_ascii=False)
-        print(f"feedbacks: {feedbacks}")
-        print(f"review: {review}")
+        logger.info(f"feedbacks: {feedbacks}")
+        logger.info(f"review: {review}")
 
         # 3. 일기 피드백과 리뷰 DB에 저장히기
         sql = """
@@ -137,6 +139,9 @@ def generate_save_diary_feedback(api, **kwargs):
         WHERE DIARY_ID = %s
         """
         pg_hook.run(sql, parameters=(feedbacks, review, diary_id), autocommit=True)
+
+        logger.info(f"✅ Diary {diary_id} 업데이트 완료.")
+    logger.info("🎯 모든 피드백 생성 및 저장 완료.")
 
 
 default_args = {"owner": "airflow", "retries": 1, "retry_delay": timedelta(seconds=5)}
