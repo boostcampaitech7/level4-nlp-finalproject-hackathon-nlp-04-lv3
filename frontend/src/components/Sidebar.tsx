@@ -9,10 +9,10 @@ import { CgNotes } from 'react-icons/cg'
 import { LuBookOpenText } from 'react-icons/lu'
 import { useNavigate } from 'react-router'
 import { useSidebarStore } from '../stores/sidebarStore'
-import useIsAuthenticated from '../hooks/useIsAuthenticated'
-
+// import useIsAuthenticated from '../hooks/useIsAuthenticated'
+import { useAuthStore } from '../stores/authStore'
 const Sidebar = () => {
-  const { isAuthenticated } = useIsAuthenticated()
+  const { isAuthenticated, logout } = useAuthStore()
   const { isSidebarOpen, closeSidebar } = useSidebarStore()
   const navigate = useNavigate()
 
@@ -20,6 +20,12 @@ const Sidebar = () => {
   const closeSidebarWithNavigate = (path: string) => {
     closeSidebar()
     navigate(path)
+  }
+
+  const handleLogout = () => {
+    logout()
+    closeSidebar()
+    navigate('/auth/login')
   }
 
   return (
@@ -49,7 +55,10 @@ const Sidebar = () => {
           <IconButton
             icon={FaRegFileWord}
             text="단어 학습"
-            onClick={() => closeSidebarWithNavigate('/vocab/list')}
+            onClick={() => {
+              const randomVocabId = Math.floor(Math.random() * 100) + 1; // 1부터 100 사이의 랜덤 숫자
+              closeSidebarWithNavigate(`/vocab/${randomVocabId}`);
+            }}
           />
           <IconButton
             icon={CgNotes}
@@ -72,7 +81,7 @@ const Sidebar = () => {
             icon={FaRegCircleUser}
             text="로그아웃"
             color="red"
-            onClick={() => console.log('로그아웃 함수 구현 예정')}
+            onClick={handleLogout}
           />
         )}
       </div>

@@ -7,23 +7,28 @@ import {
 } from 'react-router-dom'
 import { useEffect } from 'react'
 import * as Pages from './pages'
-import useIsAuthenticated from './hooks/useIsAuthenticated'
+import { useAuthStore } from './stores/authStore'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 function App() {
+  const { isAuthenticated, checkAuth } = useAuthStore()
   const queryClient = new QueryClient()
-  const { isAuthenticated } = useIsAuthenticated()
 
   useEffect(() => {
     window.history.scrollRestoration = 'manual'
     window.scrollTo(0, 0)
   }, [])
 
+  useEffect(() => {
+    checkAuth()
+  }, [checkAuth])
+
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <Routes>
           <Route element={<Pages.MainLayout />}>
+            {/* 1. 인증 여부에 따라 다른 메인 페이지 */}
             <Route
               path="/"
               element={
@@ -31,7 +36,7 @@ function App() {
               }
             />
 
-            {/* 인증이 필요하지 않은 라우트들 */}
+            {/* 2. 인증이 필요하지 않은 라우트들 */}
             <Route path="auth">
               <Route
                 path="login"
@@ -53,16 +58,25 @@ function App() {
                   )
                 }
               />
+              <Route
+                path="signup/survey"
+                element={
+                  isAuthenticated ? (
+                    <Navigate to="/" replace />
+                  ) : (
+                    <Pages.ComprehensionSurveyPage />
+                  )
+                }
+              />
             </Route>
 
-            {/* 인증이 필요한 라우트들 */}
+            {/* 3. 인증이 필요한 라우트들 */}
             <Route
-              path="/*"
               element={
                 isAuthenticated ? <Outlet /> : <Navigate to="/" replace />
               }
             >
-              {/* 1. text */}
+              {/* 3-1. text 관련 라우트 */}
               <Route path="text">
                 <Route
                   path=":text_id/quiz/:level/result"
@@ -81,7 +95,7 @@ function App() {
                 <Route path="add" element={<Pages.TextAddPage />} />
               </Route>
 
-              {/* 2. vocab */}
+              {/* 3-2. vocab 관련 라우트 */}
               <Route path="vocab">
                 <Route
                   path=":vocab_id/quiz/:level/result"
@@ -98,24 +112,24 @@ function App() {
                 <Route path=":vocab_id" element={<Pages.VocabDetailPage />} />
               </Route>
 
-              {/* 3. diary */}
+              {/* 3-3. diary 관련 라우트 */}
               <Route path="diary">
                 <Route path=":diary_id" element={<Pages.DiaryDetailPage />} />
-                <Route path="list" element={<Pages.DiaryListPage />} />
                 <Route path="write" element={<Pages.DiaryWritePage />} />
+                <Route path="list" element={<Pages.DiaryListPage />} />
               </Route>
 
-              {/* 4. user */}
+              {/* 3-4. user 관련 라우트 */}
               <Route path="user">
+                <Route path="profile" element={<Pages.ProfilePage />} />
+                <Route
+                  path="study-record"
+                  element={<Pages.StudyRecordListPage />}
+                />
                 <Route
                   path="study-record/:record_id"
                   element={<Pages.StudyRecordDetailPage />}
                 />
-                <Route
-                  path="study-record/list"
-                  element={<Pages.StudyRecordListPage />}
-                />
-                <Route path="profile" element={<Pages.ProfilePage />} />
                 <Route path="bookmark" element={<Pages.BookmarkListPage />} />
               </Route>
             </Route>

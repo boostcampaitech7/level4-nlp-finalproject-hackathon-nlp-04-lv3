@@ -62,7 +62,8 @@ def signup(new_user: UserSignupDTO, session: Session = Depends(get_session)):
     session.add(score)
     session.commit()
 
-    return {"message": "User created successfully"}
+    access_token = create_access_token(data={"sub": str(user.user_id)})
+    return JwToken(access_token=access_token, token_type="bearer")
 
 
 # 로그인

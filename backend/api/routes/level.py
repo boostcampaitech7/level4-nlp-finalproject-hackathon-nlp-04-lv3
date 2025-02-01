@@ -1,9 +1,8 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, HTTPException
 from sqlmodel import Session, select, desc
 
 from models.vocab_quiz import VocabQuizzes
 from models.text_quiz import TextQuizzes
-from models.score import Scores
 from models.study_record import StudyRecords
 from schemas.level import LevelStudyRecordItemDTO, LevelStudyRecordDTO
 from core.database import get_session
@@ -36,32 +35,36 @@ def fetch_vocab_level(
         select(VocabQuizzes).where(VocabQuizzes.vocab_id == vocab_id)
     ).all()
 
-    # 4. 사용자 학습 기록 조회
-    quiz_ids = [quiz.quiz_id for quiz in quizzes]
-    study_records = session.exec(
-        select(StudyRecords)
-        .where(
-            StudyRecords.user_id == user_id, StudyRecords.vocab_quiz_id.in_(quiz_ids)
+    # 3.1 단어 퀴즈가 존재하지 않을 시 예외처리
+    if not quizzes:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="해당 단어의 퀴즈를 찾을 수 없습니다.",
         )
-        .order_by(desc(StudyRecords.created_at))
-    ).all()
 
-    # 5. 레벨별 데이터 생성
+    # 4. 레벨별 데이터 생성
     level_data_map = {
         level: {"quiz_id": None, "is_solved": False} for level in range(1, 6)
     }
 
-    # 6. 가장 최근의 학습 기록을 기반으로 레벨별 데이터 저장
-    for record in study_records:
-        quiz = session.get(VocabQuizzes, record.vocab_quiz_id)
-        if (
-            quiz
-            and quiz.level in level_data_map
-            and not level_data_map[quiz.level]["is_solved"]
-        ):
-            level_data_map[quiz.level] = {"quiz_id": quiz.quiz_id, "is_solved": True}
+    # 5. 가장 최근의 학습 기록을 기반으로 레벨별 데이터 저장
+    for level in range(1, 6):
+        latest_record = session.exec(
+            select(StudyRecords)
+            .where(StudyRecords.user_id == user_id)
+            .where(
+                StudyRecords.vocab_quiz_id.in_(
+                    [quiz.quiz_id for quiz in quizzes if quiz.level == level]
+                )
+            )
+            .order_by(desc(StudyRecords.created_at))
+        ).first()
 
-    # 7. 모든 레벨 데이터 생성
+        if latest_record:
+            level_data_map[level]["quiz_id"] = latest_record.vocab_quiz_id
+            level_data_map[level]["is_solved"] = True
+
+    # 6. 모든 레벨 데이터 생성
     level_data = [
         LevelStudyRecordItemDTO(
             level=level,
@@ -71,7 +74,7 @@ def fetch_vocab_level(
         for level in range(1, 6)
     ]
 
-    # 8. 응답 데이터 반환
+    # 7. 응답 데이터 반환
     return LevelStudyRecordDTO(user_level=user_level, level_data=level_data)
 
 
@@ -92,35 +95,41 @@ def get_text_level_study_record(
     # 2. 사용자의 난이도(level) 조회
     user_level = get_user_level(user_id, session)
 
-    # 3. 해당 단어에 대한 모든 퀴즈 조회
+    # 3. 해당 긴 글에 대한 모든 퀴즈 조회
     quizzes = session.exec(
         select(TextQuizzes).where(TextQuizzes.text_id == text_id)
     ).all()
 
-    # 4. 사용자 학습 기록 조회
-    quiz_ids = [quiz.quiz_id for quiz in quizzes]
-    study_records = session.exec(
-        select(StudyRecords)
-        .where(StudyRecords.user_id == user_id, StudyRecords.text_quiz_id.in_(quiz_ids))
-        .order_by(desc(StudyRecords.created_at))
-    ).all()
+    # 3.1 긴 글 퀴즈가 존재하지 않을 시 예외처리
+    if not quizzes:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="해당 긴 글의 퀴즈를 찾을 수 없습니다.",
+        )
 
-    # 5. 레벨별 데이터 생성
+    # 4. 레벨별 데이터 생성
     level_data_map = {
         level: {"quiz_id": None, "is_solved": False} for level in range(1, 6)
     }
 
-    # 6. 가장 최근의 학습 기록을 기반으로 레벨별 데이터 저장
-    for record in study_records:
-        quiz = session.get(TextQuizzes, record.text_quiz_id)
-        if (
-            quiz
-            and quiz.level in level_data_map
-            and not level_data_map[quiz.level]["is_solved"]
-        ):
-            level_data_map[quiz.level] = {"quiz_id": quiz.quiz_id, "is_solved": True}
+    # 5. 가장 최근의 학습 기록을 기반으로 레벨별 데이터 저장
+    for level in range(1, 6):
+        latest_record = session.exec(
+            select(StudyRecords)
+            .where(StudyRecords.user_id == user_id)
+            .where(
+                StudyRecords.text_quiz_id.in_(
+                    [quiz.quiz_id for quiz in quizzes if quiz.level == level]
+                )
+            )
+            .order_by(desc(StudyRecords.created_at))
+        ).first()
 
-    # 7. 모든 레벨 데이터 생성
+        if latest_record:
+            level_data_map[level]["quiz_id"] = latest_record.text_quiz_id
+            level_data_map[level]["is_solved"] = True
+
+    # 6. 모든 레벨 데이터 생성
     level_data = [
         LevelStudyRecordItemDTO(
             level=level,
@@ -130,5 +139,5 @@ def get_text_level_study_record(
         for level in range(1, 6)
     ]
 
-    # 8. 응답 데이터 반환
+    # 7. 응답 데이터 반환
     return LevelStudyRecordDTO(user_level=user_level, level_data=level_data)

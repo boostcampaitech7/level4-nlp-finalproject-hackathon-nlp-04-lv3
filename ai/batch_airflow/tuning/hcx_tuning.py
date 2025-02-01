@@ -2,9 +2,9 @@ import requests
 import json
 import csv
 import os
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 
-load_dotenv()
+load_dotenv(find_dotenv())
 
 # https://clovastudio.ncloud.com/tuning/api
 # API 가이드: https://api.ncloud-docs.com/docs/clovastudio-gettask
@@ -38,6 +38,7 @@ def construct_instruction_dataset(data_file, save_file):
         writer.writeheader()
         writer.writerows(records)
 
+    # .jsonl 파일에 저장하기
     with open(f"{save_file}.jsonl", "w", encoding="utf-8") as file:
         for record in records:
             file.write(json.dumps(record, ensure_ascii=False) + "\n")
@@ -115,19 +116,19 @@ class FindTaskExecutor:
 
 
 if __name__ == "__main__":
-    # 1. HCX 전용 instruction dataset 만들기
     """
-    data_file = "/data/ephemeral/home/gj/level4-nlp-finalproject-hackathon-nlp-04-lv3/ai/batch_airflow/tuning/data/feedback.jsonl"
-    save_file = "/data/ephemeral/home/gj/level4-nlp-finalproject-hackathon-nlp-04-lv3/ai/batch_airflow/tuning/data/instruction_dataset"
+    # 1. HCX 전용 instruction dataset 만들기
+    data_file = f"{os.getenv('AIRFLOW_DIR')}/tuning/data/train_feedback.jsonl"
+    save_file = f"{os.getenv('AIRFLOW_DIR')}/tuning/data/train_instruction_dataset"
     construct_instruction_dataset(data_file, save_file)
     """
 
     # 2. HCX tuning 작업 생성하기
-    name = "feedback_epoch=8_lr=1e-5_dash"
+    name = "feedback_train_dash"
     model = "HCX-DASH-001"  # HCX-003
     train_epochs = "8"
     learning_rate = "1e-5f"
-    file_path = "instruction_dataset.jsonl"
+    file_path = "train_instruction_dataset.jsonl"
     completion_executor = CreateTaskExecutor()
     response_text = completion_executor.execute(
         name, model, train_epochs, learning_rate, file_path

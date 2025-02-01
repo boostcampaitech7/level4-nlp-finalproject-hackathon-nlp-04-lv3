@@ -4,6 +4,7 @@ export { MainPage } from './MainPage'
 export { GuestMainPage } from './MainPage/GuestMainPage'
 export { LoginPage } from './auth/LoginPage'
 export { SignupPage } from './auth/SignupPage'
+export { ComprehensionSurveyPage } from './auth/SignupPage/'
 
 export { TextListPage } from './text/TextListPage'
 export { TextDetailPage } from './text/TextDetailPage'
