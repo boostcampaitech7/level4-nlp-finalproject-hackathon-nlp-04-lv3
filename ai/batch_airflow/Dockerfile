@@ -5,7 +5,7 @@ FROM python:3.10.13-slim
 WORKDIR /ai/batch_airflow
 
 # 빌드 시 환경 변수를 ARG로 설정
-ARG NAVER_API_KEY=nv-8cb3966e22374ab892ca9a397d81672cBIlR
+ARG NAVER_API_KEY
 ARG DB_HOST=host.docker.internal
 
 # Poetry + postgresql-client 설치 (최신 버전)

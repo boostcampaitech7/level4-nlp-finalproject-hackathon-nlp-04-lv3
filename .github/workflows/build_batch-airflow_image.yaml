@@ -1,4 +1,4 @@
-name: Build * Push Arabugi Backend Docker
+name: Build & Push Arabugi AI Batch-AirFlow Image
 
 on:
   push:
