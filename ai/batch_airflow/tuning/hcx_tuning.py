@@ -2,9 +2,9 @@ import requests
 import json
 import csv
 import os
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 
-load_dotenv()
+load_dotenv(find_dotenv())
 
 # https://clovastudio.ncloud.com/tuning/api
 # API 가이드: https://api.ncloud-docs.com/docs/clovastudio-gettask
@@ -118,8 +118,8 @@ class FindTaskExecutor:
 if __name__ == "__main__":
     """
     # 1. HCX 전용 instruction dataset 만들기
-    data_file = f"{os.getenv('TUNING_PATH')}/data/train_feedback.jsonl"
-    save_file = f"{os.getenv('TUNING_PATH')}/data/train_instruction_dataset"
+    data_file = f"{os.getenv('AIRFLOW_DIR')}/tuning/data/train_feedback.jsonl"
+    save_file = f"{os.getenv('AIRFLOW_DIR')}/tuning/data/train_instruction_dataset"
     construct_instruction_dataset(data_file, save_file)
     """
 

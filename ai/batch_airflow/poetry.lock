@@ -1904,6 +1904,17 @@ files = [
 ]
 
 [[package]]
+name = "logging"
+version = "0.4.9.6"
+description = "A logging module for Python"
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "logging-0.4.9.6.tar.gz", hash = "sha256:26f6b50773f085042d301085bd1bf5d9f3735704db9f37c1ce6d8b85c38f2417"},
+]
+
+[[package]]
 name = "mako"
 version = "1.2.4"
 description = "A super-fast templating language that borrows the best ideas from the existing templating languages."
@@ -3538,4 +3549,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.1"
 python-versions = "==3.10.13"
-content-hash = "179f8ac08ea353a1ed9e4718d9ac746211aba41ce9c850764874e4b41b878693"
+content-hash = "16b774684516fbf2f8b551e6fc8d71699e7eb56862a17fb07169c4ae3d64c7c8"
