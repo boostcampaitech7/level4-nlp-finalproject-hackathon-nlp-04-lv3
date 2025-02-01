@@ -10,10 +10,11 @@ from airflow.providers.postgres.operators.postgres import PostgresOperator
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 from airflow.operators.python import PythonOperator
 from dotenv import load_dotenv, find_dotenv
-from loguru import logger
+import logging
 
 
 load_dotenv(find_dotenv())
+logger = logging.getLogger(__name__)
 
 
 with open(f"{os.getenv('AIRFLOW_DIR')}/prompt.json", "r", encoding="utf-8") as f:
