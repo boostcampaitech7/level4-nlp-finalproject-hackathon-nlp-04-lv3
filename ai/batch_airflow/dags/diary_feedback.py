@@ -1,7 +1,8 @@
 import os
+import re
+import json
 import requests
 from datetime import datetime, timedelta
-from psycopg2.extras import Json
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.providers.postgres.operators.postgres import PostgresOperator
@@ -88,15 +89,19 @@ feedback_prompt = """#### 역할:
 **총평**:  
 일기에서 작업 과정과 감정을 세밀하게 표현한 점이 정말 인상적이에요! 조금만 표현을 다듬으면 완성도가 훨씬 높아질 거예요. 특히 긴 문장을 나누고 띄어쓰기를 수정하면 읽기 편해질 거랍니다. 앞으로도 꾸준히 쓰다 보면 자연스러운 문장이 술술 나올 테니 화이팅입니다 :)"""
 
+
 class CompletionExecutor:
-    def __init__(self):
-        self._host = "https://clovastudio.stream.ntruss.com"
+    def __init__(self, model_name):
+        if "HCX" in model_name:
+            self._host = f"https://clovastudio.stream.ntruss.com/testapp/v1/chat-completions/{model_name}"
+        else:
+            self._host = f"https://clovastudio.stream.ntruss.com/testapp/v2/tasks/{model_name}/chat-completions"
         self._api_key = os.getenv("NAVER_API_KEY")
 
         self.request_data = {
             "topP": 0.3,
             "topK": 0,
-            "maxTokens": 1882,
+            "maxTokens": 4096,
             "temperature": 0.5,
             "repeatPenalty": 5.0,
             "stopBefore": [],
@@ -114,46 +119,97 @@ class CompletionExecutor:
 
     def execute(self, diary):
         headers = {
-            "Authorization": self._api_key,
+            "Authorization": f"Bearer {self._api_key}",
             "Content-Type": "application/json; charset=utf-8",
         }
         self.prompt[1]["content"] = f"**일기**:  \n{diary}"
         self.request_data["messages"] = self.prompt
         print(self.request_data)
 
-        response = []
         response = requests.post(
-            self._host + "/testapp/v1/chat-completions/HCX-003",
+            self._host,
             headers=headers,
             json=self.request_data,
         )
 
         response_body = response.json()
-        feedback = response_body["result"]["message"]["content"]
-        return feedback
+        return response_body["result"]["message"]["content"]
+
+
+def parse_feedback_review(diary, feedback):
+    patterns = {
+        "original_sentence": r"\d+\.\s*\*\*기존 문장\*\*:\s*(.*?)\*\*이유 및 개선점\*\*",
+        "feedback": r"\*\*이유 및 개선점\*\*:\s*(.*?)\*\*수정 문장\*\*",
+        "updated_sentence": r"\*\*수정 문장\*\*:\s*(.*?)(?=\d+\.\s*\*\*기존 문장\*\*|\*\*총평\*\*)",
+        "review": r"\*\*총평\*\*:(.*)",
+    }
+
+    data = {
+        "original_sentence": list(),
+        "feedback": list(),
+        "updated_sentence": list(),
+        "review": list(),
+    }
+
+    # 1. 일기 피드백과 리뷰 파싱하기
+    for key, pattern in patterns.items():
+        matches = re.findall(pattern, feedback, re.DOTALL)
+        for match in matches:
+            data[key].append(match.strip().strip('"'))
+
+    # 2. 형식에 맞게 변환 (start_idx, end_idx, feedback, updated_sentence)
+    feedbacks = []
+    for idx, original_sentence in enumerate(data["original_sentence"]):
+        matches = re.search(re.escape(original_sentence), diary)
+        if matches:
+            feedbacks.append(
+                [
+                    matches.start(),
+                    matches.end(),
+                    data["feedback"][idx],
+                    data["updated_sentence"][idx],
+                ]
+            )
+        else:
+            feedbacks.append(
+                [-1, -1, data["feedback"][idx], data["updated_sentence"][idx]]
+            )
+
+    if data["review"]:
+        review = data["review"][0]
+    else:
+        review = ""
+
+    return feedbacks, review
 
 
 def generate_save_diary_feedback(api, **kwargs):
-    diaries = kwargs["ti"].xcom_pull(
-        task_ids="fetch_yesterday_diary"
-    )  # dict이 아닌 list로 전달
+    diaries = kwargs["ti"].xcom_pull(task_ids="fetch_yesterday_diary")
+    # SQL 결과가 dict이 아닌 list로 전달
     pg_hook = PostgresHook(postgres_conn_id="my_postgres_conn")
 
     for diary in diaries:
         diary_id = diary[0]
         text = diary[1]
 
-        # Feedback 생성
+        # 1. HCX로 일기 피드백 생성
         feedback = api.execute(text)
         print(f"Generated Feedback for Diary {diary_id}: {feedback}")
 
-        # 매개변수화된 쿼리 실행
+        # 2. 생성한 content에서 일기 피드백과 리뷰 파싱하기
+        feedbacks, review = parse_feedback_review(text, feedback)
+        if isinstance(feedbacks, (list, dict)):
+            feedbacks = json.dumps(feedbacks, ensure_ascii=False)
+        print(f"feedbacks: {feedbacks}")
+        print(f"review: {review}")
+
+        # 3. 일기 피드백과 리뷰 DB에 저장히기
         sql = """
         UPDATE DIARIES
-        SET FEEDBACK = %s, STATUS = 2
+        SET FEEDBACK = %s, REVIEW = %s, STATUS = 2
         WHERE DIARY_ID = %s
         """
-        pg_hook.run(sql, parameters=(feedback, diary_id), autocommit=True)
+        pg_hook.run(sql, parameters=(feedbacks, review, diary_id), autocommit=True)
 
 
 default_args = {"owner": "airflow", "retries": 1, "retry_delay": timedelta(seconds=5)}
@@ -161,12 +217,12 @@ default_args = {"owner": "airflow", "retries": 1, "retry_delay": timedelta(secon
 with DAG(
     dag_id="diary_feedback",
     default_args=default_args,
-    start_date=datetime(2025, 1, 15),
+    start_date=datetime(2025, 1, 25),
     schedule_interval="0 1 * * *",
     catchup=True,
     tags=["diary_feedback"],
 ) as dag:
-    completion_executor = CompletionExecutor()
+    completion_executor = CompletionExecutor(model_name="lmh7w4qy")
 
     # 1. 어제 제출한 일기 가져오기
     get_yesterday_diaries_task = PostgresOperator(

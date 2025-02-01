@@ -55,7 +55,7 @@ def fetch_diary_by_date(
     response_model=DiaryExtendedDTO,
     status_code=status.HTTP_200_OK,
 )
-def fetch_diary_by_date(
+def fetch_diary_by_id(
     diary_id: int,
     token: str = Depends(oauth2_scheme),
     session: Session = Depends(get_session),
@@ -75,6 +75,7 @@ def fetch_diary_by_date(
     # 3. 응답 데이터 생성
     return DiaryExtendedDTO(
         diary_id=diary.diary_id,
+        status=diary.status,
         text=diary.text,
         feedback=diary.feedback,
         review=diary.review,

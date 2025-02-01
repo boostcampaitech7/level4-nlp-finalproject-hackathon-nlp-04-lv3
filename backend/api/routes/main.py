@@ -35,7 +35,7 @@ def get_random_texts(
             text_id=text.text_id,
             title=text.title,
             category=text.category,
-            content=text.content[0],
+            content=[text.content[0]],
         )
         for text in texts
     ]
@@ -47,7 +47,7 @@ def get_random_texts(
     response_model=List[VocabStudyRecordDTO],
     status_code=status.HTTP_200_OK,
 )
-def fetch_record_by_page(
+def fetch_review_quiz(
     token: str = Depends(oauth2_scheme), session: Session = Depends(get_session)
 ):
     # 1. 토큰 검증
@@ -57,10 +57,14 @@ def fetch_record_by_page(
     today = datetime.now().date()
     review_date = today - timedelta(days=7)
 
-    statement = select(StudyRecords).where(
-        StudyRecords.user_id == user_id,
-        cast(StudyRecords.created_at, Date) == review_date,
-        StudyRecords.vocab_quiz_id.isnot(None),  # None 비교 수정
+    statement = (
+        select(StudyRecords)
+        .where(
+            StudyRecords.user_id == user_id,
+            cast(StudyRecords.created_at, Date) == review_date,
+            StudyRecords.vocab_quiz_id.isnot(None),  # None 비교 수정
+        )
+        .limit(3)
     )
     study_records = session.exec(statement).all()
 

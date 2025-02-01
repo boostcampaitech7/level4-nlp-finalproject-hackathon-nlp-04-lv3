@@ -7,6 +7,11 @@ class VocabQuizDTO(BaseModel):
     options: List[str]
 
 
+class VocabQuizRequestDTO(BaseModel):
+    quiz_id: int
+    user_answer: List[int]
+
+
 class VocabQuizResponseDTO(BaseModel):
     question: List[str]
     options: List[str]

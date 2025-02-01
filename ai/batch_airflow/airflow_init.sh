@@ -54,6 +54,8 @@ poetry run airflow connections add 'my_postgres_conn' \
     --conn-port '5432'
 COMMENT
 
+#poetry run airflow webserver --port 8080
+#poetry run airflow scheduler
 # 포트 프로세스 Kill
 #  - 스케줄러: kill -9 $(lsof -i :8793)
 #  - 웹 서버: kill -9 $(lsof -i :8080)

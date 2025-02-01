@@ -36,9 +36,28 @@ export const VocabDetailPage: React.FC = () => {
     }));
   };
 
-  const handleButtonClick = () => {
+  const handleQuizClick = () => {
     navigate(`/vocab/${vocab_id}/quiz`)
-  };
+  }
+
+  const handlePrevVocab = () => {
+    const currentId = Number(vocab_id)
+    if (currentId > 1) {
+      navigate(`/vocab/${currentId - 1}`)
+    }
+  }
+
+  const handleNextVocab = () => {
+    const currentId = Number(vocab_id)
+    // 임시로 최대 ID를 10으로 설정. 실제로는 API에서 최대 ID를 받아와야 함
+    const maxVocabId = 10
+    if (currentId < maxVocabId) {
+      navigate(`/vocab/${currentId + 1}`)
+    }
+  }
+
+  const isFirstVocab = Number(vocab_id) <= 1
+  const isLastVocab = Number(vocab_id) >= 10 // 임시로 최대 ID를 10으로 설정
 
   return (
     <div className="min-h-screen bg-background-primary">
@@ -71,24 +90,26 @@ export const VocabDetailPage: React.FC = () => {
                 size="medium"
                 color="purple"
                 text="이전 단어"
-                onClick={handleButtonClick}
-                plusClasses="px=[10px]"
+                onClick={handlePrevVocab}
+                plusClasses={`px=[10px] ${isFirstVocab ? 'opacity-50' : ''}`}
                 showBackIcon={true}
+                disabled={isFirstVocab}
               />
               <Button
                 size="medium"
                 color="purple"
                 text="퀴즈 풀기"
-                onClick={handleButtonClick}
+                onClick={handleQuizClick}
                 plusClasses="px=[10px]"
               />
               <Button
                 size="medium"
                 color="purple"
                 text="다음 단어"
-                onClick={handleButtonClick}
-                plusClasses="px=[10px]"
+                onClick={handleNextVocab}
+                plusClasses={`px=[10px] ${isLastVocab ? 'opacity-50' : ''}`}
                 showFrontIcon={true}
+                disabled={isLastVocab}
               />
             </div>
           </div>

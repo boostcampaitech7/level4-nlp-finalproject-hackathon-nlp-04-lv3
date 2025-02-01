@@ -25,8 +25,8 @@ class TextConversations(SQLModel, table=True):
     user_id: int = Field(foreign_key="users.user_id", nullable=False)
     text_id: int = Field(foreign_key="texts.text_id", nullable=False)
     focused: Optional[str] = Field(sa_column=Column(TEXT))
-    question: str = Field(sa_column=Column(TEXT), nullable=False)
-    answer: str = Field(sa_column=Column(TEXT), nullable=False)
+    question: str = Field(sa_column=Column(TEXT, nullable=False))
+    answer: str = Field(sa_column=Column(TEXT, nullable=False))
     created_at: datetime = Field(
         default_factory=datetime.now, sa_column=Column(TIMESTAMP, nullable=False)
     )

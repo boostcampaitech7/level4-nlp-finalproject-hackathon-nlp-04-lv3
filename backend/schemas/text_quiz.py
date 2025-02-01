@@ -7,6 +7,11 @@ class TextQuizDTO(BaseModel):
     options: List[str]
 
 
+class TextQuizRequestDTO(BaseModel):
+    quiz_id: int
+    user_answer: List[int]
+
+
 class TextQuizResponseDTO(BaseModel):
     question: List[str]
     options: List[str]
