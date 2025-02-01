@@ -21,9 +21,11 @@ RUN poetry install --no-root
 # 백엔드 코드 복사
 COPY dags/ /ai/batch_airflow/dags/
 COPY run_scheduler_webserver.sh /ai/batch_airflow/
+COPY prompt.json /ai/batch_airflow/
 
 # .env 파일 생성
-RUN echo "NAVER_API_KEY=${NAVER_API_KEY}" > .env
+RUN echo "NAVER_API_KEY=${NAVER_API_KEY}" > .env && \
+echo "AIRFLOW_DIR=/ai/batch_airflow" >> .env
 
 # AirFlow 환경 설정
 ENV AIRFLOW_HOME=/ai/batch_airflow

@@ -2,13 +2,17 @@ import os
 import json
 import pandas as pd
 import streamlit as st
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 
 from feedback_generator import FeedbackGenerator
 from feedback_evaluator import FeedbackComparator, FeedbackEvaluator
-from prompt import feedback_prompt, evaluate_prompt
 
-load_dotenv()
+load_dotenv(find_dotenv())
+
+with open(f"{os.getenv('AIRFLOW_DIR')}/prompt.json", "r", encoding="utf-8") as f:
+    prompt = json.load(f)
+feedback_prompt = prompt["feedback_prompt"]
+evaluate_prompt = prompt["evaluate_prompt"]
 
 
 def view_diary_selections(df):
@@ -241,12 +245,12 @@ if __name__ == "__main__":
         "deepseek": os.getenv("DEEPSEEK_API_KEY"),
         "naver": os.getenv("NAVER_API_KEY"),
     }
-    diary_file = f"{os.getenv('TUNING_PATH')}/data/test_diary.csv"
-    feedback_save_file = f"{os.getenv('TUNING_PATH')}/data/feedback.jsonl"
-    feedback_file1 = f"{os.getenv('TUNING_PATH')}/data/HCX-003_feedback.jsonl"
-    feedback_file2 = f"{os.getenv('TUNING_PATH')}/data/lmh7w4qy_feedback.jsonl"
-    evaluate_file = f"{os.getenv('TUNING_PATH')}/data/HCX-003_evaluate.jsonl"
-    evaluate_file = f"{os.getenv('TUNING_PATH')}/data/lmh7w4qy_evaluate.jsonl"
+    diary_file = f"{os.getenv('AIRFLOW_DIR')}/tuning/data/test_diary.csv"
+    feedback_save_file = f"{os.getenv('AIRFLOW_DIR')}/tuning/data/feedback.jsonl"
+    feedback_file1 = f"{os.getenv('AIRFLOW_DIR')}/tuning/data/HCX-003_feedback.jsonl"
+    feedback_file2 = f"{os.getenv('AIRFLOW_DIR')}/tuning/data/lmh7w4qy_feedback.jsonl"
+    evaluate_file = f"{os.getenv('AIRFLOW_DIR')}/tuning/data/HCX-003_evaluate.jsonl"
+    evaluate_file = f"{os.getenv('AIRFLOW_DIR')}/tuning/data/lmh7w4qy_evaluate.jsonl"
 
     main(
         api_keys=api_keys,

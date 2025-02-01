@@ -26,7 +26,6 @@ from api.routes.text import router as text_router
 from api.routes.text_quiz import router as text_quiz_router
 from api.routes.diary import router as diary_router
 from api.routes.level import router as level_router
-from api.routes.study_record import router as record_router
 
 
 @asynccontextmanager
@@ -55,7 +54,6 @@ app.include_router(text_router)
 app.include_router(text_quiz_router)
 app.include_router(diary_router)
 app.include_router(level_router)
-app.include_router(record_router)
 
 
 # 서버 실행
