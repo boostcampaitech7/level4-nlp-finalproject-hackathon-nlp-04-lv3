@@ -5,7 +5,7 @@ FROM python:3.10.13-slim
 WORKDIR /backend
 
 # 빌드 시 환경 변수를 ARG로 설정
-ARG DB_URL=postgresql+psycopg2://root:password1234@host.docker.internal/arabugi_db
+ARG DB_HOST=host.docker.internal
 ARG ALGORITHM=HS256
 ARG SECRET_KEY=41cfd2ff1d20275fcd829ade54ded7eab160f65496273bb9c3d9a18c51416b8a
 ARG EXPIRE_MINUTES=300
@@ -29,7 +29,7 @@ COPY services/ /backend/services/
 COPY app.py /backend/
 
 # .env 파일 생성
-RUN echo "DB_URL=${DB_URL}" > .env && \
+RUN echo "DB_URL=postgresql+psycopg2://root:password1234@${DB_HOST}/arabugi_db" > .env && \
     echo "ALGORITHM=${ALGORITHM}" >> .env && \
     echo "SECRET_KEY=${SECRET_KEY}" >> .env && \
     echo "EXPIRE_MINUTES=${EXPIRE_MINUTES}" >> .env

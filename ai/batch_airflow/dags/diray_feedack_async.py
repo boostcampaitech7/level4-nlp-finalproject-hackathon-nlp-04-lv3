@@ -121,7 +121,7 @@ class CompletionExecutor:
 
     async def execute(self, session, diary):
         headers = {
-            "Authorization": self._api_key,
+            "Authorization": f"Bearer {self._api_key}",
             "Content-Type": "application/json; charset=utf-8",
         }
         self.prompt[1]["content"] = f"**일기**:  \n{diary}"
