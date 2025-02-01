@@ -8,7 +8,6 @@ authors = ["minseon <alstjs4739@gmail.com>"]
 python = ">=3.10,<4.0"
 fastapi = ">=0.115.6,<0.116.0"
 sqlmodel = ">=0.0.22,<0.0.23"
-loguru = ">=0.7.3,<0.8.0"
 requests = ">=2.32.3,<3.0.0"
 passlib = ">=1.7.4,<2.0.0"
 python-jose = ">=3.3.0,<4.0.0"
@@ -25,6 +24,7 @@ httpx = "^0.28.1"
 pytest = "^8.3.4"
 bcrypt = "^4.2.1"
 pytest-mock = "^3.14.0"
+logging = "^0.4.9.6"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
