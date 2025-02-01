@@ -98,7 +98,7 @@ def parse_feedback_review(diary, feedback):
     # 3. feedbacks JSON으로 저장하기 위해 직렬화
     feedbacks = json.dumps(feedbacks, ensure_ascii=False)
     review = data["review"][0] if data["review"] else ""
-    print(f"feedback: {feedback}")
+    print(f"feedback: {feedbacks}")
     print(f"review: {review}")
     return feedbacks, review
 
