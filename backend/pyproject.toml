@@ -24,7 +24,7 @@ httpx = "^0.28.1"
 pytest = "^8.3.4"
 bcrypt = "^4.2.1"
 pytest-mock = "^3.14.0"
-logging = "^0.4.9.6"
+loguru = "^0.7.3"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
