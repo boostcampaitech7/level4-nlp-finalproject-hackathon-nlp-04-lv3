@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import getTextQuizSolve from 'services/temp.getTextQuizSolve'
+import { getTextQuizSolve } from 'services'
 import { TextQuizSolveType } from 'types/textQuizSolve'
 
 const useTextQuizSolve = (quizId: number) => {

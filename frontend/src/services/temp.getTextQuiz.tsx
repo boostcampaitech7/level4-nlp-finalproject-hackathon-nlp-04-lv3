@@ -1,7 +1,7 @@
 import { TextAccountType } from 'types'
 import { TextQuizType } from 'types/textQuiz'
 
-const getTextQuizAPI = async (quizId: number) => {
+const getTextQuiz = async (quizId: number) => {
   console.log(`${quizId} 퀴즈 호출`)
   const dummyTextQuiz: TextQuizType = {
     question: [
@@ -31,4 +31,4 @@ const getTextQuizAPI = async (quizId: number) => {
   return dummyTextQuiz
 }
 
-export default getTextQuizAPI
+export default getTextQuiz
