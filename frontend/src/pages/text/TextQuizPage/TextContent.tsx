@@ -1,11 +1,6 @@
-import { useQueryClient } from '@tanstack/react-query'
-import { TextDataType } from 'types'
-
-const TextContent = () => {
-  const queryClient = useQueryClient()
-  const textData = queryClient.getQueryData<TextDataType>(['textData'])
+const TextContent = ({ text }: { text: string[] }) => {
   const getConcatText = () => {
-    return textData?.text.join('\n')
+    return text.join('\n')
   }
   return (
     <div
