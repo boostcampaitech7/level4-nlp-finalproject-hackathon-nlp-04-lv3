@@ -15,6 +15,7 @@ const LoginPage = () => {
     password: ''
   })
   const [error, setError] = useState('')
+  const [keepLoggedIn, setKeepLoggedIn] = useState(false) // 체크박스 상태 관리
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword)
@@ -85,7 +86,12 @@ const LoginPage = () => {
             {error && <p className="text-red-500 body-s">{error}</p>}
 
             <label className="flex items-center gap-2.5 body-s">
-              <input type="checkbox" className="w-6 h-6 rounded-full border-2" />
+              <input
+                type="checkbox"
+                className="w-6 h-6 rounded-full border-2"
+                checked={keepLoggedIn}
+                onChange={(e) => setKeepLoggedIn(e.target.checked)}
+              />
               로그인 상태 유지하기
             </label>
 
