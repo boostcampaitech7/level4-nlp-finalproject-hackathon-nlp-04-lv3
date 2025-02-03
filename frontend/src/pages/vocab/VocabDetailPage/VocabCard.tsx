@@ -59,10 +59,14 @@ export const VocabCard: React.FC<VocabCardProps> = ({ data, type, onBookmarkTogg
           onMouseEnter={() => setShowTooltip(true)}
           onMouseLeave={() => setShowTooltip(false)}
         >
-          {showTooltip && (
+          {showTooltip && data.hanja && (
             <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 z-50">
               <div className="h-[92px] p-2.5 bg-text-secondary rounded-xl shadow-[0px_0px_12.899999618530273px_0px_rgba(0,0,0,0.25)] justify-center items-center gap-2.5 inline-flex whitespace-nowrap">
-                <div className="text-text-inverse body-m">독: 두텁다, 진실되다<br/>실: 참되다, 실제</div>
+                <div className="text-text-inverse body-m">
+                {data.hanja.split('\n').map((line, index) => (
+    <p key={index} className="break-keep">{line}</p>
+  ))}
+                </div>
               </div>
             </div>
           )}

@@ -3,15 +3,19 @@ import { VocabCard } from './VocabCard';
 import { VocabDetailType } from './types';
 import Button from 'components/Button';
 import {VocabChatInterface} from 'components/VocabChatInterface'; // Import VocabChatInterface component
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, useLocation } from 'react-router-dom'
+
+
 
 export const VocabDetailPage: React.FC = () => {
+  const location = useLocation();
   const { vocab_id } = useParams()
   const navigate = useNavigate()
-  const [vocabData, setVocabData] = useState<VocabDetailType>({
+  const [vocabData, setVocabData] = useState<VocabDetailType>(
+    location.state?.vocabData ||{
     vocab_id: 11123043,
     vocab: "독실한",
-    hanja: "",
+    hanja: "독: 두텁다, 진실되다 \n실: 참되다, 실제",
     bookmark: false,
     dict_mean: "믿음이 두텁고 성실하다.",
     easy_explain: "어떤 믿음이나 신념을 매우 깊고 진지하게 믿고 따르는 것을 뜻해요 주로 종교를 열심히 믿는 사람을 말할 때 많이 사용하지만, 꼭 종교가 아니어도 어떤 생각이나 가치를 진심으로 지키는 사람에게도 쓸 수 있어요.",

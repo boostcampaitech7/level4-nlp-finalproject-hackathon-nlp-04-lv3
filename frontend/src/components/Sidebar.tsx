@@ -1,3 +1,4 @@
+import React, { useState } from 'react'
 import IconButton from './IconButton'
 import {
   FaMagnifyingGlass,
@@ -11,11 +12,13 @@ import { useNavigate } from 'react-router'
 import { useSidebarStore } from '../stores/sidebarStore'
 // import useIsAuthenticated from '../hooks/useIsAuthenticated'
 import { useAuthStore } from '../stores/authStore'
+import SearchModal from './SearchModal'
+
 const Sidebar = () => {
   const { isAuthenticated, logout } = useAuthStore()
   const { isSidebarOpen, closeSidebar } = useSidebarStore()
   const navigate = useNavigate()
-
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false)
   // 사이드바를 닫고 해당 페이지로 이동하는 함수
   const closeSidebarWithNavigate = (path: string) => {
     closeSidebar()
@@ -45,7 +48,7 @@ const Sidebar = () => {
           <IconButton
             icon={FaMagnifyingGlass}
             text="검색"
-            onClick={() => console.log('검색 모달 구현 예정')}
+            onClick={() => setIsSearchModalOpen(true)}
           />
           <IconButton
             icon={LuBookOpenText}
@@ -65,7 +68,7 @@ const Sidebar = () => {
             text="일기"
             onClick={() => closeSidebarWithNavigate('/diary/list')}
           />
-          <IconButton
+          {/* <IconButton
             icon={FaRegStar}
             text="즐겨찾기"
             onClick={() => closeSidebarWithNavigate('/user/bookmark')}
@@ -74,7 +77,7 @@ const Sidebar = () => {
             icon={FaRegCircleUser}
             text="마이페이지"
             onClick={() => closeSidebarWithNavigate('/user/profile')}
-          />
+          /> */}
         </div>
         {isAuthenticated && (
           <IconButton
@@ -85,6 +88,9 @@ const Sidebar = () => {
           />
         )}
       </div>
+      {isSearchModalOpen && (
+        <SearchModal onClose={() => setIsSearchModalOpen(false)} />
+      )}
     </>
   )
 }
