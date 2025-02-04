@@ -5,9 +5,12 @@ on:
     branches:
       - develop
     paths:
+      - .github/workflows/build_batch-airflow_image.yaml
       - ai/batch_airflow/dags/**
       - ai/batch_airflow/prompt.json
       - ai/batch_airflow/run_scheduler_webserver.sh
+
+  workflow_dispatch:
 
 jobs:
   build:

@@ -5,12 +5,15 @@ on:
     branches:
       - develop
     paths:
+      - .github/workflows/build_backend_image.yaml
       - backend/app.py
       - backend/api/**
       - backend/core/**
       - backend/models/**
       - backend/schemas/**
       - backend/services/**
+
+  workflow_dispatch:
 
 jobs:
   build:

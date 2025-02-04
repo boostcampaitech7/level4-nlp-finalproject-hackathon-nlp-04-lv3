@@ -66,6 +66,16 @@ class CompletionExecutor:
         return response_body["result"]["message"]["content"]
 
 
+def check_jailbreaking(feedback):
+    jailbreaking_pattern = (
+        r"탈옥 감지|경고 메시지|"
+        r"제 역할은 학생의 일기를 피드백 해주는 것이에요|"
+        r"일기 피드백이 아닌 다른 요청에는 도와드리게 어려워요|"
+        r"다음에 일기를 작성해 제출해 주시면, 꼼꼼하게 읽고 정성껏 피드백 해 드릴게요"
+    )
+    return bool(re.search(jailbreaking_pattern, feedback))
+
+
 def parse_feedback_review(diary, feedback):
     patterns = {
         "original_sentence": r"\d+\.\s*\*\*기존 문장\*\*:\s*(.*?)\*\*이유 및 개선점\*\*",
@@ -127,19 +137,28 @@ def generate_save_diary_feedback(api, **kwargs):
         logger.info(f"Generated Feedback for Diary {diary_id}: {feedback}")
 
         # 2. 생성한 content에서 일기 피드백과 리뷰 파싱하기
-        feedbacks, review = parse_feedback_review(text, feedback)
-        if isinstance(feedbacks, (list, dict)):
-            feedbacks = json.dumps(feedbacks, ensure_ascii=False)
-        logger.info(f"feedbacks: {feedbacks}")
-        logger.info(f"review: {review}")
+        # 2.1. 탈옥 여부 확인
+        if check_jailbreaking(feedback):
+            feedbacks, review = None, None
+            status = 3
+            logger.waring(f"jailbreaking: {text}")
+        else:
+            feedbacks, review = parse_feedback_review(text, feedback)
+            status = 2
+            if isinstance(feedbacks, (list, dict)):
+                feedbacks = json.dumps(feedbacks, ensure_ascii=False)
+            logger.info(f"feedbacks: {feedbacks}")
+            logger.info(f"review: {review}")
 
         # 3. 일기 피드백과 리뷰 DB에 저장히기
         sql = """
         UPDATE DIARIES
-        SET FEEDBACK = %s, REVIEW = %s, STATUS = 2
+        SET FEEDBACK = %s, REVIEW = %s, STATUS = %s
         WHERE DIARY_ID = %s
         """
-        pg_hook.run(sql, parameters=(feedbacks, review, diary_id), autocommit=True)
+        pg_hook.run(
+            sql, parameters=(feedbacks, review, status, diary_id), autocommit=True
+        )
 
         logger.info(f"✅ Diary {diary_id} 업데이트 완료.")
     logger.info("🎯 모든 피드백 생성 및 저장 완료.")
