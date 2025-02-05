@@ -265,7 +265,7 @@ export const GuestMainPage: React.FC = () => {
               </div>
             </TextAnimationWrapper>
           </div>
-          <div className="w-full py-[100px] justify-center items-center gap-[100px] flex flex-col md:flex-row">
+          <div className="w-full px-[100px] py-[100px] justify-center items-center gap-[100px] flex flex-col md:flex-row">
             <AnimationWrapper
               cardSelector=".chat-container"
               preset="fadeUp"
