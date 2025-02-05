@@ -226,10 +226,10 @@ async def request_text_chatbot_response(
                 detail=f"AI 서버 응답 오류: {ai_data["status"]["message"]}",
             )
 
-        # 7. 응답 데이터를 추출
+        # 6. 응답 데이터를 추출
         answer = ai_data["result"]["message"]["content"]
 
-        # 8. 응답 데이터를 데이터베이스에 저장하고 chat_id 가져오기
+        # 7. 응답 데이터를 데이터베이스에 저장하고 chat_id 가져오기
         conversation = TextConversations(
             user_id=user_id, text_id=text_id, question=question, answer=answer
         )
@@ -237,7 +237,7 @@ async def request_text_chatbot_response(
         session.commit()
         session.refresh(conversation)
 
-        # 9. 응답 반환
+        # 8. 응답 반환
         return TextChatbotResponseDTO(chat_id=conversation.chat_id, answer=answer)
 
     except httpx.RequestError as exc:
