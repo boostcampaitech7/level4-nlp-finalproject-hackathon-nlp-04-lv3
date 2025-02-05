@@ -1,0 +1,18 @@
+[project]
+name = "realtime-fastapi"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "김민선",email = "alstjs4739@kookmin.ac.kr"}
+]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi (>=0.115.8,<0.116.0)",
+    "python-dotenv (>=1.0.1,<2.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
