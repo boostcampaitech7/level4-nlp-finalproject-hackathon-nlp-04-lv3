@@ -27,3 +27,4 @@ class DiaryExtendedDTO(BaseModel):
     )
     review: Optional[str] = None
     created_at: date
+    is_last: bool

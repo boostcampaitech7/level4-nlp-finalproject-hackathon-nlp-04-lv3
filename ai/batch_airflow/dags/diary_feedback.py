@@ -70,8 +70,8 @@ def check_jailbreaking(feedback):
     jailbreaking_pattern = (
         r"탈옥 감지|경고 메시지|"
         r"제 역할은 학생의 일기를 피드백 해주는 것이에요|"
-        r"일기 피드백이 아닌 다른 요청에는 도와드리게 어려워요|"
-        r"다음에 일기를 작성해 제출해 주시면, 꼼꼼하게 읽고 정성껏 피드백 해 드릴게요"
+        r"일기 피드백이 아닌 다른 요청에는 도와드리기 어려워요|"
+        r"다음에 일기를 작성해서 제출해 주시면, 꼼꼼하게 읽고 정성껏 피드백 해 드릴게요"
     )
     return bool(re.search(jailbreaking_pattern, feedback))
 
