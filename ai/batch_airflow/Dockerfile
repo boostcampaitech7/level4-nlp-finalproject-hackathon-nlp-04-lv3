@@ -30,7 +30,7 @@ echo "AIRFLOW_DIR=/ai/batch_airflow" >> .env
 
 # AirFlow 환경 설정
 ENV AIRFLOW_HOME=/ai/batch_airflow
-ENV AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://root:${DB_PASSWORD}@${DB_HOST}/arabugi_db
+ENV AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://root:${DB_PASSWORD}@${DB_HOST}/airflow_db
 ENV AIRFLOW__CORE__EXECUTOR=LocalExecutor
 ENV DB_HOST=${DB_HOST}
 
