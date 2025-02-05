@@ -117,25 +117,18 @@ async def request_text_account(
                 json={"text": request_text, "focused": focused},
             )
 
-        # 5. 응답 상태 코드 확인
-        if ai_explain_response.status_code != 200:
-            raise HTTPException(
-                status_code=ai_explain_response.status_code,
-                detail=f"AI 서버 요청 실패: {ai_explain_response.text}",
-            )
-
-        # 6. AI 응답 데이터 처리
+        # 5. AI 응답 데이터 처리
         ai_data = ai_explain_response.json()
-        if ai_data["status"]["code"] != "20000":
+        if ai_data["status"] != "20000":
             raise HTTPException(
                 status_code=500,
-                detail=f"AI 서버 응답 오류: {ai_data['status']['message']}",
+                detail=f"AI 서버에서 올바른 응답을 받지 못했습니다.",
             )
 
-        # 7. 응답 데이터를 추출
-        explain = ai_data["result"]["message"]["content"]
+        # 6. 응답 데이터를 추출
+        explain = ai_data["explain"]
 
-        # 8. 결과를 프론트엔드에 전달할 형식으로 변환
+        # 7. 결과를 프론트엔드에 전달할 형식으로 변환
         return TextExplainResponseDTO(text_id=text_id, explain=explain)
 
     except httpx.RequestError as exc:
@@ -225,19 +218,12 @@ async def request_text_chatbot_response(
                 },
             )
 
-        # 5. 응답 상태 코드 확인
-        if ai_chat_response.status_code != 200:
-            raise HTTPException(
-                status_code=ai_chat_response.status_code,
-                detail=f"AI 서버 요청 실패: {ai_chat_response.text}",
-            )
-
-        # 6. AI 응답 데이터 처리
+        # 5. AI 응답 데이터 처리
         ai_data = ai_chat_response.json()
         if ai_data["status"]["code"] != "20000":
             raise HTTPException(
                 status_code=500,
-                detail=f"AI 서버 응답 오류: {ai_data['status']['message']}",
+                detail=f"AI 서버 응답 오류: {ai_data["status"]["message"]}",
             )
 
         # 7. 응답 데이터를 추출
