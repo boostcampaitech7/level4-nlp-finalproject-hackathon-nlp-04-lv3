@@ -67,7 +67,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ onClose }) => {
 
       {/* 모달 내용 */}
       <div className="relative z-10">
-        <div className="w-[655px] h-[78px] px-7 py-2.5 bg-[#f2f2f2] rounded-2xl shadow-[0px_0px_13.2px_0px_rgba(178,148,250,1)] flex items-center gap-[22px]">
+        <div className="w-[655px] h-[78px] px-7 py-2.5 bg-[#f2f2f2] rounded-[32px] shadow-[0px_0px_13.2px_0px_rgba(178,148,250,1)] flex items-center gap-[22px]">
           {/* 아이콘 영역 */}
           <div className="w-[36.27px] h-[37px] flex items-center justify-center">
             <FaMagnifyingGlass size={30} className="text-[#707070]" />
