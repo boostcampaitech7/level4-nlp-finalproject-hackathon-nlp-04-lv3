@@ -5,6 +5,7 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa'
 import { ReactComponent as AraboogieWithBackground } from '../../../assets/araboogie_with_background.svg'
 import Button from 'components/Button'
 import { useAuthStore } from '../../../stores/authStore'
+import useLogin from 'services/login'
 
 const LoginPage = () => {
   const navigate = useNavigate()
@@ -28,19 +29,11 @@ const LoginPage = () => {
       [name]: value
     }))
   }
-
+  const login = useLogin()
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault()
     
-    // 더미 로그인 검증
-    if (credentials.username === 'admin' && credentials.password === 'admin') {
-      // 더미 토큰 생성 (실제로는 서버에서 받아야 함)
-      const dummyToken = 'dummy_token_' + Date.now()
-      setAuth(dummyToken)
-      navigate('/')
-    } else {
-      setError('잘못된 아이디 또는 비밀번호입니다')
-    }
+    login({ username: credentials.username, password: credentials.password })
   }
 
   return (

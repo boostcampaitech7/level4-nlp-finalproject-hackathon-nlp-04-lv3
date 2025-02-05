@@ -9,4 +9,4 @@ export interface VocabDetailType {
   incorrect_example: string[];
 }
 
-export type CardType = 'definition' | 'explanation' | 'correct' | 'incorrect';
+export type CardType = 'definition' | 'explanation' | 'correct' | 'incorrect' | 'correctTutorial' | 'incorrectTutorial';

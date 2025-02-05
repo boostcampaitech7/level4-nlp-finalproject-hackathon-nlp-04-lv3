@@ -4,6 +4,7 @@ import { FaSearch } from 'react-icons/fa';
 import { PiHandsClappingDuotone } from 'react-icons/pi';
 import Button from 'components/Button';
 import ProgressBar from 'components/ProgressBar';
+import customAxios from 'services/customAxios';
 
 // 오늘의 글 데이터 타입 정의
 interface TodayText {
@@ -205,33 +206,33 @@ const MainPage = () => {
       setCurrentSolutionIndex((prev) => prev - 1);
     }
   };
-  const fetchVocabData = async (vocab: string) => {
-    // 실제 API 호출 대신 더미 데이터 반환
-    return {
-      vocab_id: 12345678,
-      vocab: vocab,
-      hanja: "",
-      dict_mean: "신의, 믿음, 관계, 인정 따위가 굳고 깊다.",
-      easy_explain: "감정이나 연결이 아주 깊고 단단하다는 뜻이에요. 쉽게 말해, 친구나 가족과의 믿음이나 관계가 매우 굳고 가까운 상태를 말해요.",
-      correct_example: [
-        "그는 친구들과의 신뢰가 두터워 어떤 어려운 상황에서도 도움을 주고받았다.",
-        "그들의 가족 간의 사랑은 세월이 흘러도 여전히 두텁다.",
-        "두터운 우정을 쌓아 온 친구들이라 서로의 약점을 이해하고 감싸주었다.",
-        "회사 내에서 동료들과의 신뢰가 두텁기 때문에 중요한 프로젝트를 맡을 수 있었다.",
-        "선생님은 제자들과 두터운 정을 나누며 오랜 시간 가르침을 이어갔다."
-      ],
-      incorrect_example: [
-        "그는 두터운 목소리로 노래를 불렀다.",
-        "\"두텁다\"는 목소리와 같은 물리적 특성에는 쓰이지 않음."
-      ]
-    };
+
+  const getVocabData = (vocab: string) => {
+        const axios = customAxios()
+        return axios
+        .get(`api/main/vocab/${vocab}`)
+        .then((res) => {
+          const {data} = res
+          if (res.status != 200) {
+            throw new Error('Failed to get vocab data')
+          }
+          console.log(data)
+          const {vocab_id, vocab, hanja, dict_mean, easy_explain, correct_example, incorrect_example} = data
+          return {vocab_id, vocab, hanja, dict_mean, easy_explain, correct_example, incorrect_example}
+        })
+        .catch((err) => {
+          console.log(err)
+          throw new Error('Failed to get vocab data')
+        })
+
   };
+  
   // 단어 검색
   const handleSearch = async () => {
     if (!searchTerm.trim()) return;
     
     try {
-      const data = await fetchVocabData(searchTerm);
+      const data = await getVocabData(searchTerm);
       navigate(`/vocab/${data.vocab_id}`, { state: { vocabData: data } });
     } catch (error) {
       console.error('Search failed:', error);

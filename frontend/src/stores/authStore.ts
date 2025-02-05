@@ -17,28 +17,28 @@ interface AuthState {
 export const useAuthStore = create<AuthState>((set) => ({
   // 초기 상태는 현재 쿠키에 저장된 토큰을 읽어 결정합니다.
   isAuthenticated: !!Cookies.get('token'),
-  token: Cookies.get('token') || null,
+  token: Cookies.get('access_token') || null,
   setAuth: (token, persistent = false) => {
     if (token) {
       if (persistent) {
         // persistent가 true이면 7일간 유지되는 쿠키로 설정 (브라우저 종료 후에도 유지)
-        Cookies.set('token', token)
+        Cookies.set('access_token', token)
       } else {
         // persistent가 false이면 세션 쿠키로 저장 (브라우저 종료 시 삭제)
-        Cookies.set('token', token)
+        Cookies.set('access_token', token)
       }
       set({ isAuthenticated: true, token })
     } else {
-      Cookies.remove('token')
+      Cookies.remove('access_token')
       set({ isAuthenticated: false, token: null })
     }
   },
   logout: () => {
-    Cookies.remove('token')
+    Cookies.remove('access_token')
     set({ isAuthenticated: false, token: null })
   },
   checkAuth: () => {
-    const token = Cookies.get('token')
+    const token = Cookies.get('access_token')
     const isAuthenticated = !!token
     set({ isAuthenticated, token: token || null })
     return isAuthenticated
