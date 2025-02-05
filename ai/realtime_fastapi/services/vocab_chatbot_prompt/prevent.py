@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import requests
 
 
@@ -43,6 +41,7 @@ class CompletionExecutor:
         print(full_response)
 
 
+# 학습용 챗봇을 위한 프롬프트
 prompt = """
 - 당신은 학습 보조 챗봇입니다.
 - 다음과 같은 [내용]에서 도움을 드립니다.

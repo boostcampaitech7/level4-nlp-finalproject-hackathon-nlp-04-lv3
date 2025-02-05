@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import requests
 
 
@@ -43,7 +41,7 @@ class CompletionExecutor:
         print(full_response)
 
 
-# 기존 CLOVA Studio의 요구사항과 다름 -> "3. '친구', 'AI' 이름을 제외시킵니다." 추가
+# 주어진 단어를 활용하여 일상생활 대화를 생성하는 프롬프트
 prompt = """
 #목적: 한글 단어를 이해시키기
 
