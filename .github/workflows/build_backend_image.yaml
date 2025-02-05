@@ -33,6 +33,7 @@ jobs:
     - name: Build Docker Image
       run: |
         docker build --build-arg DB_HOST=${{ secrets.DB_HOST }} \
+                     --build-arg DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
                      --build-arg ALGORITHM=${{ secrets.ALGORITHM }} \
                      --build-arg SECRET_KEY=${{ secrets.SECRET_KEY }} \
                      --build-arg EXPIRE_MINUTES=${{ secrets.EXPIRE_MINUTES }} \
