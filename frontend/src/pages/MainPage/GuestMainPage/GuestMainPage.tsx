@@ -3,12 +3,12 @@ import AnimatedCards from './AnimatedCards'
 import { TextAnimationWrapper } from './TextAnimationWrapper'
 import { ImageAnimationWrapper } from './ImageAnimationWrapper'
 import { ChatInterface } from './GuestChatInterface'
-import { ChatMessage, ChatAction } from '../../types/chat'
+import { ChatMessage, ChatAction } from '../../../types/chat'
 import { AnimationWrapper } from './AnimationWrapper'
 import LoginPopup from './LoginPopup'
 import Button from 'components/Button'
 import { MagneticText } from 'components/MagneticText'
-import Footer from '../../components/Footer'
+import Footer from '../../../components/Footer'
 
 export const GuestMainPage: React.FC = () => {
   useEffect(() => {
