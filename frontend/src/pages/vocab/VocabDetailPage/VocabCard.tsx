@@ -42,8 +42,8 @@ export const VocabCard: React.FC<VocabCardProps> = ({ data, type, onBookmarkTogg
   };
 
   const renderDefinitionCard = () => (
-    <div className="w-[390px] h-[363px] px-[50px] py-[30px] bg-surface-primary-2 rounded-[32px] shadow-[0px_0px_13.199999809265137px_0px_rgba(178,148,250,1.00)] flex-col justify-start items-start inline-flex">
-      <div className="w-[303px] h-[60px] justify-end items-start inline-flex">
+    <div className="w-full max-w-[390px] min-w-[280px] h-auto min-h-[363px] px-4 sm:px-[50px] py-[30px] bg-surface-primary-2 rounded-[32px] shadow-[0px_0px_13.199999809265137px_0px_rgba(178,148,250,1.00)] flex-col justify-start items-start inline-flex">
+      <div className="w-full sm:w-[303px] h-[60px] justify-end items-start inline-flex">
         {/* <button 
           onClick={onBookmarkToggle}
           className="w-[60px] h-[60px] relative cursor-pointer"
@@ -53,7 +53,7 @@ export const VocabCard: React.FC<VocabCardProps> = ({ data, type, onBookmarkTogg
           </span>
         </button> */}
       </div>
-      <div className="self-stretch h-[76px] flex-col justify-start items-start gap-2.5 flex">
+      <div className="self-stretch h-auto sm:h-[76px] flex-col justify-start items-start gap-2.5 flex">
         <div 
           className="relative px-2.5 justify-center items-end gap-2.5 inline-flex"
           onMouseEnter={() => setShowTooltip(true)}
@@ -61,16 +61,16 @@ export const VocabCard: React.FC<VocabCardProps> = ({ data, type, onBookmarkTogg
         >
           {showTooltip && data.hanja && (
             <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 z-50">
-              <div className="h-[92px] p-2.5 bg-text-secondary rounded-xl shadow-[0px_0px_12.899999618530273px_0px_rgba(0,0,0,0.25)] justify-center items-center gap-2.5 inline-flex whitespace-nowrap">
+              <div className="h-auto sm:h-[92px] p-2.5 bg-text-secondary rounded-xl shadow-[0px_0px_12.899999618530273px_0px_rgba(0,0,0,0.25)] justify-center items-center gap-2.5 inline-flex whitespace-normal sm:whitespace-nowrap">
                 <div className="text-text-inverse body-m">
-                {data.hanja.split('\n').map((line, index) => (
-    <p key={index} className="break-keep">{line}</p>
-  ))}
+                  {data.hanja.split('\n').map((line, index) => (
+                    <p key={index} className="break-keep">{line}</p>
+                  ))}
                 </div>
               </div>
             </div>
           )}
-          <div className="text-text-primary display-l">
+          <div className="text-text-primary display-l break-words">
             {data.vocab}
           </div>
           <div className="h-[38px] py-[7px]" />
@@ -85,14 +85,14 @@ export const VocabCard: React.FC<VocabCardProps> = ({ data, type, onBookmarkTogg
   );
 
   const renderExplanationCard = () => (
-    <div className="w-[390px] h-[363px] bg-surface-primary-2 rounded-[32px] border-4 border-button-secondary-1 overflow-hidden">
+    <div className="w-full max-w-[390px] min-w-[280px] h-auto min-h-[363px] bg-surface-primary-2 rounded-[32px] border-4 border-button-secondary-1 overflow-hidden">
       <div className="w-full h-full flex flex-col">
-        <div className="px-8 pt-6 pb-4">
+        <div className="px-4 sm:px-8 pt-6 pb-4">
           <h3 className="self-stretch text-text-primary body-l">
             쉬운 설명
           </h3>
         </div>
-        <div className="relative z-10 flex flex-col items-start px-8 w-full">
+        <div className="relative z-10 flex flex-col items-start px-4 sm:px-8 w-full flex-grow">
           <div className="self-stretch text-text-primary body-s tracking-tight">
             {data.easy_explain}
           </div>
@@ -102,20 +102,20 @@ export const VocabCard: React.FC<VocabCardProps> = ({ data, type, onBookmarkTogg
   );
 
   const renderCorrectCard = () => (
-    <div className="w-[390px] h-[363px] bg-surface-primary-2 rounded-[32px] border-4 border-button-secondary-1 overflow-hidden">
+    <div className="w-full max-w-[390px] min-w-[280px] h-auto min-h-[363px] bg-surface-primary-2 rounded-[32px] border-4 border-button-secondary-1 overflow-hidden">
       <div className="w-full h-full flex flex-col">
-        <div className="px-8 pt-6 pb-4">
+        <div className="px-4 sm:px-8 pt-6 pb-4">
           <h3 className="body-l text-text-primary">
             옳은 사용
           </h3>
         </div>
         <div className="flex-1 flex items-center justify-center relative">
           <div className="absolute inset-0 flex items-center justify-center z-0">
-            <div className="text-[270px] font-bold font-['Pretendard'] text-[#426cff]/10">
+            <div className="text-[200px] sm:text-[270px] font-bold font-['Pretendard'] text-[#426cff]/10">
               O
             </div>
           </div>
-          <div className="relative z-10 flex flex-col items-start px-8 w-full overflow-hidden">
+          <div className="relative z-10 flex flex-col items-start px-4 sm:px-8 w-full overflow-hidden">
             <AnimatePresence initial={false} custom={direction} mode="wait">
               <motion.p
                 key={difficultyLevel}
@@ -135,7 +135,7 @@ export const VocabCard: React.FC<VocabCardProps> = ({ data, type, onBookmarkTogg
             </AnimatePresence>
           </div>
         </div>
-        <div className="px-8 pb-6 flex justify-end gap-2 z-10">
+        <div className="px-4 sm:px-8 pb-6 flex justify-end gap-2 z-10">
           <Button
             size="small"
             color="grey"
@@ -156,20 +156,20 @@ export const VocabCard: React.FC<VocabCardProps> = ({ data, type, onBookmarkTogg
   );
 
   const renderIncorrectCard = () => (
-    <div className="w-[390px] h-[363px] bg-surface-primary-2 rounded-[32px] border-4 border-button-secondary-1 overflow-hidden">
+    <div className="w-full max-w-[390px] min-w-[280px] h-auto min-h-[363px] bg-surface-primary-2 rounded-[32px] border-4 border-button-secondary-1 overflow-hidden">
       <div className="w-full h-full flex flex-col">
-        <div className="px-8 pt-6">
+        <div className="px-4 sm:px-8 pt-6">
           <h3 className="body-l text-text-primary">
             틀린 사용
           </h3>
         </div>
         <div className="flex-1 relative flex items-center justify-center -mt-6">
           <div className="absolute inset-0 flex items-center justify-center z-0">
-            <div className="text-[#ff4646]/10 text-[270px] font-bold font-['Pretendard'] -mt-4">
+            <div className="text-[200px] sm:text-[270px] font-bold font-['Pretendard'] text-[#ff4646]/10 -mt-4">
               X
             </div>
           </div>
-          <div className="relative z-10 flex flex-col items-start px-8 w-full">
+          <div className="relative z-10 flex flex-col items-start px-4 sm:px-8 w-full">
             <p className="body-m text-text-primary">
               {data.incorrect_example[0]}
             </p>

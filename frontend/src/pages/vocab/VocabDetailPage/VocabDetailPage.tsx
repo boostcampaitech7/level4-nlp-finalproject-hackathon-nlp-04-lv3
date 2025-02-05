@@ -53,20 +53,20 @@ export const VocabDetailPage: React.FC = () => {
 
   const handleNextVocab = () => {
     const currentId = Number(vocab_id)
-    // 임시로 최대 ID를 10으로 설정. 실제로는 API에서 최대 ID를 받아와야 함
-    const maxVocabId = 10
+    // 임시로 최대 ID를 10으로 설정. 실제로는 API에서 최대 ID를 받아와야함
+    const maxVocabId = 100
     if (currentId < maxVocabId) {
       navigate(`/vocab/${currentId + 1}`)
     }
   }
 
   const isFirstVocab = Number(vocab_id) <= 1
-  const isLastVocab = Number(vocab_id) >= 10 // 임시로 최대 ID를 10으로 설정
+  const isLastVocab = Number(vocab_id) >= 100 // 임시로 최대 ID를 10으로 설정
 
   return (
     <div className="min-h-screen bg-background-primary">
       <main className="container mx-auto px-4 py-5">
-        <div className="h-[917px] px-[138px] py-5 justify-start items-start gap-[19px] inline-flex">
+        <div className="h-[917px] w-full py-5 justify-center items-center gap-[19px] flex">
           {/* Left section with cards */}
           <div className="flex-col justify-center items-center gap-5 inline-flex">
             <div className="grid grid-cols-2 gap-4">
@@ -119,7 +119,22 @@ export const VocabDetailPage: React.FC = () => {
           </div>
 
           {/* Right section with chat UI */}
-          <VocabChatInterface vocabId={String(vocabData.vocab_id)} />
+          <div className="flex-col justify-center items-center inline-flex">
+            <VocabChatInterface vocabId={String(vocabData.vocab_id)} />
+            {/* Help section */}
+            <div className="justify-start items-center inline-flex">
+              <div className="w-[32px] h-[32px] px-[11px] py-0.5 bg-white/80 rounded-[17.50px] border-2 border-[#707070] flex-col justify-center items-center gap-2.5 inline-flex">
+                <div className="text-center text-text-secondary body-s leading-[31.20px] tracking-tight">
+                  ?
+                </div>
+              </div>
+              <div className="p-2.5 justify-center items-center gap-2.5 flex">
+                <div className="text-text-secondary body-s">
+                  현재 페이지의 사용법 알아보기
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </main>
     </div>
