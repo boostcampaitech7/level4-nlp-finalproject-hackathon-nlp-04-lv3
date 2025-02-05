@@ -10,15 +10,17 @@ import { CgNotes } from 'react-icons/cg'
 import { LuBookOpenText } from 'react-icons/lu'
 import { useNavigate } from 'react-router'
 import { useSidebarStore } from '../stores/sidebarStore'
-// import useIsAuthenticated from '../hooks/useIsAuthenticated'
 import { useAuthStore } from '../stores/authStore'
 import SearchModal from './SearchModal'
+import LoginPopup from '../pages/MainPage/GuestMainPage/LoginPopup'
 
 const Sidebar = () => {
   const { isAuthenticated, logout } = useAuthStore()
   const { isSidebarOpen, closeSidebar } = useSidebarStore()
   const navigate = useNavigate()
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false)
+  const [isLoginPopupOpen, setIsLoginPopupOpen] = useState(false)
+
   // 사이드바를 닫고 해당 페이지로 이동하는 함수
   const closeSidebarWithNavigate = (path: string) => {
     closeSidebar()
@@ -29,6 +31,15 @@ const Sidebar = () => {
     logout()
     closeSidebar()
     navigate('/auth/login')
+  }
+
+  // 인증이 필요한 작업을 처리하는 래퍼 함수
+  const handleAuthenticatedAction = (action: () => void) => {
+    if (isAuthenticated) {
+      action()
+    } else {
+      setIsLoginPopupOpen(true)
+    }
   }
 
   return (
@@ -48,36 +59,26 @@ const Sidebar = () => {
           <IconButton
             icon={FaMagnifyingGlass}
             text="검색"
-            onClick={() => setIsSearchModalOpen(true)}
+            onClick={() => handleAuthenticatedAction(() => setIsSearchModalOpen(true))}
           />
           <IconButton
             icon={LuBookOpenText}
             text="긴 글 학습"
-            onClick={() => closeSidebarWithNavigate('/text/list')}
+            onClick={() => handleAuthenticatedAction(() => closeSidebarWithNavigate('/text/list'))}
           />
           <IconButton
             icon={FaRegFileWord}
             text="단어 학습"
-            onClick={() => {
-              const randomVocabId = Math.floor(Math.random() * 100) + 1; // 1부터 100 사이의 랜덤 숫자
+            onClick={() => handleAuthenticatedAction(() => {
+              const randomVocabId = Math.floor(Math.random() * 100) + 1;
               closeSidebarWithNavigate(`/vocab/${randomVocabId}`);
-            }}
+            })}
           />
           <IconButton
             icon={CgNotes}
             text="일기"
-            onClick={() => closeSidebarWithNavigate('/diary/list')}
+            onClick={() => handleAuthenticatedAction(() => closeSidebarWithNavigate('/diary/list'))}
           />
-          {/* <IconButton
-            icon={FaRegStar}
-            text="즐겨찾기"
-            onClick={() => closeSidebarWithNavigate('/user/bookmark')}
-          />
-          <IconButton
-            icon={FaRegCircleUser}
-            text="마이페이지"
-            onClick={() => closeSidebarWithNavigate('/user/profile')}
-          /> */}
         </div>
         {isAuthenticated && (
           <IconButton
@@ -91,6 +92,10 @@ const Sidebar = () => {
       {isSearchModalOpen && (
         <SearchModal onClose={() => setIsSearchModalOpen(false)} />
       )}
+      <LoginPopup 
+        isOpen={isLoginPopupOpen}
+        onClose={() => setIsLoginPopupOpen(false)}
+      />
     </>
   )
 }
