@@ -9,6 +9,7 @@ ARG DB_HOST=host.docker.internal
 ARG ALGORITHM=HS256
 ARG SECRET_KEY=41cfd2ff1d20275fcd829ade54ded7eab160f65496273bb9c3d9a18c51416b8a
 ARG EXPIRE_MINUTES=300
+ARG DB_PASSWORD=password1234
 
 # Poetry 설치 (최신 버전)
 RUN apt update && apt install -y curl && \
@@ -29,7 +30,7 @@ COPY services/ /backend/services/
 COPY app.py /backend/
 
 # .env 파일 생성
-RUN echo "DB_URL=postgresql+psycopg2://root:password1234@${DB_HOST}/arabugi_db" > .env && \
+RUN echo "DB_URL=postgresql+psycopg2://root:${DB_PASSWORD}@${DB_HOST}/arabugi_db" > .env && \
     echo "ALGORITHM=${ALGORITHM}" >> .env && \
     echo "SECRET_KEY=${SECRET_KEY}" >> .env && \
     echo "EXPIRE_MINUTES=${EXPIRE_MINUTES}" >> .env

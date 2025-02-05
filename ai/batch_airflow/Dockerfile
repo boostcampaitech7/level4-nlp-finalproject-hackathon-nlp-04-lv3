@@ -7,6 +7,7 @@ WORKDIR /ai/batch_airflow
 # 빌드 시 환경 변수를 ARG로 설정
 ARG NAVER_API_KEY
 ARG DB_HOST=host.docker.internal
+ARG DB_PASSWORD=password1234
 
 # Poetry + postgresql-client 설치 (최신 버전)
 RUN apt update && apt install -y curl postgresql-client python3-dev build-essential && \
@@ -29,7 +30,7 @@ echo "AIRFLOW_DIR=/ai/batch_airflow" >> .env
 
 # AirFlow 환경 설정
 ENV AIRFLOW_HOME=/ai/batch_airflow
-ENV AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://root:password1234@${DB_HOST}/airflow_db
+ENV AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://root:${DB_PASSWORD}@${DB_HOST}/airflow_db
 ENV AIRFLOW__CORE__EXECUTOR=LocalExecutor
 ENV DB_HOST=${DB_HOST}
 
