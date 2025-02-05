@@ -2,6 +2,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FaMagnifyingGlass } from 'react-icons/fa6'
+import { useSidebarStore } from '../stores/sidebarStore' 
 
 // 실제 API 호출 함수 대신 더미 함수를 사용합니다.
 // 실제 환경에서는 API 호출 로직으로 대체하세요.
@@ -39,6 +40,7 @@ interface SearchModalProps {
 const SearchModal: React.FC<SearchModalProps> = ({ onClose }) => {
   const [searchTerm, setSearchTerm] = useState('')
   const navigate = useNavigate()
+  const { closeSidebar } = useSidebarStore()
 
   const handleSearch = async () => {
     if (!searchTerm.trim()) return
@@ -47,6 +49,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ onClose }) => {
       const data = await fetchVocabData(searchTerm)
       // 검색 성공 후 모달 닫고, 단어 상세 페이지로 이동
       onClose()
+      closeSidebar()
       navigate(`/vocab/${data.vocab_id}`, { state: { vocabData: data } })
     } catch (error) {
       console.error('Search failed:', error)
@@ -79,6 +82,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ onClose }) => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             onKeyPress={handleKeyPress}
+            autoFocus
             className="flex-1 text-text-intermidiate body-l bg-transparent outline-none"
           />
         </div>
