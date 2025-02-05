@@ -60,10 +60,17 @@ const Button = ({
   const buttonStyles = `${baseStyles} ${sizeStyles[size]} ${colorStyles[color]} ${hoverColorStyles[color]} ${plusClasses} ${disabled ? 'cursor-not-allowed opacity-50' : ''}`
 
   return (
-    <button className={buttonStyles} onClick={onClick} disabled={disabled} type={type}>
+    <button
+      className={buttonStyles}
+      onClick={onClick}
+      disabled={disabled}
+      type={type}
+    >
       {showBackIcon && <FaChevronLeft size={iconSize[size]} />}
       <span className="w-[3px]"></span>
-      <div className={`${size === 'large' ? 'flex-1' : 'w-fit'} text-start`}>
+      <div
+        className={`${size === 'large' ? 'flex-1 text-center' : 'w-fit text-start'}`}
+      >
         {text}
       </div>
       <span className="w-[3px]"></span>
