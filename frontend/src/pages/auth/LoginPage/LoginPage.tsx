@@ -44,7 +44,7 @@ const LoginPage = () => {
   }
 
   return (
-    <div className="h-[calc(100vh-126px)] flex justify-center items-start bg-background-primary pt-20">
+    <div className="min-w-[1440px] min-h-screen flex justify-center items-start bg-background-primary pt-20">
       <div className="flex gap-10 max-w-6xl w-full px-4">
         {/* 왼쪽 로그인 폼 */}
         <div className="flex-1 max-w-[510px]">
@@ -78,6 +78,7 @@ const LoginPage = () => {
                 type="button"
                 onClick={togglePasswordVisibility}
                 className="absolute right-5 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-gray-500 hover:text-gray-700"
+                tabIndex={-1}
               >
                 {showPassword ? <FaEyeSlash size={24} /> : <FaEye size={24} />}
               </button>
@@ -100,6 +101,7 @@ const LoginPage = () => {
               size="large"
               color="purple"
               onClick={handleLogin}
+              type="submit"
             />
 
             <p className="mt-8 text-center body-s">
