@@ -41,7 +41,7 @@ class CompletionExecutor:
         print(full_response)
 
 
-# 주어진 단어를 활용하여 일상생활 대화를 생성하는 프롬프트
+# 예시 대화 버튼 프롬프트
 prompt = """
 #목적: 한글 단어를 이해시키기
 

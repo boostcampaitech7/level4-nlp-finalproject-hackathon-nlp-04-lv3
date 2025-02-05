@@ -41,7 +41,7 @@ class CompletionExecutor:
         print(full_response)
 
 
-# 주어진 단어의 반의어를 제공하고, 해당 단어와 반의어 간의 차이점을 설명하는 프롬프트
+# 반의어 버튼 프롬프트
 prompt = """
 #목적: 한글 단어를 이해시키기
 
