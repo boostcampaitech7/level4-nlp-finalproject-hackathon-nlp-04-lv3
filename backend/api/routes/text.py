@@ -37,6 +37,7 @@ def get_text_list(
 
     # 3. 총 페이지 수 계산
     total_count = None
+    total_page_count = None
     if page_num == 1:
         total_count = session.exec(select(func.count(Texts.text_id))).one()
         total_page_count = max(ceil(total_count / 16), 1)

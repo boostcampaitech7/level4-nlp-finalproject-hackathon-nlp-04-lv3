@@ -10,6 +10,7 @@ ARG ALGORITHM=HS256
 ARG SECRET_KEY=41cfd2ff1d20275fcd829ade54ded7eab160f65496273bb9c3d9a18c51416b8a
 ARG EXPIRE_MINUTES=300
 ARG DB_PASSWORD=password1234
+ARG SCHEMA=arabugi
 
 # Poetry 설치 (최신 버전)
 RUN apt update && apt install -y curl && \
@@ -30,7 +31,10 @@ COPY services/ /backend/services/
 COPY app.py /backend/
 
 # .env 파일 생성
-RUN echo "DB_URL=postgresql+psycopg2://root:${DB_PASSWORD}@${DB_HOST}/arabugi_db" > .env && \
+#psql -h 10.0.0.7 -U root -d arabugi_db (10.0.0.7 = 사설IP)
+# CREATE SCHEMA arabugi; (참고, public은 postgres 꺼라 NCP-postgresql은 사용 못하는 듯)
+# SET search_path TO arabugi; <- 그럼 psql 터미널에서 arabugi 접두사 사용 안해도 됨
+RUN echo "DB_URL=postgresql+psycopg2://root:${DB_PASSWORD}@${DB_HOST}/arabugi_db?options=-csearch_path=${SCHEMA}" > .env && \
     echo "ALGORITHM=${ALGORITHM}" >> .env && \
     echo "SECRET_KEY=${SECRET_KEY}" >> .env && \
     echo "EXPIRE_MINUTES=${EXPIRE_MINUTES}" >> .env

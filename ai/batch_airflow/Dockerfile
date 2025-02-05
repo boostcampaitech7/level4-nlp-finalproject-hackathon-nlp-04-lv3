@@ -8,6 +8,8 @@ WORKDIR /ai/batch_airflow
 ARG NAVER_API_KEY
 ARG DB_HOST=host.docker.internal
 ARG DB_PASSWORD=password1234
+ARG DB_NAME=arabugi_db
+ARG SCHEMA=arabugi
 
 # Poetry + postgresql-client 설치 (최신 버전)
 RUN apt update && apt install -y curl postgresql-client python3-dev build-essential && \
@@ -30,9 +32,11 @@ echo "AIRFLOW_DIR=/ai/batch_airflow" >> .env
 
 # AirFlow 환경 설정
 ENV AIRFLOW_HOME=/ai/batch_airflow
-ENV AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://root:${DB_PASSWORD}@${DB_HOST}/airflow_db
+ENV AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://root:${DB_PASSWORD}@${DB_HOST}/${DB_NAME}?options=-csearch_path=${SCHEMA}
 ENV AIRFLOW__CORE__EXECUTOR=LocalExecutor
 ENV DB_HOST=${DB_HOST}
+ENV DB_NAME=${DB_NAME}
+ENV DB_PASSWORD=${DB_PASSWORD}
 
 # 컨테이너 실행 명령
-ENTRYPOINT ["bash", "/ai/batch_airflow/run_scheduler_webserver.sh", "airflow_db"]
+ENTRYPOINT ["bash", "/ai/batch_airflow/run_scheduler_webserver.sh"]
