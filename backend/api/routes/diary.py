@@ -73,23 +73,15 @@ def fetch_diary_by_id(
             status_code=status.HTTP_404_NOT_FOUND, detail="diary doesn't exist"
         )
 
-    # 피드백 기준 문구 제거
-    feedbacks = []
-    for feedback in diary.feedback:
-        feedback[2] = re.sub(r"\(기준\s\d+.*?\)$", "", feedback[2])
-        feedbacks.append(feedback)
+    # 3. 피드백 기준 문구 제거
+    feedbacks = None
+    if diary.feedback:
+        feedbacks = []
+        for feedback in diary.feedback:
+            feedback[2] = re.sub(r"\(기준\s\d+.*?\)$", "", feedback[2])
+            feedbacks.append(feedback)
 
-    # 현재 일기가 최신 일기인지 여부 확인
-    statement = (
-        select(Diaries.diary_id)
-        .where(Diaries.user_id == user_id)
-        .order_by(desc(Diaries.created_at))
-        .limit(1)
-    )
-    last_diary_id = session.exec(statement).first()
-    is_last = last_diary_id == diary.diary_id
-
-    # 3. 응답 데이터 생성
+    # 4. 응답 데이터 생성
     return DiaryExtendedDTO(
         diary_id=diary.diary_id,
         status=diary.status,
@@ -97,7 +89,6 @@ def fetch_diary_by_id(
         feedback=feedbacks,
         review=diary.review,
         created_at=diary.created_at,
-        is_last=is_last,
     )
 
 
