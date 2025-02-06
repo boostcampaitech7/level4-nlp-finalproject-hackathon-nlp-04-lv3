@@ -1,48 +1,51 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { VocabCard } from './VocabCard';
 import { VocabDetailType } from './types';
 import Button from 'components/Button';
 import { VocabChatInterface } from 'components/VocabChatInterface';
-import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import { useNavigate, useParams} from 'react-router-dom';
 import TutorialOverlay from './TutorialOverlay'; // 경로에 맞게 수정
 import ExplanationCarousel from './ExplanationCarousel';
+import { getVocabByNumberData } from 'services/getVocabByNumber'; // 경로에 맞게 수정
 
 export const VocabDetailPage: React.FC = () => {
-  const location = useLocation();
   const { vocab_id } = useParams();
   const navigate = useNavigate();
 
-  const [vocabData, setVocabData] = useState<VocabDetailType>(
-    location.state?.vocabData || {
-      vocab_id: 11123043,
-      vocab: "독실한",
-      hanja: "독: 두텁다, 진실되다 \n실: 참되다, 실제",
-      bookmark: false,
-      dict_mean: "믿음이 두텁고 성실하다.",
-      easy_explain:
-        "어떤 믿음이나 신념을 매우 깊고 진지하게 믿고 따르는 것을 뜻해요. 주로 종교를 열심히 믿는 사람을 말할 때 많이 사용하지만, 꼭 종교가 아니어도 어떤 생각이나 가치를 진심으로 지키는 사람에게도 쓸 수 있어요.",
-      correct_example: [
-        "그는 매일 새벽에 교회에 나가 기도하는 독실한 신자였다",
-        "그녀는 힘든 상황에서도 신앙을 잃지 않고 독실한 자세로 예배에 참석했다",
-        "그는 기독교 신앙을 기반으로 한 가치관을 지키며 살아가는 독실한 사람이었다",
-        "어려운 삶의 고비에서도 그는 독실한 신앙으로 인해 희망을 놓지 않았다",
-        "그는 독실한 신앙을 바탕으로 지역 사회에서 자선 활동을 이끄는 데 열정을 쏟았다"
-      ],
-      incorrect_example: [
-        "그는 독실한 운동 실력으로 대회에서 우승했다.",
-        "\"독실한\"은 실력에 쓰이지 않음"
-      ]
-    }
-  );
-
+  // 초기 데이터는 location.state를 사용할 수 있으나, vocab_id 변경 시 새로 데이터를 받아오도록 함
+  const [vocabData, setVocabData] = useState<VocabDetailType | null>(null);
   const [showTutorial, setShowTutorial] = useState(false);
 
-  const handleBookmarkToggle = () => {
-    setVocabData(prev => ({
-      ...prev,
-      bookmark: !prev.bookmark
-    }));
-  };
+  // vocabData가 없는 경우 백엔드에서 데이터를 받아옴
+  useEffect(() => {
+    if (vocab_id) {
+      // 새 단어 데이터를 요청하기 전에 기존 데이터를 초기화하여 로딩 상태를 명확히 할 수 있음.
+      setVocabData(null);
+      getVocabByNumberData(Number(vocab_id))
+        .then((data) => {
+          setVocabData(data);
+        })
+        .catch((err) => {
+          console.error('단어 데이터를 가져오지 못했습니다.', err);
+        });
+    }
+  }, [vocab_id]); // vocab_id가 바뀔 때마다 호출됨
+
+
+  // 데이터가 아직 로딩 중이면 로딩 UI를 렌더링 (원하는 로딩 컴포넌트로 대체 가능)
+  if (!vocabData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p>Loading...</p>
+      </div>
+    );
+  }
+
+  // const handleBookmarkToggle = () => {
+  //   setVocabData((prev) =>
+  //     prev ? { ...prev, bookmark: !prev.bookmark } : prev
+  //   );
+  // };
 
   const handleQuizClick = () => {
     navigate(`/vocab/${vocab_id}/quiz`);
@@ -70,42 +73,38 @@ export const VocabDetailPage: React.FC = () => {
   const tutorialSteps = [
     {
       title: "단어 뜻 풀이",
-      description: "단어 위에 마우스를 올리면 해당 한자어의 뜻을 확인할 수 있습니다.",
+      description:
+        "단어 위에 마우스를 올리면 해당 한자어의 뜻을 확인할 수 있습니다.",
       component: (
         <VocabCard
           data={vocabData}
           type="definition"
-          onBookmarkToggle={handleBookmarkToggle}
+          // onBookmarkToggle={handleBookmarkToggle}
         />
       )
     },
     {
       title: "쉬운 설명",
-      description: "해당 단어에 대한 간단하고 이해하기 쉬운 설명을 제공합니다.",
-      component: (
-        <VocabCard
-          data={vocabData}
-          type="explanation"
-        />
-      )
+      description:
+        "해당 단어에 대한 간단하고 이해하기 쉬운 설명을 제공합니다.",
+      component: <VocabCard data={vocabData} type="explanation" />
     },
     {
       title: "옳은 예문 제공",
-      description: "단어가 문장에서 어떻게 사용되는지 알 수 있도록, 쉬운 예시부터 어려운 예시까지 차례로 제공합니다.",
-      component: (
-        <VocabCard data={vocabData} type="correctTutorial" />
-      )
+      description:
+        "단어가 문장에서 어떻게 사용되는지 알 수 있도록, 쉬운 예시부터 어려운 예시까지 차례로 제공합니다.",
+      component: <VocabCard data={vocabData} type="correctTutorial" />
     },
     {
       title: "틀린 예문 제공",
-      description: "잘못 사용된 예시를 함께 제공하여 올바른 사용법을 학습할 수 있도록 합니다.",
-      component: (
-        <VocabCard data={vocabData} type="incorrectTutorial" />
-      )
+      description:
+        "잘못 사용된 예시를 함께 제공하여 올바른 사용법을 학습할 수 있도록 합니다.",
+      component: <VocabCard data={vocabData} type="incorrectTutorial" />
     },
     {
       title: "AI 챗봇 문의",
-      description: "모르는 것이 있다면, ‘아라부기’ 챗봇을 통해 즉시 질문할 수 있습니다.",
+      description:
+        "모르는 것이 있다면, ‘아라부기’ 챗봇을 통해 즉시 질문할 수 있습니다.",
       component: (
         <VocabChatInterface vocabId={String(vocabData.vocab_id)} />
       )
@@ -135,7 +134,7 @@ export const VocabDetailPage: React.FC = () => {
               <VocabCard
                 data={vocabData}
                 type="definition"
-                onBookmarkToggle={handleBookmarkToggle}
+                // onBookmarkToggle={handleBookmarkToggle}
               />
               <ExplanationCarousel data={vocabData} />
               <VocabCard data={vocabData} type="correct" />
@@ -195,7 +194,10 @@ export const VocabDetailPage: React.FC = () => {
       </main>
       {/* 튜토리얼 오버레이 조건부 렌더링 */}
       {showTutorial && (
-        <TutorialOverlay steps={tutorialSteps} onClose={() => setShowTutorial(false)} />
+        <TutorialOverlay
+          steps={tutorialSteps}
+          onClose={() => setShowTutorial(false)}
+        />
       )}
     </div>
   );

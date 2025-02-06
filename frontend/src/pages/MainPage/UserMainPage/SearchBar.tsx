@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaSearch } from 'react-icons/fa';
-import { fetchVocabData } from '../../../services/mainPage';
+import { getVocabData } from 'services/mainPage';
 
 interface SearchBarProps {
   className?: string;
@@ -10,12 +10,11 @@ interface SearchBarProps {
 const SearchBar = ({ className = '' }: SearchBarProps) => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
-
   const handleSearch = async () => {
     if (!searchTerm.trim()) return;
     
     try {
-      const data = await fetchVocabData(searchTerm);
+      const data = await getVocabData(searchTerm);
       navigate(`/vocab/${data.vocab_id}`, { state: { vocabData: data } });
     } catch (error) {
       console.error('Search failed:', error);
