@@ -75,7 +75,7 @@ def generate_focused_prompt(text, focused):
 
     # 프롬프트 JSON 파일 열기
     with open(
-        "C:/aitech7_final/level4-nlp-finalproject-hackathon-nlp-04-lv3/ai/realtime_fastapi/services/text_explain/text_explain_prompt.json",
+        "C:/level4-nlp-finalproject-hackathon-nlp-04-lv3/ai/realtime_fastapi/services/text_explain/text_explain_prompt.json",
         "r",
         encoding="utf-8",
     ) as file:
