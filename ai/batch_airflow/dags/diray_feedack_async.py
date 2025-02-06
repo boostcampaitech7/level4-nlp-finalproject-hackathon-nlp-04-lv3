@@ -22,7 +22,6 @@ kst = timezone("Asia/Seoul")
 SCHEMA = os.getenv("SCHEMA").upper()
 with open(f"{os.getenv('AIRFLOW_DIR')}/prompt.json", "r", encoding="utf-8") as f:
     prompt = json.load(f)
-feedback_prompt = prompt["feedback_prompt"]
 
 
 class CompletionExecutor:
@@ -33,7 +32,7 @@ class CompletionExecutor:
             self._host = f"https://clovastudio.stream.ntruss.com/testapp/v2/tasks/{model_name}/chat-completions"
         self._api_key = os.getenv("NAVER_API_KEY")
 
-        self.request_data = {
+        self.hyper_parameter = {
             "topP": 0.3,
             "topK": 0,
             "maxTokens": 4096,
@@ -44,25 +43,29 @@ class CompletionExecutor:
             "seed": 0,
         }
 
-        self.prompt = [
-            {
-                "role": "system",
-                "content": feedback_prompt,
-            },
-            {"role": "user", "content": None},
-        ]
+        self.system_prompt = prompt["feedback_prompt"]
 
     async def execute(self, session, diary):
         headers = {
             "Authorization": f"Bearer {self._api_key}",
             "Content-Type": "application/json; charset=utf-8",
         }
-        self.prompt[1]["content"] = f"**일기**:  \n{diary}"
-        self.request_data["messages"] = self.prompt
-        logger.info(f"request body: {self.request_data}")
+
+        user_prompt = f"**일기**:  \n{diary}"
+        messages = {
+            "messages": [
+                {
+                    "role": "system",
+                    "content": self.system_prompt,
+                },
+                {"role": "user", "content": user_prompt},
+            ]
+        }
+        request_data = {**self.hyper_parameter, **messages}
+        logger.info(f"request body: {request_data}")
 
         async with session.post(
-            self._host, headers=headers, json=self.request_data
+            self._host, headers=headers, json=request_data
         ) as response:
             response_body = await response.json()
             return response_body["result"]["message"]["content"]
