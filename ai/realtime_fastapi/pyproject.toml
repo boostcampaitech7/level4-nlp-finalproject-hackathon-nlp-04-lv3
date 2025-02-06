@@ -29,11 +29,9 @@ requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.dependencies]
-python = ">=3.9,<3.12"
 pandas = "^2.2.3"
 
 [tool.poetry.group.dev.dependencies]
 commitizen = "^4.1.1"
 pre-commit = "^4.1.0"
 pytest = "^8.3.4"
-[project]
