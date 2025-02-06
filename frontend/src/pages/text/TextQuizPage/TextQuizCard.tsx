@@ -10,11 +10,11 @@ interface TextQuizProps {
 const TextQuizCard = ({ questionIdx, question, options }: TextQuizProps) => {
   const { textQuizSolve, setAnswer } = useTextQuizUserAnswerStore()
 
-  const handleClickOption = (optionIdx: number) => {
-    if (textQuizSolve.userAnswer[questionIdx] === optionIdx) {
+  const changeAnswer = (answer: number) => {
+    if (textQuizSolve.userAnswer[questionIdx] === answer) {
       setAnswer(questionIdx, -1)
     } else {
-      setAnswer(questionIdx, optionIdx)
+      setAnswer(questionIdx, answer)
     }
   }
 
@@ -27,10 +27,10 @@ const TextQuizCard = ({ questionIdx, question, options }: TextQuizProps) => {
             <Button
               key={index}
               text={option}
-              color={`${textQuizSolve.userAnswer[questionIdx] === index ? 'purple' : 'white'}`}
+              color={`${textQuizSolve.userAnswer[questionIdx] === index + 1 ? 'purple' : 'white'}`}
               size="xsmall"
               alignCenter={false}
-              onClick={() => handleClickOption(index)}
+              onClick={() => changeAnswer(index + 1)}
             />
           )
         })}

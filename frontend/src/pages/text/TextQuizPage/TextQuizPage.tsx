@@ -50,7 +50,7 @@ const TextQuizPage = () => {
     } else {
       let unsolved: string[] = []
       textQuizSolve.userAnswer.forEach((answer, idx) => {
-        if (![0, 1, 2, 3].includes(answer)) {
+        if (![1, 2, 3, 4].includes(answer)) {
           unsolved.push(`${idx + 1}번`)
         }
       })

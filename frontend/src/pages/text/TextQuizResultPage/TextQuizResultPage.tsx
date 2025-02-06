@@ -10,6 +10,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { TextDataType } from 'types/text'
 import { TextQuizSolveType } from 'types/textQuizSolve'
 import Modal from 'components/Modal'
+import useTextQuizResult from 'hooks/useTextQuizResult'
 
 const TextQuizResultPage = () => {
   const { text_id, quiz_id } = useParams<{ text_id: string; quiz_id: string }>()
@@ -22,8 +23,9 @@ const TextQuizResultPage = () => {
     return isNaN(parsedQuizId) ? 0 : parsedQuizId
   }, [quiz_id])
   const { data: textData, isLoading: isTextLoading } = useTextData(tId)
-  const { data: textQuizSolve, isLoading: isTextQuizSolveLoading } =
-    useTextQuizSolve(qId)
+  // const { data: textQuizSolve, isLoading: isTextQuizSolveLoading } = useTextQuizSolve(qId)
+  const { data: textQuizResult, isLoading: isTextQuizResultLoading } =
+    useTextQuizResult(qId)
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
 
@@ -35,15 +37,15 @@ const TextQuizResultPage = () => {
     }
   }, [isTextLoading])
 
-  useEffect(() => {
-    if (!isTextQuizSolveLoading) {
-      queryClient.setQueryData<TextQuizSolveType>(
-        ['textQuizSolve'],
-        textQuizSolve,
-      )
-      console.log(textQuizSolve)
-    }
-  }, [isTextQuizSolveLoading])
+  // useEffect(() => {
+  //   if (!isTextQuizSolveLoading) {
+  //     queryClient.setQueryData<TextQuizSolveType>(
+  //       ['textQuizSolve'],
+  //       textQuizSolve,
+  //     )
+  //     console.log(textQuizSolve)
+  //   }
+  // }, [isTextQuizSolveLoading])
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -71,39 +73,39 @@ const TextQuizResultPage = () => {
               </div>
             </div>
             <div className="flex min-w-[346px] flex-col gap-y-[10px]">
-              {isTextQuizSolveLoading ? (
+              {isTextQuizResultLoading ? (
                 <div className="flex h-[660px] min-w-[345px] flex-col gap-y-[16px] rounded-[32px] bg-white-1 px-[20px] py-[15px] font-bold body-s">
                   해설을 준비 중이에요.
                 </div>
               ) : (
-                !!textQuizSolve && (
+                !!textQuizResult && (
                   <>
                     <TextQuizResultCard
                       questionIdx={0}
-                      question={textQuizSolve.question[0]}
-                      options={textQuizSolve.options.slice(0, 4)}
-                      answer={textQuizSolve.answer[0]}
-                      answerExplain={textQuizSolve.answerExplain[0]}
-                      userAnswer={textQuizSolve.userAnswer[0]}
-                      correct={textQuizSolve.correct[0]}
+                      question={textQuizResult.question[0]}
+                      options={textQuizResult.options.slice(0, 4)}
+                      answer={textQuizResult.answer[0]}
+                      answerExplain={textQuizResult.answerExplain[0]}
+                      userAnswer={textQuizResult.userAnswer[0]}
+                      correct={textQuizResult.correct[0]}
                     />
                     <TextQuizResultCard
                       questionIdx={1}
-                      question={textQuizSolve.question[1]}
-                      options={textQuizSolve.options.slice(4, 8)}
-                      answer={textQuizSolve.answer[1]}
-                      answerExplain={textQuizSolve.answerExplain[1]}
-                      userAnswer={textQuizSolve.userAnswer[1]}
-                      correct={textQuizSolve.correct[1]}
+                      question={textQuizResult.question[1]}
+                      options={textQuizResult.options.slice(4, 8)}
+                      answer={textQuizResult.answer[1]}
+                      answerExplain={textQuizResult.answerExplain[1]}
+                      userAnswer={textQuizResult.userAnswer[1]}
+                      correct={textQuizResult.correct[1]}
                     />
                     <TextQuizResultCard
                       questionIdx={2}
-                      question={textQuizSolve.question[2]}
-                      options={textQuizSolve.options.slice(8, 12)}
-                      answer={textQuizSolve.answer[2]}
-                      answerExplain={textQuizSolve.answerExplain[2]}
-                      userAnswer={textQuizSolve.userAnswer[2]}
-                      correct={textQuizSolve.correct[2]}
+                      question={textQuizResult.question[2]}
+                      options={textQuizResult.options.slice(8, 12)}
+                      answer={textQuizResult.answer[2]}
+                      answerExplain={textQuizResult.answerExplain[2]}
+                      userAnswer={textQuizResult.userAnswer[2]}
+                      correct={textQuizResult.correct[2]}
                     />
                   </>
                 )
