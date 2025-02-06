@@ -28,6 +28,8 @@ tsconfig.tsbuildinfo
 vite.config.d.ts
 
 # Environment variables
+.env
+.env.development
 .env.local
 .env.*.local
 
