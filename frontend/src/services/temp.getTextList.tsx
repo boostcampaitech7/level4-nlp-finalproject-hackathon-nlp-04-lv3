@@ -4,7 +4,7 @@ const getTextList = (pageNum: number) => {
   const dummyTextList: TextListType = {
     pageNum: pageNum,
     texts: Array.from({ length: 16 }, (_, i) => ({
-      textId: pageNum * 100 + i,
+      textId: (pageNum - 1) * 16 + i + 1,
       title: pageNum % 2 === 0 ? '어린왕자' : '연금술사',
       category: '소설',
     })),

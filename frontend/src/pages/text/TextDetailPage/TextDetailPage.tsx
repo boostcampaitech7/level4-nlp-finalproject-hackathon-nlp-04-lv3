@@ -1,11 +1,11 @@
-import useTextData from 'hooks/temp.useTextData'
+import useTextData from 'hooks/useText'
 import { TitleBar } from './TitleBar'
 import MainHelp from './MainHelp'
 import TextContent from './TextContent'
 import Button from 'components/Button'
 import EasyExplainArea from './EasyExplainArea'
 import ChatbotArea from './ChatbotArea'
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 const TextDetailPage = () => {
@@ -14,7 +14,7 @@ const TextDetailPage = () => {
     const parsedId = parseInt(text_id || '', 10)
     return isNaN(parsedId) ? 0 : parsedId
   }, [text_id])
-  const { data: textData, isLoading } = useTextData(textId)
+  const { data: textData, isFetching, refetch } = useTextData(textId)
 
   const navigate = useNavigate()
 
@@ -30,9 +30,19 @@ const TextDetailPage = () => {
     navigate(`/text/${textId}/quiz`)
   }
 
+  useEffect(() => {
+    if (textId > 0) {
+      refetch()
+      window.scrollTo(0, 0)
+    }
+  }, [textId])
+
   return (
-    <div className="flex flex-grow justify-center bg-background-primary pb-[36px] pt-[24px]">
-      {isLoading ? (
+    <div
+      key={`textdetail-${textId}`}
+      className="flex flex-grow justify-center bg-background-primary pb-[36px] pt-[24px]"
+    >
+      {isFetching ? (
         <div>본문을 불러오는 중이에요.</div>
       ) : (
         !!textData && (

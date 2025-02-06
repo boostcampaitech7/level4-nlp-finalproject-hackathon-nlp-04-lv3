@@ -1,5 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
-import { TextDataType } from 'types'
 import 'styles/scrollbar.css'
 import 'styles/drag.css'
 import { useEffect, useMemo, useRef, useState } from 'react'

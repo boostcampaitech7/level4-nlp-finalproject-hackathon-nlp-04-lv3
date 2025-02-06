@@ -1,4 +1,4 @@
-import { TextDataType } from 'types'
+import { TextDataType } from 'types/text'
 
 // TODO: 실제 API 호출 함수로 구현 예정
 const getTextData = (textId: number) => {

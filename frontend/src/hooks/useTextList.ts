@@ -6,8 +6,6 @@ import { TextListType } from 'types/textList'
 const useTextList = () => {
   const [pageNum, setPageNum] = useState<number>(1)
 
-  // TODO: 실제 api 함수 연결 및 훅 세부 설정 구현 예정
-
   const queryResult = useQuery<TextListType>({
     queryKey: ['textList'],
     queryFn: () => {
