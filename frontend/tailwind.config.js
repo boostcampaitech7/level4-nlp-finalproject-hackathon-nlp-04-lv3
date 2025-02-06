@@ -214,6 +214,5 @@ export default {
         variants: ['responsive', 'hover', 'focus', 'dark'],
       })
     },
-    require('@tailwindcss/line-clamp'),
   ],
 }

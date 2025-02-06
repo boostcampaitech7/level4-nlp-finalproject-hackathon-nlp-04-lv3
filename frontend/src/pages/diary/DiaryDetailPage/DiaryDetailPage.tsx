@@ -1,6 +1,6 @@
 import useDiary from 'hooks/temp.useDiary'
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { SlicedTextType } from 'types/diary'
 import getSlicedTexts from 'utils/getSlicedTexts'
 import { RoughNotation } from 'react-rough-notation'
@@ -50,11 +50,12 @@ const DiaryDetailPage = () => {
   useEffect(() => {
     if (diary) {
       setSlicedTexts(getSlicedTexts(diary))
-      console.log(diary.status)
     }
   }, [diary])
 
-  // 전체 컨테이너 참조
+  // 가장 바깥 div
+  const wrapperRef = useRef<HTMLDivElement>(null)
+  // 본문 컨테이너 참조
   const containerRef = useRef<HTMLDivElement>(null)
 
   // 본문 구절 span의 ref
@@ -122,15 +123,10 @@ const DiaryDetailPage = () => {
 
       const height = Math.ceil(slicedText.feedback.length / 19) * 43 + 72
       let pos = {
-        top: textPosition.top,
+        top: textPosition.top - 40,
         left: isLeft ? -276 : 580,
         width: 256,
         height: height,
-      }
-      if (!isLeft) {
-        console.log(
-          `${idx} ${pos.top} ${prevRightPosition.top} ${prevRightPosition.height}`,
-        )
       }
       if (isLeft) {
         if (
@@ -198,7 +194,7 @@ const DiaryDetailPage = () => {
       const midX = (x1 + x2) / 2
       // 큐빅베지어
       const d = `M ${x1},${y1} C ${midX},${y1} ${midX},${y2} ${x2},${y2}`
-      console.log(`${idx}번 연결선: ${d}`)
+      // console.log(`${idx}번 연결선: ${d}`)
       return {
         d: d,
         color: isLeft
@@ -314,87 +310,89 @@ const DiaryDetailPage = () => {
     return feedbacks
   }
 
-  const navigate = useNavigate()
-
   return (
-    <div
-      key={`diary-${diaryId}`}
-      className="flex h-full min-w-[1440px] justify-center bg-background-primary py-[24px]"
-    >
-      <div className="flex w-4/5 flex-col gap-y-[20px]">
-        <TitleBar
-          createdAt={diary?.createdAt || '2025-01-01'}
-          status={diary?.status || 0}
-        />
-        <div className="flex flex-col items-center gap-y-[36px] rounded-[16px] py-[36px]">
-          {diary && diary.status > 0 && (
-            <div className="flex w-full items-end justify-end gap-x-[24px] pr-[24px]">
-              <div className="tranform relative max-w-[500px] rotate-[5deg] whitespace-pre-line rounded-[32px] bg-surface-tertiary p-[20px] font-bold text-main feedback-m">
-                {/* 말풍선 안의 컨텐츠 */}
-                {diary.status === 3 ? (
-                  <>
-                    <p className="text-red-200 body-m">
-                      ⚠️ 일기에서 AI 윤리에 위반되는 내용이 감지되었습니다.
+    <>
+      <div
+        ref={wrapperRef}
+        key={`diary-${diaryId}`}
+        className={`flex h-full min-w-[1440px] justify-center bg-background-primary py-[24px]`}
+      >
+        <div className="flex w-4/5 flex-col gap-y-[20px]">
+          <TitleBar
+            createdAt={diary?.createdAt || '2025-01-01'}
+            status={diary?.status || 0}
+          />
+          <div className="flex flex-col items-center gap-y-[36px] rounded-[16px] py-[36px]">
+            {diary && diary.status > 0 && (
+              <div className="flex w-full items-end justify-end gap-x-[24px] pr-[24px]">
+                <div className="tranform relative max-w-[500px] rotate-[5deg] whitespace-pre-line rounded-[32px] bg-surface-tertiary p-[20px] font-bold text-main feedback-m">
+                  {/* 말풍선 안의 컨텐츠 */}
+                  {diary.status === 3 ? (
+                    <>
+                      <p className="text-red-200 body-m">
+                        ⚠️ 일기에서 AI 윤리에 위반되는 내용이 감지되었습니다.
+                      </p>
+                      <p className="text-text-primary">{diary.review}</p>
+                    </>
+                  ) : (
+                    <p>
+                      {diary.status === 1
+                        ? '일기 쓰느라 고생 많았어요!\n 아라부기가 일기에서 맞춤법이나 문법을 다듬어 줄 부분을 찾고 있어요. 내일 아침에 확인할 수 있게 준비해둘게요.🥰'
+                        : diary.review}
                     </p>
-                    <p className="text-text-primary">{diary.review}</p>
-                  </>
-                ) : (
-                  <p>
-                    {diary.status === 1
-                      ? '일기 쓰느라 고생 많았어요!\n 아라부기가 일기에서 맞춤법이나 문법을 다듬어 줄 부분을 찾고 있어요. 내일 아침에 확인할 수 있게 준비해둘게요.🥰'
-                      : diary.review}
-                  </p>
-                )}
+                  )}
 
-                {/* 꼬리 부분 */}
-                <div className="absolute right-[-24px] top-1/3 h-0 w-0 -translate-y-1/2 transform border-y-[18px] border-l-[40px] border-y-transparent border-l-surface-tertiary" />
+                  {/* 꼬리 부분 */}
+                  <div className="absolute right-[-24px] top-1/3 h-0 w-0 -translate-y-1/2 transform border-y-[18px] border-l-[40px] border-y-transparent border-l-surface-tertiary" />
+                </div>
+                <div className="relative flex h-[160px] w-[160px] translate-y-8 transform items-center justify-center overflow-visible p-[5px]">
+                  <img
+                    className="absolute h-full w-full transform object-contain"
+                    src={araboogie}
+                    alt="완료"
+                  />
+                </div>
               </div>
-              <div className="relative flex h-[160px] w-[160px] translate-y-8 transform items-center justify-center overflow-visible p-[5px]">
-                <img
-                  className="absolute h-full w-full transform object-contain"
-                  src={araboogie}
-                  alt="완료"
+            )}
+            <div className="flex w-[560px] flex-col gap-y-[22px]">
+              <div
+                ref={containerRef}
+                className="relative w-[560px] rounded-[32px] bg-surface-primary-2 p-[20px] leading-loose text-text-primary shadow-[0px_0px_13.199999809265137px_0px_rgba(178,148,250,1.00)] body-m"
+              >
+                {isFetching || !diary
+                  ? '일기를 불러오는 중이에요.'
+                  : displayTexts()}
+                {slicedTexts && feedbackPositions && displayFeedback()}
+                {lines && (
+                  <svg className="pointer-events-none absolute left-0 top-0 z-10 h-full w-full overflow-visible">
+                    {lines?.map((line, idx) => {
+                      return (
+                        <path
+                          key={`l-${idx}`}
+                          d={line.d}
+                          fill="none"
+                          stroke={line.color}
+                          strokeWidth={2}
+                        />
+                      )
+                    })}
+                  </svg>
+                )}
+              </div>
+              <div className="flex items-center justify-center gap-x-[22px]">
+                <Button
+                  text={diary && diary?.status === 0 ? '수정' : '제출완료'}
+                  size="small"
+                  disabled={diary && diary?.status >= 1}
+                  onClick={() => console.log('수정 페이지...')}
                 />
               </div>
-            </div>
-          )}
-          <div className="flex w-[560px] flex-col gap-y-[22px]">
-            <div
-              ref={containerRef}
-              className="relative w-[560px] rounded-[32px] bg-surface-primary-2 p-[20px] leading-loose text-text-primary shadow-[0px_0px_13.199999809265137px_0px_rgba(178,148,250,1.00)] body-m"
-            >
-              {isFetching || !diary
-                ? '일기를 불러오는 중이에요.'
-                : displayTexts()}
-              {slicedTexts && feedbackPositions && displayFeedback()}
-              {lines && (
-                <svg className="pointer-events-none absolute left-0 top-0 z-10 h-full w-full overflow-visible">
-                  {lines?.map((line, idx) => {
-                    return (
-                      <path
-                        key={`l-${idx}`}
-                        d={line.d}
-                        fill="none"
-                        stroke={line.color}
-                        strokeWidth={2}
-                      />
-                    )
-                  })}
-                </svg>
-              )}
-            </div>
-            <div className="flex items-center justify-center gap-x-[22px]">
-              <Button
-                text={diary && diary?.status === 0 ? '수정' : '제출완료'}
-                size="small"
-                disabled={diary && diary?.status >= 1}
-                onClick={() => console.log('수정 페이지...')}
-              />
             </div>
           </div>
         </div>
       </div>
-    </div>
+      <div className="h-[360px] bg-background-primary" />
+    </>
   )
 }
 
