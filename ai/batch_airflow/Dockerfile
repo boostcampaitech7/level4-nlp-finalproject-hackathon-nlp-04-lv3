@@ -28,15 +28,20 @@ COPY prompt.json /ai/batch_airflow/
 
 # .env 파일 생성
 RUN echo "NAVER_API_KEY=${NAVER_API_KEY}" > .env && \
-echo "AIRFLOW_DIR=/ai/batch_airflow" >> .env
+echo "AIRFLOW_DIR=/ai/batch_airflow" >> .env && \
+echo "SCHEMA=${SCHEMA}" >> .env
 
 # AirFlow 환경 설정
 ENV AIRFLOW_HOME=/ai/batch_airflow
 ENV AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://root:${DB_PASSWORD}@${DB_HOST}/${DB_NAME}?options=-csearch_path=${SCHEMA}
 ENV AIRFLOW__CORE__EXECUTOR=LocalExecutor
+ENV AIRFLOW__CORE__DEFAULT_TIMEZONE=Asia/Seoul
+
 ENV DB_HOST=${DB_HOST}
 ENV DB_NAME=${DB_NAME}
 ENV DB_PASSWORD=${DB_PASSWORD}
 
 # 컨테이너 실행 명령
 ENTRYPOINT ["bash", "/ai/batch_airflow/run_scheduler_webserver.sh"]
+# docker run -d --name arabugi-batch-airflow -e TZ=Asia/Seoul -p 8080:8080 gj98/arabugi:batch-airflow-latest
+# docker exec -it arabugi-batch-airflow bash

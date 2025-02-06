@@ -1,13 +1,20 @@
-from fastapi import Depends, APIRouter, HTTPException, status
-from sqlmodel import Session, select
-from sqlalchemy import desc, cast, Date
 import re
+from math import ceil
 from typing import List
 from datetime import date
+from fastapi import Depends, APIRouter, HTTPException, status
+from sqlmodel import Session, select
+from sqlalchemy import desc, cast, Date, func
 
 from models.diary import Diaries
 from models.score import Scores
-from schemas.diary import DiaryDTO, DiaryExtendedDTO, DiaryBookmarkDTO, DiaryDayDTO
+from schemas.diary import (
+    DiaryDTO,
+    DiaryExtendedDTO,
+    DiaryBookmarkDTO,
+    DiaryDayDTO,
+    DiaryListDTO,
+)
 from core.database import get_session
 from core.security import validate_access_token, oauth2_scheme
 
@@ -94,7 +101,7 @@ def fetch_diary_by_id(
 
 # 일기 목록 조회
 @router.get(
-    "/page/{page_num}", response_model=List[DiaryDayDTO], status_code=status.HTTP_200_OK
+    "/page/{page_num}", response_model=DiaryListDTO, status_code=status.HTTP_200_OK
 )
 def fetch_diary_by_page(
     page_num: int,
@@ -114,11 +121,26 @@ def fetch_diary_by_page(
     )
     diary_list = session.exec(statement).all()
 
+    total_page_count = None
+    if page_num == 1:
+        statement = select(func.count(Diaries)).where(Diaries.user_id == user_id)
+        diary_count = session.exec(statement).scalar()
+        total_page_count = max(ceil(diary_count / 10), 1)
+
     # 3. 응답 데이터 생성
-    return [
-        DiaryDayDTO(diary_id=diary.diary_id, day=diary.created_at, status=diary.status)
-        for diary in diary_list
-    ]
+    return DiaryListDTO(
+        page_num=page_num,
+        diaries=[
+            DiaryDayDTO(
+                diary_id=diary.diary_id,
+                text=diary.text[:100],
+                day=diary.created_at,
+                status=diary.status,
+            )
+            for diary in diary_list
+        ],
+        total_page_count=total_page_count,
+    )
 
 
 """
