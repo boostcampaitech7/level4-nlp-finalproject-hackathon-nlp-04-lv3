@@ -2,19 +2,22 @@ import os
 import re
 import json
 import requests
+import logging
 from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.providers.postgres.operators.postgres import PostgresOperator
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 from dotenv import load_dotenv, find_dotenv
-import logging
+from pendulum import timezone
 
 
 load_dotenv(find_dotenv())
 logger = logging.getLogger(__name__)
 
 
+kst = timezone("Asia/Seoul")
+SCHEMA = os.getenv("SCHEMA").upper()
 with open(f"{os.getenv('AIRFLOW_DIR')}/prompt.json", "r", encoding="utf-8") as f:
     prompt = json.load(f)
 feedback_prompt = prompt["feedback_prompt"]
@@ -123,7 +126,7 @@ def parse_feedback_review(diary, feedback):
     return feedbacks, review
 
 
-def generate_save_diary_feedback(api, **kwargs):
+def generate_save_feedbacks(api, **kwargs):
     diaries = kwargs["ti"].xcom_pull(task_ids="fetch_yesterday_diary")
     # SQL 결과가 dict이 아닌 list로 전달
     pg_hook = PostgresHook(postgres_conn_id="my_postgres_conn")
@@ -151,8 +154,8 @@ def generate_save_diary_feedback(api, **kwargs):
             logger.info(f"review: {review}")
 
         # 3. 일기 피드백과 리뷰 DB에 저장히기
-        sql = """
-        UPDATE DIARIES
+        sql = f"""
+        UPDATE {SCHEMA}.DIARIES
         SET FEEDBACK = %s, REVIEW = %s, STATUS = %s
         WHERE DIARY_ID = %s
         """
@@ -164,12 +167,17 @@ def generate_save_diary_feedback(api, **kwargs):
     logger.info("🎯 모든 피드백 생성 및 저장 완료.")
 
 
-default_args = {"owner": "airflow", "retries": 1, "retry_delay": timedelta(seconds=5)}
+default_args = {
+    "owner": "airflow",
+    "retries": 1,
+    "retry_delay": timedelta(seconds=5),
+    "timezone": kst,
+}
 
 with DAG(
     dag_id="diary_feedback",
     default_args=default_args,
-    start_date=datetime(2025, 1, 25),
+    start_date=datetime(2025, 1, 25, tzinfo=kst),
     schedule_interval="0 1 * * *",
     catchup=True,
     tags=["diary_feedback"],
@@ -182,16 +190,17 @@ with DAG(
         postgres_conn_id="my_postgres_conn",
         sql="""
             SELECT diary_id, text
-            FROM DIARIES
-            WHERE created_at::date = '{{ macros.ds_add(ds, -1) }}'::date AND status = 1
-        """,
+            FROM {{ params.schema }}.DIARIES
+            WHERE created_at::date = '{{ macros.ds_add(ds, 1) }}'::date AND status = 1
+        """,  # macros.ds_add(ds, -1) -> macros.ds_add(ds, 1)로 수정 (시스템 오류인지 몰라도 이래야 어제 일기를 수행함)
+        params={"schema": SCHEMA},
         do_xcom_push=True,
     )
 
     # 2. 일기 피드백 생성하고 저장하기
     generate_save_diary_feedback_task = PythonOperator(
         task_id="generate_save_diary_feedback",
-        python_callable=generate_save_diary_feedback,
+        python_callable=generate_save_feedbacks,
         op_kwargs={"api": completion_executor},
     )
 
