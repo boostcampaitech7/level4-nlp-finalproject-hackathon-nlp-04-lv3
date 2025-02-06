@@ -79,11 +79,11 @@ function App() {
               {/* 3-1. text 관련 라우트 */}
               <Route path="text">
                 <Route
-                  path=":text_id/quiz/:level/result"
+                  path=":text_id/quiz/:quiz_id/result"
                   element={<Pages.TextQuizResultPage />}
                 />
                 <Route
-                  path=":text_id/quiz/:level"
+                  path=":text_id/quiz/:quiz_id"
                   element={<Pages.TextQuizPage />}
                 />
                 <Route

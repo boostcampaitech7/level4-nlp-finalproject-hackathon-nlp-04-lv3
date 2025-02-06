@@ -1,6 +1,6 @@
-import { useQuery, useQueryClient, UseQueryResult } from '@tanstack/react-query'
-import { useEffect, useState } from 'react'
-import { getTextAccountAPI } from 'services'
+import { useQuery } from '@tanstack/react-query'
+import { useState } from 'react'
+import { getTextAcount } from 'services'
 import { TextAccountType } from 'types'
 
 interface TextAccountProps {
@@ -20,7 +20,7 @@ const useTextAccount = () => {
   const queryResult = useQuery<TextAccountType>({
     queryKey: ['textAccount'],
     queryFn: async () => {
-      const textAccount = await getTextAccountAPI(queryParams)
+      const textAccount = await getTextAcount(queryParams)
       console.log(textAccount)
       setQueryEnabled(false)
       return textAccount
