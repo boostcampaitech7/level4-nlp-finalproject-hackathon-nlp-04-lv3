@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { FaEye, FaEyeSlash } from 'react-icons/fa'
 import Button from 'components/Button'
 import { ReactComponent as AraboogieImage } from '../../../assets/araboogie100.svg'
-import { ChatInterface } from '../../MainPage/GuestChatInterface'
+import { ChatInterface } from '../../MainPage/GuestMainPage/GuestChatInterface'
 
 const SignupPage = () => {
   // 팝업 제거

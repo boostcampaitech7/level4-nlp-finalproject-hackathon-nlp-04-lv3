@@ -131,25 +131,18 @@ async def request_vocab_chatbot_response(
                 },
             )
 
-        # 5. 응답 상태 코드 확인
-        if ai_chat_response.status_code != 200:
-            raise HTTPException(
-                status_code=ai_chat_response.status_code,
-                detail=f"AI 서버 요청 실패: {ai_chat_response.text}",
-            )
-
-        # 6. AI 응답 데이터 처리
+        # 5. AI 응답 데이터 처리
         ai_data = ai_chat_response.json()
         if ai_data["status"]["code"] != "20000":
             raise HTTPException(
                 status_code=500,
-                detail=f"AI 서버 응답 오류: {ai_data['status']['message']}",
+                detail=f"AI 서버 응답 오류: {ai_data["status"]["message"]}",
             )
 
-        # 7. 응답 데이터를 추출
+        # 6. 응답 데이터를 추출
         answer = ai_data["result"]["message"]["content"]
 
-        # 8. 응답 데이터를 데이터베이스에 저장하고 chat_id 가져오기
+        # 7. 응답 데이터를 데이터베이스에 저장하고 chat_id 가져오기
         conversation = VocabConversations(
             user_id=user_id, vocab_id=vocab_id, question=question, answer=answer
         )
@@ -157,7 +150,7 @@ async def request_vocab_chatbot_response(
         session.commit()
         session.refresh(conversation)
 
-        # 9. 응답 반환
+        # 8. 응답 반환
         return VocabChatbotResponseDTO(chat_id=conversation.chat_id, answer=answer)
 
     except httpx.RequestError as exc:

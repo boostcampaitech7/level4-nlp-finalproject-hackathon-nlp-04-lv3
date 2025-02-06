@@ -1,10 +1,10 @@
 import os
 import re
 import json
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 from llm_api import OpenAIApi, HcxApi
 
-load_dotenv()
+load_dotenv(find_dotenv())
 
 
 class FeedbackComparator:
@@ -78,6 +78,11 @@ class FeedbackEvaluator:
             )
         elif "o1" in model_name or "gpt" in model_name:
             self.api = OpenAIApi(api_keys["openai"])
+        elif "gemini" in model_name:
+            self.api = OpenAIApi(
+                api_keys["google"],
+                base_url="https://generativelanguage.googleapis.com/v1beta/",
+            )
         else:
             self.api = HcxApi(api_keys["naver"])
 
@@ -155,13 +160,20 @@ def calculate_score(evaluate_file):
 
 
 if __name__ == "__main__":
-    # Test Results Summary:
+    # Test Results Summary: by gpt-4o
     # -----------------------------------------------------------------
     #                compliance  validity    consistency
     # HCX-003:        22          22          23
     # Tuning:         27          27          27
     # -----------------------------------------------------------------
-    hcx_003 = f"{os.getenv('TUNING_PATH')}/data/HCX-003_evaluate.jsonl"
-    tuning = f"{os.getenv('TUNING_PATH')}/data/lmh7w4qy_evaluate.jsonl"
+
+    # Test Results Summary: by gemini-2.0-flash-thinking-exp
+    # -----------------------------------------------------------------
+    #                compliance  validity    consistency
+    # HCX-003:        22          23          25
+    # Tuning:         26          25          28
+    # -----------------------------------------------------------------
+    hcx_003 = f"{os.getenv('AIRFLOW_DIR')}/tuning/data/HCX-003_evaluate.jsonl"
+    tuning = f"{os.getenv('AIRFLOW_DIR')}/tuning/data/lmh7w4qy_evaluate.jsonl"
     calculate_score(hcx_003)
     calculate_score(tuning)

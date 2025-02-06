@@ -47,18 +47,21 @@ const Header = () => {
         <div className="text-text-secondary headline-l">{getHeaderTitle()}</div>
       </div>
       <div className="inline-flex items-center gap-[40px]">
-        {isAuthenticated && (
-          <button className="inline-flex h-[60px] w-[60px] items-center justify-center rounded-full bg-button-secondary-2 hover:bg-button-secondary-hover">
-            <FaRegBell size={33} />
-          </button>
+        {isAuthenticated ? (
+          <>
+            {/* <button className="inline-flex h-[60px] w-[60px] items-center justify-center rounded-full bg-button-secondary-2 hover:bg-button-secondary-hover">
+              <FaRegBell size={33} />
+            </button> */}
+          </>
+        ) : (
+          <Button
+            size="medium"
+            color="black"
+            text="로그인하기"
+            onClick={handleClickUserButton}
+            plusClasses="px-[30px]"
+          />
         )}
-        <Button
-          size="medium"
-          color="black"
-          text={isAuthenticated ? '마이페이지' : '로그인하기'}
-          onClick={handleClickUserButton}
-          plusClasses="px-[30px]"
-        />
         <button onClick={handleClickSidebarButton}>
           <FaBars size={44} />
         </button>

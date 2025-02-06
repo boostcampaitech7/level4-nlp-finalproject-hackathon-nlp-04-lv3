@@ -1,5 +1,5 @@
 import React, { useRef } from 'react'
-import { useTextAnimation } from '../../hooks/useTextAnimation'
+import { useTextAnimation } from '../../../hooks/useTextAnimation'
 
 interface TextAnimationWrapperProps {
   children: React.ReactNode

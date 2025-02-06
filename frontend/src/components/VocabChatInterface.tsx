@@ -221,19 +221,7 @@ export const VocabChatInterface: React.FC<VocabChatInterfaceProps> = ({ vocabId 
 
         </div>
       </div>
-      {/* Help section */}
-      <div className="justify-start items-center inline-flex">
-        <div className="w-[32px] h-[32px] px-[11px] py-0.5 bg-white/80 rounded-[17.50px] border-2 border-[#707070] flex-col justify-center items-center gap-2.5 inline-flex">
-          <div className="text-center text-text-secondary body-s leading-[31.20px] tracking-tight">
-            ?
-          </div>
-        </div>
-        <div className="p-2.5 justify-center items-center gap-2.5 flex">
-          <div className="text-text-secondary body-s">
-            현재 페이지의 사용법 알아보기
-          </div>
-        </div>
-      </div>
+      
     </div>
   );
 };

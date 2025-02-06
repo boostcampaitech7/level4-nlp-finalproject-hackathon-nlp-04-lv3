@@ -5,7 +5,12 @@ on:
     branches:
       - develop
     paths:
-      - ai/dags/**
+      - .github/workflows/build_batch-airflow_image.yaml
+      - ai/batch_airflow/dags/**
+      - ai/batch_airflow/prompt.json
+      - ai/batch_airflow/run_scheduler_webserver.sh
+
+  workflow_dispatch:
 
 jobs:
   build:
@@ -26,6 +31,7 @@ jobs:
       run: |
         docker build --build-arg NAVER_API_KEY=${{ secrets.NAVER_API_KEY }} \
                      --build-arg DB_HOST=${{ secrets.DB_HOST }} \
+                     --build-arg DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
                      --tag ${{ secrets.DOCKER_REPO }}:batch-airflow-${{ github.sha }} ./ai/batch_airflow
 
     # Docker 이미지 태깅 (latest 태그 추가)
