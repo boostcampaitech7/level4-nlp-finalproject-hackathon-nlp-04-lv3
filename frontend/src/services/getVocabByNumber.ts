@@ -1,0 +1,28 @@
+import customAxios from './customAxios';
+
+export const getVocabByNumberData = (vocabId: number) => {
+  const axios = customAxios();
+  return axios
+    .get(`/api/vocab/${vocabId}`)
+    .then((res) => {
+      if (res.status !== 200) {
+        throw new Error('Failed to get vocab data');
+      }
+      // 받아온 데이터를 구조분해 할당하여 원하는 형태로 반환할 수 있습니다.
+      const {
+        vocab_id,
+        vocab,
+        hanja,
+        dict_mean,
+        easy_explain,
+        correct_example,
+        incorrect_example,
+      } = res.data;
+      console.log(res.data);
+      return { vocab_id, vocab, hanja, dict_mean, easy_explain, correct_example, incorrect_example };
+    })
+    .catch((err) => {
+      console.error(err);
+      throw new Error('Failed to get vocab data');
+    });
+};

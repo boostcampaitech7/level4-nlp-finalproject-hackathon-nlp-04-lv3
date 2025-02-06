@@ -7,9 +7,16 @@ class FeedbackGenerator:
     def __init__(self, api_keys, model_name, diaries):
 
         if "deepseek" in model_name:
-            self.api = OpenAIApi(api_keys["deepseek"], base_url="https://api.deepseek.com")
+            self.api = OpenAIApi(
+                api_keys["deepseek"], base_url="https://api.deepseek.com"
+            )
         elif "o1" in model_name or "gpt" in model_name:
             self.api = OpenAIApi(api_keys["openai"])
+        elif "gemini" in model_name:
+            self.api = OpenAIApi(
+                api_keys["google"],
+                base_url="https://generativelanguage.googleapis.com/v1beta/",
+            )
         else:
             self.api = HcxApi(api_keys["naver"])
 
@@ -42,6 +49,32 @@ class FeedbackGenerator:
         feedback = self.api.call(prompt, self.model_name, structured_output)
         return prompt, feedback
 
+    def test_jailbreaking(self, instruction, user_prompt, structured_output=None):
+
+        # 1. 프롬프트 생성
+        if "o1" in self.model_name:
+            prompt = [
+                {"role": "assistant", "content": instruction},
+                {
+                    "role": "user",
+                    "content": f"**일기**:  \n{user_prompt}",
+                },
+            ]
+        else:
+            prompt = [
+                {"role": "system", "content": instruction},
+                {
+                    "role": "user",
+                    "content": f"**일기**:  \n{user_prompt}",
+                },
+            ]
+
+        print(prompt)
+
+        # 2. API 호출
+        feedback = self.api.call(prompt, self.model_name, structured_output)
+        return prompt, feedback
+
     def run(self, save_file, instruction, start_idx, end_idx):
 
         for index, diary in self.diaries.iterrows():
@@ -51,6 +84,11 @@ class FeedbackGenerator:
                 break
             prompt, feedback = self.test(instruction, index)
 
-            new_record = {"id": diary["id"], "model": self.model_name, "prompt": prompt, "feedback": feedback}
+            new_record = {
+                "id": diary["id"],
+                "model": self.model_name,
+                "prompt": prompt,
+                "feedback": feedback,
+            }
             with open(save_file, "a", encoding="utf-8") as file:
                 file.write(json.dumps(new_record, ensure_ascii=False) + "\n")

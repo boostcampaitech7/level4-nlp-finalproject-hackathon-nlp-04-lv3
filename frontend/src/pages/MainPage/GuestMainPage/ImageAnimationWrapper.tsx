@@ -1,5 +1,5 @@
 import React, { useRef } from 'react'
-import { useImageAnimation } from '../../hooks/useImageAnimation'
+import { useImageAnimation } from '../../../hooks/useImageAnimation'
 
 interface ImageAnimationWrapperProps {
   children: React.ReactNode

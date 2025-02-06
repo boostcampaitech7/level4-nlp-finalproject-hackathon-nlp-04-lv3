@@ -23,9 +23,9 @@ const Modal: React.FC<ModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="fixed inset-0 bg-button-inverse opacity-30" onClick={onClose}></div>
-      <div className="relative bg-surface-secondary z-50 w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
-        <h2 className="mb-4 text-xl font-bold">{title}</h2>
-        <p className="mb-6 text-gray-600">{message}</p>
+      <div className="relative bg-surface-primary-2 z-50 w-full max-w-md p-6 rounded-[32px] shadow-lg">
+        <h2 className="mb-4 body-s font-bold">{title}</h2>
+        <p className="mb-6 text-text-secondary caption-s">{message}</p>
         <div className="flex justify-end gap-2">
           <Button
             text="닫기"

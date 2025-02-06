@@ -5,7 +5,7 @@ interface TextAccountAPIProps {
   focused: string
 }
 
-const getTextAccountAPI = async ({ textId, focused }: TextAccountAPIProps) => {
+const getTextAcount = async ({ textId, focused }: TextAccountAPIProps) => {
   console.log(`${focused}에 대한 쉬운 설명 호출`)
   const dummyTextAccount: TextAccountType = {
     text_id: textId,
@@ -18,4 +18,4 @@ const getTextAccountAPI = async ({ textId, focused }: TextAccountAPIProps) => {
   return dummyTextAccount
 }
 
-export default getTextAccountAPI
+export default getTextAcount

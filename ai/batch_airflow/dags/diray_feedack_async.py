@@ -65,6 +65,16 @@ class CompletionExecutor:
             return response_body["result"]["message"]["content"]
 
 
+def check_jailbreaking(feedback):
+    jailbreaking_pattern = (
+        r"탈옥 감지|경고 메시지|"
+        r"제 역할은 학생의 일기를 피드백 해주는 것이에요|"
+        r"일기 피드백이 아닌 다른 요청에는 도와드리기 어려워요|"
+        r"다음에 일기를 작성해서 제출해 주시면, 꼼꼼하게 읽고 정성껏 피드백 해 드릴게요"
+    )
+    return bool(re.search(jailbreaking_pattern, feedback))
+
+
 def parse_feedback_review(diary, feedback):
     patterns = {
         "original_sentence": r"\d+\.\s*\*\*기존 문장\*\*:\s*(.*?)\*\*이유 및 개선점\*\*",
@@ -111,15 +121,27 @@ async def generate_save_feedback(api, session, conn, diary_id, text):
     # 1. (비동기) HCX로 일기 피드백 생성
     feedback = await api.execute(session, text)  # 피드백 생성
     logger.info(f"Generated Feedback for Diary {diary_id}: {feedback}")
+
     # 2. (동기) 일기 피드백과 리뷰 파싱하기
-    feedbacks, review = parse_feedback_review(text, feedback)
-    logger.info(f"feedbacks: {feedbacks}")
-    logger.info(f"review: {review}")
+    # 2.1. 탈옥 여부 확인
+    if check_jailbreaking(feedback):
+        feedbacks, review = None, None
+        status = 3
+        logger.waring(f"jailbreaking: {text}")
+    else:
+        feedbacks, review = parse_feedback_review(text, feedback)
+        status = 2
+        if isinstance(feedbacks, (list, dict)):
+            feedbacks = json.dumps(feedbacks, ensure_ascii=False)
+        logger.info(f"feedbacks: {feedbacks}")
+        logger.info(f"review: {review}")
+
     # 3. (비동기) 일기 피드백과 리뷰 DB 저장하기
     await conn.execute(
-        "UPDATE DIARIES SET FEEDBACK = $1, REVIEW = $2, STATUS = 2 WHERE DIARY_ID = $3",
+        "UPDATE DIARIES SET FEEDBACK = $1, REVIEW = $2, STATUS = $3 WHERE DIARY_ID = $4",
         feedbacks,
         review,
+        status,
         diary_id,
     )
 

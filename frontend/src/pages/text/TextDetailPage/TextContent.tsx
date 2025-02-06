@@ -13,10 +13,7 @@ interface TooltipPosition {
   y: number
 }
 
-const TextContent = () => {
-  const queryClient = useQueryClient()
-  const textData = queryClient.getQueryData<TextDataType>(['textData'])
-
+const TextContent = ({ text }: { text: string[] }) => {
   const [showTooltip, setShowTooltip] = useState(false)
   const [tooltipPosition, setTooltipPosition] = useState<TooltipPosition>({
     x: 0,
@@ -171,7 +168,7 @@ const TextContent = () => {
 
   // 본문 한 줄에 한 문장 씩 표시되게 합치기
   const getConcatText = () => {
-    return textData?.text.join('\n')
+    return text.join('\n')
   }
 
   return (

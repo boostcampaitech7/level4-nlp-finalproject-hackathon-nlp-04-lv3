@@ -35,7 +35,7 @@ const Header = () => {
   }
 
   return (
-    <div className="sticky top-0 inline-flex h-[126px] w-full min-w-[1440px] select-none items-center justify-between border-b-[3px] border-line bg-surface-secondary px-[40px]">
+    <div className="fixed left-0 top-0 z-40 inline-flex h-[126px] w-full min-w-[1440px] select-none items-center justify-between border-b-[3px] border-line bg-surface-secondary px-[40px]">
       <div className="inline-flex items-end gap-[30px]">
         <Link
           to="/"
@@ -47,18 +47,21 @@ const Header = () => {
         <div className="text-text-secondary headline-l">{getHeaderTitle()}</div>
       </div>
       <div className="inline-flex items-center gap-[40px]">
-        {isAuthenticated && (
-          <button className="inline-flex h-[60px] w-[60px] items-center justify-center rounded-full bg-button-secondary-2 hover:bg-button-secondary-hover">
-            <FaRegBell size={33} />
-          </button>
+        {isAuthenticated ? (
+          <>
+            {/* <button className="inline-flex h-[60px] w-[60px] items-center justify-center rounded-full bg-button-secondary-2 hover:bg-button-secondary-hover">
+              <FaRegBell size={33} />
+            </button> */}
+          </>
+        ) : (
+          <Button
+            size="medium"
+            color="black"
+            text="로그인하기"
+            onClick={handleClickUserButton}
+            plusClasses="px-[30px]"
+          />
         )}
-        <Button
-          size="medium"
-          color="black"
-          text={isAuthenticated ? '마이페이지' : '로그인하기'}
-          onClick={handleClickUserButton}
-          plusClasses="px-[30px]"
-        />
         <button onClick={handleClickSidebarButton}>
           <FaBars size={44} />
         </button>

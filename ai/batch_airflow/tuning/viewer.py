@@ -98,8 +98,13 @@ def main(
 
     model_name = side_bar()
 
-    tab1, tab2, tab3 = st.tabs(
-        ["일기 피드백 받아보기", "일기 피드백 비교하기", "일기 피드백 평가 받아보기"]
+    tab1, tab2, tab3, tab4 = st.tabs(
+        [
+            "일기 피드백 받아보기",
+            "일기 피드백 비교하기",
+            "일기 피드백 평가 받아보기",
+            "탈옥 시도해보기",
+        ]
     )
     with tab1:
         diary_df = pd.read_csv(diary_file)
@@ -128,6 +133,9 @@ def main(
                 feedbacks = [json.loads(line) for line in file]
         evaluate_feedback_page(api_keys, model_name, feedbacks, evaluate_file)
 
+    with tab4:
+        jailbreaking_page(api_keys, model_name)
+
 
 def side_bar():
     # 사이드바 선택 항목 부분
@@ -137,6 +145,7 @@ def side_bar():
         "o1-mini",
         "deepseek-chat",
         "deepseek-reasoner",
+        "gemini-2.0-flash-thinking-exp",
         "HCX-003",
         "lmh7w4qy",
     ]
@@ -239,10 +248,28 @@ def evaluate_feedback_page(api_keys, model_name, feedbacks, evaluate_file):
         feedback_evaluator.run(evaluate_file, prompt, num1, num2)
 
 
+def jailbreaking_page(api_keys, model_name):
+    feedback_generator = FeedbackGenerator(api_keys, model_name, None)
+
+    # API 호출
+    prompt = st.text_area(
+        "일기 피드백 프롬프트", height=200, value=feedback_prompt, key="sysstem_prompt"
+    )
+    view_prompt(prompt)
+
+    # 데이터 시각화
+    user_prompt = st.text_area("유저 프롬프트(일기)", height=200, key="user_prompt")
+
+    if st.button("일기 피드백 요청", key="jailbreaking_button"):
+        _, result = feedback_generator.test_jailbreaking(prompt, user_prompt)
+        view_feedback(result)
+
+
 if __name__ == "__main__":
     api_keys = {
         "openai": os.getenv("OPENAI_API_KEY"),
         "deepseek": os.getenv("DEEPSEEK_API_KEY"),
+        "google": os.getenv("GOOGLE_API_KEY"),
         "naver": os.getenv("NAVER_API_KEY"),
     }
     diary_file = f"{os.getenv('AIRFLOW_DIR')}/tuning/data/test_diary.csv"
@@ -250,7 +277,7 @@ if __name__ == "__main__":
     feedback_file1 = f"{os.getenv('AIRFLOW_DIR')}/tuning/data/HCX-003_feedback.jsonl"
     feedback_file2 = f"{os.getenv('AIRFLOW_DIR')}/tuning/data/lmh7w4qy_feedback.jsonl"
     evaluate_file = f"{os.getenv('AIRFLOW_DIR')}/tuning/data/HCX-003_evaluate.jsonl"
-    evaluate_file = f"{os.getenv('AIRFLOW_DIR')}/tuning/data/lmh7w4qy_evaluate.jsonl"
+    # evaluate_file = f"{os.getenv('AIRFLOW_DIR')}/tuning/data/lmh7w4qy_evaluate.jsonl"
 
     main(
         api_keys=api_keys,

@@ -5,6 +5,7 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa'
 import { ReactComponent as AraboogieWithBackground } from '../../../assets/araboogie_with_background.svg'
 import Button from 'components/Button'
 import { useAuthStore } from '../../../stores/authStore'
+import useLogin from 'services/login'
 
 const LoginPage = () => {
   const navigate = useNavigate()
@@ -15,6 +16,7 @@ const LoginPage = () => {
     password: ''
   })
   const [error, setError] = useState('')
+  const [keepLoggedIn, setKeepLoggedIn] = useState(false) // 체크박스 상태 관리
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword)
@@ -27,23 +29,15 @@ const LoginPage = () => {
       [name]: value
     }))
   }
-
+  const login = useLogin()
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault()
     
-    // 더미 로그인 검증
-    if (credentials.username === 'admin' && credentials.password === 'admin') {
-      // 더미 토큰 생성 (실제로는 서버에서 받아야 함)
-      const dummyToken = 'dummy_token_' + Date.now()
-      setAuth(dummyToken)
-      navigate('/')
-    } else {
-      setError('잘못된 아이디 또는 비밀번호입니다')
-    }
+    login({ username: credentials.username, password: credentials.password })
   }
 
   return (
-    <div className="h-[calc(100vh-126px)] flex justify-center items-start bg-background-primary pt-20">
+    <div className="min-w-[1440px] min-h-screen flex justify-center items-start bg-background-primary pt-20">
       <div className="flex gap-10 max-w-6xl w-full px-4">
         {/* 왼쪽 로그인 폼 */}
         <div className="flex-1 max-w-[510px]">
@@ -77,6 +71,7 @@ const LoginPage = () => {
                 type="button"
                 onClick={togglePasswordVisibility}
                 className="absolute right-5 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-gray-500 hover:text-gray-700"
+                tabIndex={-1}
               >
                 {showPassword ? <FaEyeSlash size={24} /> : <FaEye size={24} />}
               </button>
@@ -85,7 +80,12 @@ const LoginPage = () => {
             {error && <p className="text-red-500 body-s">{error}</p>}
 
             <label className="flex items-center gap-2.5 body-s">
-              <input type="checkbox" className="w-6 h-6 rounded-full border-2" />
+              <input
+                type="checkbox"
+                className="w-6 h-6 rounded-full border-2"
+                checked={keepLoggedIn}
+                onChange={(e) => setKeepLoggedIn(e.target.checked)}
+              />
               로그인 상태 유지하기
             </label>
 
@@ -94,6 +94,7 @@ const LoginPage = () => {
               size="large"
               color="purple"
               onClick={handleLogin}
+              type="submit"
             />
 
             <p className="mt-8 text-center body-s">
