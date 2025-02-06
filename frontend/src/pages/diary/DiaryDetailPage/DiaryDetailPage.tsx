@@ -1,4 +1,4 @@
-import useDiary from 'hooks/temp.useDiary'
+import useDiary from 'hooks/useDiary'
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { SlicedTextType } from 'types/diary'
