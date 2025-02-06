@@ -55,14 +55,17 @@ const DiaryListPage = () => {
         prevYM = currentYM
         return (
           <>
-            <div className="mb-[10px] min-w-[960px] max-w-[1024px] border-b-2 border-line text-start text-text-primary title-s">
+            <div
+              key={`diary-split-${currentYM}`}
+              className="mb-[10px] min-w-[960px] max-w-[1024px] border-b-2 border-line text-start text-text-primary title-s"
+            >
               {currentYM}
             </div>
-            <DiaryCard diary={diary} />
+            <DiaryCard key={`diary-${diary.diaryId}`} diary={diary} />
           </>
         )
       } else {
-        return <DiaryCard diary={diary} />
+        return <DiaryCard key={`diary-${diary.diaryId}`} diary={diary} />
       }
     })
 
