@@ -1,7 +1,7 @@
 import { TextDataType } from 'types'
 
 // TODO: 실제 API 호출 함수로 구현 예정
-const getTextDataAPI = (textId: number) => {
+const getTextData = (textId: number) => {
   const dummyTextData: TextDataType = {
     text_id: textId,
     title: '연금술사',
@@ -37,4 +37,4 @@ const getTextDataAPI = (textId: number) => {
   return dummyTextData
 }
 
-export default getTextDataAPI
+export default getTextData

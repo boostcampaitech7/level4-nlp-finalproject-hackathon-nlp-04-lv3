@@ -20,6 +20,7 @@ export default {
             2: 'var(--color-surface-primary-2)',
           },
           secondary: 'var(--color-surface-secondary)',
+          tertiary: 'var(--color-surface-tertiary)',
         },
         button: {
           primary: {
@@ -114,6 +115,7 @@ export default {
             inverse: 'rgba(255, 70, 70, 0.3)',
           },
         },
+        drag: 'var(--color-drag-background)',
       },
       fontFamily: {
         pretendardBlack: ['PretendardBlack', 'sans-serif'],
@@ -123,6 +125,7 @@ export default {
         pretendardMedium: ['PretendardMedium', 'sans-serif'],
         pretendardRegular: ['PretendardRegular', 'sans-serif'],
         partialSans: ['PartialSans', 'sans-serif'],
+        nanumSaranghae: ['NanumSaRangHae', 'sans-serif'],
       },
     },
   },
@@ -200,6 +203,10 @@ export default {
         '.caption-s': {
           fontFamily: theme('fontFamily.pretendardRegular'),
           fontSize: '20px',
+        },
+        '.feedback-m': {
+          fontFamily: theme('fontFamily.nanumSaranghae'),
+          fontSize: '22px',
         },
       }
 

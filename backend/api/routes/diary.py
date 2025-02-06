@@ -1,6 +1,7 @@
 from fastapi import Depends, APIRouter, HTTPException, status
 from sqlmodel import Session, select
 from sqlalchemy import desc, cast, Date
+import re
 from typing import List
 from datetime import date
 
@@ -61,7 +62,7 @@ def fetch_diary_by_id(
     session: Session = Depends(get_session),
 ):
     # 1. 토큰 검증 (username이 존재하는지 확인해야 한다. 회원탈퇴했을 수 있으니, 물론 회원탈퇴 가능은 없지만)
-    validate_access_token(token)
+    user_id = validate_access_token(token)
 
     # 2. diary 찾기
     diary = session.get(Diaries, diary_id)
@@ -72,12 +73,20 @@ def fetch_diary_by_id(
             status_code=status.HTTP_404_NOT_FOUND, detail="diary doesn't exist"
         )
 
-    # 3. 응답 데이터 생성
+    # 3. 피드백 기준 문구 제거
+    feedbacks = None
+    if diary.feedback:
+        feedbacks = []
+        for feedback in diary.feedback:
+            feedback[2] = re.sub(r"\(기준\s\d+.*?\)$", "", feedback[2])
+            feedbacks.append(feedback)
+
+    # 4. 응답 데이터 생성
     return DiaryExtendedDTO(
         diary_id=diary.diary_id,
         status=diary.status,
         text=diary.text,
-        feedback=diary.feedback,
+        feedback=feedbacks,
         review=diary.review,
         created_at=diary.created_at,
     )

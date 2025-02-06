@@ -95,7 +95,7 @@ def fetch_review_quiz(
 
 
 # 단어 검색
-@router.post(
+@router.get(
     "/vocab/{vocab}", response_model=VocabDetailDTO, status_code=status.HTTP_200_OK
 )
 def search_vocab(

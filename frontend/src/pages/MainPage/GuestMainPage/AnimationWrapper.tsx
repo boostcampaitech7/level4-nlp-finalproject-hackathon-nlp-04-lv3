@@ -1,6 +1,6 @@
 import React, { useRef } from 'react'
-import { useCardAnimation } from '../../hooks/useCardAnimation'
-import { AnimationPreset, animationPresets } from '../../animations/presets'
+import { useCardAnimation } from '../../../hooks/useCardAnimation'
+import { AnimationPreset, animationPresets } from '../../../animations/presets'
 
 interface AnimationWrapperProps {
   children: React.ReactNode

@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import Button from 'components/Button'
 import Modal from 'components/Modal'
+import ProgressBar from 'components/ProgressBar'
 
 interface QuizData {
   quiz_id: number
@@ -166,18 +167,11 @@ const handleProgressClick = (index: number) => {
             </div>
 
             <div className="self-stretch w-full px-[29px] py-[20px] justify-center items-end gap-[5px] inline-flex">
-              {quizData?.question.map((_, index) => (
-                <button
-                  key={index}
-                  className={`grow shrink basis-0 h-[9px] rounded-[32px] transition-transform duration-200 transform origin-bottom hover:scale-y-150 cursor-pointer ${
-                    currentQuestionIndex === index
-                      ? 'bg-accent-highlight scale-y-110'
-                      : 'bg-background-primary hover:bg-accent-highlight'
-                  }`}
-                  onClick={() => handleProgressClick(index)}
-                  aria-label={`문제 ${index + 1}`}
-                />
-              ))}
+              <ProgressBar
+                total={quizData?.question.length || 0}
+                current={currentQuestionIndex}
+                onClick={handleProgressClick}
+              />
             </div>
 
             {currentQuestionIndex === 2 && selectedOption !== null && (

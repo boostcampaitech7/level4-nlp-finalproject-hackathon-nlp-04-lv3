@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { ChatMessage as ChatMessageType, ChatAction } from '../../types/chat'
+import { ChatMessage as ChatMessageType, ChatAction } from '../../../types/chat'
 import { ChatMessage } from './ChatMessage'
 import { FaPaperPlane } from 'react-icons/fa'
-import '../../styles/safari.css'
+import '../../../styles/safari.css'
 
 interface ChatInterfaceProps {
   messages: ChatMessageType[]

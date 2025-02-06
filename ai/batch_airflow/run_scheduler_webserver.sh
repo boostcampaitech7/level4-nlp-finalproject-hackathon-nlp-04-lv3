@@ -2,15 +2,17 @@
 
 # AirFlow DB 설정에 필요한 변수
 DB_HOST=$DB_HOST
-DB_NAME=$1
+DB_NAME=$DB_NAME
+DB_PASSWORD=$DB_PASSWORD
 
-# AirFlow가 사용할 DB airflow_db 생성. 이때, DB가 존재하는지 확인하고, 없으면 생성
-if ! psql -h $DB_HOST -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = $DB_NAME;" | grep -q 1; then
-  echo "🚀 Creating database $DB_NAME..."
-  psql -h $DB_HOST -U postgres -c "CREATE DATABASE $DB_NAME;"
-else
-  echo "✅ Database $DB_NAME already exists!"
-fi
+
+# # AirFlow가 사용할 DB airflow_db 생성. 이때, DB가 존재하는지 확인하고, 없으면 생성
+# if ! psql -h $DB_HOST -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = $DB_NAME;" | grep -q 1; then
+#   echo "🚀 Creating database $DB_NAME..."
+#   psql -h $DB_HOST -U postgres -c "CREATE DATABASE $DB_NAME;"
+# else
+#   echo "✅ Database $DB_NAME already exists!"
+# fi
 
 # AirFlow DB 초기화
 poetry run airflow db init
@@ -33,9 +35,9 @@ fi
 poetry run airflow connections add 'my_postgres_conn' \
     --conn-type 'postgres' \
     --conn-host $DB_HOST \
-    --conn-schema 'arabugi_db' \
+    --conn-schema $DB_NAME \
     --conn-login 'root' \
-    --conn-password 'password1234' \
+    --conn-password $DB_PASSWORD \
     --conn-port '5432'
 
 # AirFlow 스케줄러 실행 (백그라운드 실행)

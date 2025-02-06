@@ -9,6 +9,7 @@ import { useEffect } from 'react'
 import * as Pages from './pages'
 import { useAuthStore } from './stores/authStore'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import ScrollToTop from 'components/ScrollToTop'
 
 function App() {
   const { isAuthenticated, checkAuth } = useAuthStore()
@@ -26,6 +27,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
+        <ScrollToTop />
         <Routes>
           <Route element={<Pages.MainLayout />}>
             {/* 1. 인증 여부에 따라 다른 메인 페이지 */}
@@ -79,11 +81,11 @@ function App() {
               {/* 3-1. text 관련 라우트 */}
               <Route path="text">
                 <Route
-                  path=":text_id/quiz/:level/result"
+                  path=":text_id/quiz/:quiz_id/result"
                   element={<Pages.TextQuizResultPage />}
                 />
                 <Route
-                  path=":text_id/quiz/:level"
+                  path=":text_id/quiz/:quiz_id"
                   element={<Pages.TextQuizPage />}
                 />
                 <Route
