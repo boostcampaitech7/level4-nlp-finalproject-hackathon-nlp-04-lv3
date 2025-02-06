@@ -223,7 +223,7 @@ async def request_text_chatbot_response(
         if ai_data["status"]["code"] != "20000":
             raise HTTPException(
                 status_code=500,
-                detail=f"AI 서버 응답 오류: {ai_data["status"]["message"]}",
+                detail=f"AI 서버 응답 오류: {ai_data['status']['message']}",
             )
 
         # 6. 응답 데이터를 추출
