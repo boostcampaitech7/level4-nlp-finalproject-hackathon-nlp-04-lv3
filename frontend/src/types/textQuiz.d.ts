@@ -15,3 +15,13 @@ export interface TextQuizType {
     string,
   ]
 }
+
+export interface TextQuizListType {
+  userLevel: number
+  levelData: { level: number; quizId: number; isSolved: boolean }[]
+}
+
+export interface TextQuizSolveType {
+  quizId: number
+  userAnswer: [number, number, number]
+}

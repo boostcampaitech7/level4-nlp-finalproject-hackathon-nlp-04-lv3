@@ -1,14 +1,15 @@
-import useTextData from 'hooks/temp.useTextData'
+import useTextData from 'hooks/useText'
 import { TitleBar } from '../TextDetailPage/TitleBar'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useEffect, useMemo } from 'react'
 import TextContent from './TextContent'
 import TextQuizCard from './TextQuizCard'
-import useTextQuiz from 'hooks/temp.useTextQuiz'
+import useTextQuiz from 'hooks/useTextQuiz'
 import Button from 'components/Button'
 import { useTextQuizUserAnswerStore } from 'stores/textQuizUserAnswerStore'
 import { useQueryClient } from '@tanstack/react-query'
-import { TextDataType } from 'types'
+import { TextDataType } from 'types/text'
+import usePostTextQuizSolve from 'hooks/usePostTextQuizSolve'
 
 const TextQuizPage = () => {
   const { text_id, quiz_id } = useParams<{ text_id: string; quiz_id: string }>()
@@ -23,7 +24,7 @@ const TextQuizPage = () => {
   const { data: textData, isLoading: isTextLoading } = useTextData(textId)
   const { data: textQuiz, isLoading: isQuizLoading } = useTextQuiz(qId)
 
-  const { quizId, userAnswer, setQuizId, resetQuizSolve } =
+  const { textQuizSolve, setQuizId, resetQuizSolve } =
     useTextQuizUserAnswerStore()
   useEffect(() => {
     setQuizId(qId)
@@ -41,13 +42,14 @@ const TextQuizPage = () => {
     window.scrollTo(0, 0)
   }, [])
 
-  const navigate = useNavigate()
+  const { mutate } = usePostTextQuizSolve(textId)
+
   const handleClickSubmit = () => {
-    if (quizId == -1) {
+    if (textQuizSolve.quizId == -1) {
       alert('오류가 발생했습니다. 새로고침 후 다시 이용해보세요.')
     } else {
       let unsolved: string[] = []
-      userAnswer.forEach((answer, idx) => {
+      textQuizSolve.userAnswer.forEach((answer, idx) => {
         if (![0, 1, 2, 3].includes(answer)) {
           unsolved.push(`${idx + 1}번`)
         }
@@ -57,9 +59,7 @@ const TextQuizPage = () => {
           `아직 ${unsolved.join(', ')} 문제를 안 풀었어요. 모든 문제를 풀어주세요.`,
         )
       } else {
-        console.log('제출 API 연결')
-        resetQuizSolve()
-        navigate(`/text/${textId}/quiz/${qId}/result`)
+        mutate(textQuizSolve)
       }
     }
   }

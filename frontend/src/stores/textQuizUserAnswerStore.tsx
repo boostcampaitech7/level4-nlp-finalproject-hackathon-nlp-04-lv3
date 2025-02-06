@@ -1,8 +1,8 @@
+import { TextQuizSolveType } from 'types/textQuiz'
 import { create } from 'zustand'
 
 interface TextQuizUserAnswerState {
-  quizId: number
-  userAnswer: number[]
+  textQuizSolve: TextQuizSolveType
   setQuizId: (quizId: number) => void
   setAnswer: (questionIdx: number, answer: number) => void
   resetQuizSolve: () => void
@@ -10,15 +10,29 @@ interface TextQuizUserAnswerState {
 
 export const useTextQuizUserAnswerStore = create<TextQuizUserAnswerState>()(
   (set) => ({
-    quizId: -1,
-    userAnswer: [-1, -1, -1],
-    setQuizId: (quizId) => set({ quizId }),
-    setAnswer: (questionIdx: number, answer: number) =>
+    textQuizSolve: {
+      quizId: -1,
+      userAnswer: [-1, -1, -1],
+    },
+    setQuizId: (quizId) =>
       set((state) => ({
-        userAnswer: state.userAnswer.map((val, idx) =>
-          idx === questionIdx ? answer : val,
-        ),
+        textQuizSolve: {
+          quizId: quizId,
+          userAnswer: state.textQuizSolve.userAnswer,
+        },
       })),
-    resetQuizSolve: () => set({ quizId: -1, userAnswer: [-1, -1, -1] }),
+    setAnswer: (questionIdx: number, answer: number) =>
+      set((state) => {
+        let prev = state.textQuizSolve.userAnswer
+        prev[questionIdx] = answer
+        return {
+          textQuizSolve: {
+            quizId: state.textQuizSolve.quizId,
+            userAnswer: prev,
+          },
+        }
+      }),
+    resetQuizSolve: () =>
+      set({ textQuizSolve: { quizId: -1, userAnswer: [-1, -1, -1] } }),
   }),
 )
