@@ -23,6 +23,6 @@ export interface DiaryCardType {
 
 export interface DiaryListType {
   pageNum: number
-  diarys: DiaryCardType[]
+  diaries: DiaryCardType[]
   totalPageCount: number | null
 }

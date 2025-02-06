@@ -48,7 +48,7 @@ const DiaryListPage = () => {
     }
 
     let prevYM = ''
-    const diaryCards = diaryList?.diarys.map((diary) => {
+    const diaryCards = diaryList?.diaries.map((diary) => {
       const currentYM = getYM(diary.day)
 
       if (prevYM != currentYM) {
