@@ -13,6 +13,7 @@ import { useSidebarStore } from '../stores/sidebarStore'
 import { useAuthStore } from '../stores/authStore'
 import SearchModal from './SearchModal'
 import LoginPopup from '../pages/MainPage/GuestMainPage/LoginPopup'
+import { getVocabByNumberData } from '../services/getVocabByNumber';
 
 const Sidebar = () => {
   const { isAuthenticated, logout } = useAuthStore()
@@ -22,10 +23,10 @@ const Sidebar = () => {
   const [isLoginPopupOpen, setIsLoginPopupOpen] = useState(false)
 
   // 사이드바를 닫고 해당 페이지로 이동하는 함수
-  const closeSidebarWithNavigate = (path: string) => {
-    closeSidebar()
-    navigate(path)
-  }
+  const closeSidebarWithNavigate = (path: string, state?: any) => {
+    closeSidebar();
+    navigate(path, { state });
+  };
 
   const handleLogout = () => {
     logout()
@@ -69,10 +70,20 @@ const Sidebar = () => {
           <IconButton
             icon={FaRegFileWord}
             text="단어 학습"
-            onClick={() => handleAuthenticatedAction(() => {
-              const randomVocabId = Math.floor(Math.random() * 100) + 1;
-              closeSidebarWithNavigate(`/vocab/${randomVocabId}`);
-            })}
+            onClick={() =>
+              handleAuthenticatedAction(async () => {
+                // 1부터 100 사이의 랜덤한 vocab_id 생성
+                const randomVocabId = Math.floor(Math.random() * 10) + 1;
+                try {
+                  // 백엔드에서 단어 데이터를 받아옴
+                  const vocabData = await getVocabByNumberData(randomVocabId);
+                  // 데이터를 받아온 후 사이드바를 닫고 /vocab/{vocab_id} 페이지로 이동하면서 데이터를 state로 전달
+                  closeSidebarWithNavigate(`/vocab/${randomVocabId}`, vocabData);
+                } catch (error) {
+                  console.error('단어 데이터를 가져오지 못했습니다.', error);
+                }
+              })
+            }
           />
           <IconButton
             icon={CgNotes}

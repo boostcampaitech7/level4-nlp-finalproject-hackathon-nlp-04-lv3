@@ -35,32 +35,14 @@ interface QuizData {
 
 // 실제로는 fetch API를 사용하거나 axios를 사용하여 데이터를 가져오세요.
 const fetchTodayTexts = async (): Promise<TodayText[]> => {
-  // 예시를 위해 더미 데이터를 반환
-  // 실제로는 서버에서 데이터를 받아옵니다.
-  return new Promise((resolve) =>
-    setTimeout(() => {
-      resolve([
-        {
-          text_id: 511278047,
-          title: '연금술사',
-          category: '소설',
-          content: '연금술사는 대상들 중 한 명이 가져다 준 책을 손에 들고 있다',
-        },
-        {
-          text_id: 511278048,
-          title: '데미안',
-          category: '철학',
-          content: '새는 알에서 나오기 위해 투쟁한다. 알은 세계다...',
-        },
-        {
-          text_id: 511278049,
-          title: '1984',
-          category: '디스토피아',
-          content: '모든 동물은 평등하다. 하지만 어떤 동물은 다른 동물들보다 더 평등하다.',
-        },
-      ]);
-    }, 500)
-  );
+  try {
+    const response = await customAxios().get('/api/main/text');
+    console.log(response.data);
+    return response.data.slice(0, 3); // Get only first 3 items
+  } catch (error) {
+    console.error('Error fetching today texts:', error);
+    throw error;
+  }
 };
 
 const fetchTodayQuizzes = async (): Promise<QuizData[]> => {
@@ -427,11 +409,8 @@ const MainPage = () => {
                       text="읽으러 가기"
                       color="purple"
                       size="small"
-                      onClick={() =>
-                        navigate(`/text/${text.text_id}`, {
-                          state: { textData: text },
-                        })
-                      }
+                      onClick={() => navigate(`/text/${text.text_id}`, { state: { textData: text } })}
+                      plusClasses="min-w-[120px] whitespace-nowrap"
                     />
                   </div>
                   <p className="body-s text-text-secondary">{text.content}</p>
