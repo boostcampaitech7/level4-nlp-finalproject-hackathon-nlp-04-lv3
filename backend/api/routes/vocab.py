@@ -1,7 +1,7 @@
-from fastapi import APIRouter, HTTPException, Depends, status, Path
-from sqlmodel import Session, select, desc, func
-import httpx
 import os
+import httpx
+from sqlmodel import Session, select, desc, func
+from fastapi import APIRouter, HTTPException, Depends, status, Path
 from dotenv import load_dotenv, find_dotenv
 
 from models.vocab import Vocabs
@@ -150,14 +150,14 @@ async def request_vocab_chatbot_response(
 
     try:
         # 4. 단어, 사용자의 질문을 전달 및 응답 요청
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=100.0) as client:
             ai_chat_response = await client.post(
                 AI_SERVER_URL + "/ai/vocab/chat",
                 json={
                     "vocab": vocab_data.vocab,
                     "explain": vocab_data.easy_explain[0],
                     "question": question,
-                    "previous": previous,
+                    "previous": [prev.model_dump() for prev in previous],
                 },
             )
 

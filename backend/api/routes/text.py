@@ -1,9 +1,9 @@
-from fastapi import Depends, APIRouter, status, Path, HTTPException
-from sqlmodel import Session, select, func
-from sqlalchemy import desc
-from math import ceil
-import httpx
 import os
+import httpx
+from math import ceil
+from sqlalchemy import desc
+from sqlmodel import Session, select, func
+from fastapi import Depends, APIRouter, status, Path, HTTPException
 from dotenv import load_dotenv, find_dotenv
 
 from models.text import Texts
@@ -116,7 +116,7 @@ async def request_text_account(
 
     try:
         # 4. 드래그한 부분을 전달하여 설명 요청
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=100.0) as client:
             ai_explain_response = await client.post(
                 AI_SERVER_URL + "/ai/text/explain",
                 json={"text": request_text, "focused": focused},
@@ -131,7 +131,7 @@ async def request_text_account(
             )
 
         # 6. 응답 데이터를 추출
-        explain = ai_data["explain"]
+        explain = ai_data["content"]
 
         # 7. 결과를 프론트엔드에 전달할 형식으로 변환
         return TextExplainResponseDTO(text_id=text_id, explain=explain)
@@ -212,14 +212,14 @@ async def request_text_chatbot_response(
 
     try:
         # 4. 드래그한 부분, text의 content, 사용자의 질문을 전달하여 챗봇에 응답 요청
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=100.0) as client:
             ai_chat_response = await client.post(
                 AI_SERVER_URL + "/ai/text/chat",
                 json={
                     "text": request_text,
                     "focused": focused,
                     "question": question,
-                    "previous": previous,
+                    "previous": [prev.model_dump() for prev in previous],
                 },
             )
 
