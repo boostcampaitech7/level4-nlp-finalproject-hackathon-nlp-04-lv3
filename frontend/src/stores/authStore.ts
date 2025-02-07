@@ -16,7 +16,7 @@ interface AuthState {
 
 export const useAuthStore = create<AuthState>((set) => ({
   // 초기 상태는 현재 쿠키에 저장된 토큰을 읽어 결정합니다.
-  isAuthenticated: !!Cookies.get('token'),
+  isAuthenticated: !!Cookies.get('access_token'),
   token: Cookies.get('access_token') || null,
   setAuth: (token, persistent = false) => {
     if (token) {
