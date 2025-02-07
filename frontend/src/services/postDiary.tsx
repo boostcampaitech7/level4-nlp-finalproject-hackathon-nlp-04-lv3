@@ -1,7 +1,7 @@
-import customAxios from './customAxios'
+import authenticatedAxios from './authenticatedAxios'
 
 const postDiary = async (text: string) => {
-  const axios = customAxios()
+  const axios = authenticatedAxios()
 
   return axios
     .post(

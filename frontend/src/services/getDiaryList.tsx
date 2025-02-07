@@ -1,4 +1,4 @@
-import customAxios from './customAxios'
+import customAxios from './authenticatedAxios'
 import { DiaryListType } from 'types/diary'
 
 const getDiaryList = async (pageNum: number) => {
@@ -11,7 +11,6 @@ const getDiaryList = async (pageNum: number) => {
         throw new Error('일기 목록을 불러오는 데 실패했습니다.')
       }
       const { data } = res
-      console.log(data)
       const diaryList: DiaryListType = {
         pageNum: data.page_num,
         diaries: data.diaries.map((diary: any) => {

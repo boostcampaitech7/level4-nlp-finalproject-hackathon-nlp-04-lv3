@@ -1,18 +1,18 @@
-import { TextQuizListType } from 'types/textQuiz'
 import authenticatedAxios from './authenticatedAxios'
+import { VocabQuizListType } from 'types/vocab'
 
-const getTextQuizList = (textId: number) => {
+const getVocabQuizList = (vocabId: number) => {
   const axios = authenticatedAxios()
 
   return axios
-    .get(`/api/level/text/${textId}`)
+    .get(`/api/level/vocab/${vocabId}`)
     .then((res) => {
       if (res.status != 200) {
         throw new Error('퀴즈 목록을 불러오는 데 실패했습니다.')
       }
       const { data } = res
       console.log(data)
-      const textQuizList: TextQuizListType = {
+      const vocabQuizList: VocabQuizListType = {
         userLevel: data.user_level,
         levelData: data.level_data.map((quiz: any) => {
           return {
@@ -23,7 +23,7 @@ const getTextQuizList = (textId: number) => {
         }),
       }
 
-      return textQuizList
+      return vocabQuizList
     })
     .catch((err) => {
       console.error(`API 요청 에러 발생: ${err}`)
@@ -31,4 +31,4 @@ const getTextQuizList = (textId: number) => {
     })
 }
 
-export default getTextQuizList
+export default getVocabQuizList

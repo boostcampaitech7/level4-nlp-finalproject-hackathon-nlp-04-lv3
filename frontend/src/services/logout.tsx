@@ -1,7 +1,7 @@
-import customAxios from './customAxios'
+import authenticatedAxios from './authenticatedAxios'
 
 const logout = async () => {
-  const axios = customAxios()
+  const axios = authenticatedAxios()
 
   return axios
     .get('/api/auth/logout')

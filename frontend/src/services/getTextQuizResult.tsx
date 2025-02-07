@@ -1,13 +1,12 @@
 import { TextQuizResultType } from 'types/textQuiz'
-import customAxios from './customAxios'
+import authenticatedAxios from './authenticatedAxios'
 
 const getTextQuizResult = async (quizId: number) => {
-  const axios = customAxios()
+  const axios = authenticatedAxios()
 
   return axios
     .get(`/api/text_quiz/solve/${quizId}`)
     .then((res) => {
-      console.log(res)
       if (res.status != 200) {
         throw new Error('퀴즈 풀이 결과 데이터를 불러오는 데 실패했습니다.')
       }

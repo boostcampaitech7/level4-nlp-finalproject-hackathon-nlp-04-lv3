@@ -1,8 +1,8 @@
 import { TextListType } from 'types/text'
-import customAxios from './customAxios'
+import authenticatedAxios from './authenticatedAxios'
 
 const getTextList = async (pageNum: number) => {
-  const axios = customAxios()
+  const axios = authenticatedAxios()
 
   return axios
     .get(`/api/text/list/${pageNum}`)

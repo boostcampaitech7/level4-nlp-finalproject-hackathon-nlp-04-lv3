@@ -1,7 +1,7 @@
 import axios from 'axios'
 import Cookies from 'js-cookie'
 
-const customAxios = () => {
+const authenticatedAxios = () => {
   const api = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
     headers: {
@@ -25,4 +25,4 @@ const customAxios = () => {
   return api
 }
 
-export default customAxios
+export default authenticatedAxios

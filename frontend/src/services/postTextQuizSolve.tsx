@@ -1,8 +1,8 @@
 import { TextQuizSolveType } from 'types/textQuiz'
-import customAxios from './customAxios'
+import authenticatedAxios from './authenticatedAxios'
 
 const postTextQuizSolve = async ({ quizId, userAnswer }: TextQuizSolveType) => {
-  const axios = customAxios()
+  const axios = authenticatedAxios()
   return axios
     .post(
       `/api/text_quiz/solve`,
@@ -14,7 +14,6 @@ const postTextQuizSolve = async ({ quizId, userAnswer }: TextQuizSolveType) => {
       },
     )
     .then((res) => {
-      console.log(res)
       if (res.status !== 200) {
         throw new Error('퀴즈 풀이 제출에 실패하였습니다.')
       }

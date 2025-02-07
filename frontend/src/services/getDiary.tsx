@@ -1,13 +1,12 @@
-import customAxios from './customAxios'
+import authenticatedAxios from './authenticatedAxios'
 import { DiaryType } from 'types/diary'
 
 const getDiary = async (diaryId: number) => {
-  const axios = customAxios()
+  const axios = authenticatedAxios()
 
   return axios
     .get(`/api/diary/diary_id/${diaryId}`)
     .then((res) => {
-      console.log(res)
       if (res.status != 200) {
         throw new Error('일기를 불러오는 데 실패했습니다.')
       }

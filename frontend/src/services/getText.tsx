@@ -1,8 +1,8 @@
-import customAxios from './customAxios'
+import authenticatedAxios from './authenticatedAxios'
 import { TextDataType } from 'types/text'
 
 const getText = (textId: number) => {
-  const axios = customAxios()
+  const axios = authenticatedAxios()
 
   return axios
     .get(`/api/text/${textId}`)

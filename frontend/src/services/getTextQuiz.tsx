@@ -1,8 +1,8 @@
 import { TextQuizType } from 'types/textQuiz'
-import customAxios from './customAxios'
+import authenticatedAxios from './authenticatedAxios'
 
 const getTextQuiz = async (quizId: number) => {
-  const axios = customAxios()
+  const axios = authenticatedAxios()
 
   return axios
     .get(`/api/text_quiz/${quizId}`)
