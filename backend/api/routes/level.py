@@ -61,7 +61,7 @@ def fetch_vocab_level(
             )
         )
 
-    return level_data
+    return LevelStudyRecordDTO(user_level=user_level, level_data=level_data)
 
 
 # 긴 글 퀴즈 난이도별 학습기록 조회
@@ -112,4 +112,4 @@ def get_text_level_study_record(
             )
         )
 
-    return level_data
+    return LevelStudyRecordDTO(user_level=user_level, level_data=level_data)
