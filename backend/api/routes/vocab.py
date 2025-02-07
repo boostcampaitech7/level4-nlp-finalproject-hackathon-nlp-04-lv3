@@ -1,6 +1,8 @@
 from fastapi import APIRouter, HTTPException, Depends, status, Path
 from sqlmodel import Session, select, desc, func
 import httpx
+import os
+from dotenv import load_dotenv, find_dotenv
 
 from models.vocab import Vocabs
 from models.vocab_conversation import VocabConversations
@@ -18,7 +20,7 @@ from core.security import validate_access_token, oauth2_scheme
 router = APIRouter(prefix="/vocab", tags=["vocab"])
 
 # AI 서버 URL - 임시
-AI_SERVER_URL = "http://ai-server.com"
+AI_SERVER_URL = os.getenv("AI_SERVER_URL")
 
 
 # 단어 랜덤으로 조회

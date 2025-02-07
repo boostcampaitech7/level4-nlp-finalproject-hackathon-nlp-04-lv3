@@ -7,6 +7,7 @@ WORKDIR /backend
 # 빌드 시 환경 변수를 ARG로 설정
 ARG ALGORITHM=HS256
 ARG SECRET_KEY=41cfd2ff1d20275fcd829ade54ded7eab160f65496273bb9c3d9a18c51416b8a
+ARG AI_SERVER_URL=10.0.0.9
 ARG EXPIRE_MINUTES=300
 ARG DB_HOST=host.docker.internal
 ARG DB_PASSWORD=password1234
@@ -38,6 +39,7 @@ COPY app.py /backend/
 RUN echo "DB_URL=postgresql+psycopg2://root:${DB_PASSWORD}@${DB_HOST}/${DB_NAME}?options=-csearch_path=${SCHEMA}" > .env && \
     echo "ALGORITHM=${ALGORITHM}" >> .env && \
     echo "SECRET_KEY=${SECRET_KEY}" >> .env && \
+    echo "AI_SERVER_URL=${AI_SERVER_URL}" >> .env && \
     echo "EXPIRE_MINUTES=${EXPIRE_MINUTES}" >> .env
 
 # 컨테이너 실행 명령
