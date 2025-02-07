@@ -51,7 +51,7 @@ const TextDetailPage = () => {
             <MainHelp />
             <div className="flex flex-grow gap-x-[40px]">
               <div className="flex flex-col gap-y-[20px]">
-                <TextContent text={textData.text} />
+                <TextContent text={textData.content} />
                 <div className="flex justify-center gap-x-[22px]">
                   {textId > 0 && (
                     <Button
