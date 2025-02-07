@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends, status, Path
-from sqlmodel import Session, select, desc
+from sqlmodel import Session, select, desc, func
 import httpx
 
 from models.vocab import Vocabs
@@ -19,6 +19,30 @@ router = APIRouter(prefix="/vocab", tags=["vocab"])
 
 # AI 서버 URL - 임시
 AI_SERVER_URL = "http://ai-server.com"
+
+
+# 글 목록 조회
+@router.get("/random", response_model=VocabDetailDTO, status_code=status.HTTP_200_OK)
+def get_text_list(
+    token: str = Depends(oauth2_scheme),
+    session: Session = Depends(get_session),
+):
+    # 1. 토큰 검증
+    validate_access_token(token)
+
+    # 2. DB에서 긴 글 데이터 중 임의로 3개 추출 후 반환
+    vocab_data = session.exec(select(Vocabs).order_by(func.random()).limit(1)).first()
+
+    # 3. 응답 데이터 생성
+    return VocabDetailDTO(
+        vocab_id=vocab_data.vocab_id,
+        vocab=vocab_data.vocab,
+        hanja=vocab_data.hanja,
+        dict_mean=vocab_data.dict_mean,
+        easy_explain=vocab_data.easy_explain,
+        correct_example=vocab_data.correct_example,
+        incorrect_example=vocab_data.incorrect_example,
+    )
 
 
 # 단어 설명 조회

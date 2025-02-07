@@ -27,7 +27,7 @@ RUN poetry install --no-root
 COPY api/ /backend/api/
 COPY core/ /backend/core/
 COPY models/ /backend/models/
-COPY schemas/ /backend/schemas
+COPY schemas/ /backend/schemas/
 COPY services/ /backend/services/
 COPY app.py /backend/
 
