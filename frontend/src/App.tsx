@@ -88,11 +88,11 @@ function App() {
                 isAuthenticated ? (
                   <Routes>
                     <Route
-                      path=":vocab_id/quiz/:level/result"
+                      path=":vocab_id/quiz/:quiz_id/result"
                       element={<Pages.VocabQuizResultPage />}
                     />
                     <Route
-                      path=":vocab_id/quiz/:level"
+                      path=":vocab_id/quiz/:quiz_id"
                       element={<Pages.VocabQuizPage />}
                     />
                     <Route
