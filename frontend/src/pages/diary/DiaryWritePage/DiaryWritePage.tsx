@@ -1,7 +1,9 @@
 import Button from 'components/Button'
 import usePostDiary from 'hooks/usePostDiary'
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import usePostDiaryFeedback from 'hooks/usePostDiaryFeedback'
+import { useEffect } from 'react'
+import { useLocation } from 'react-router'
+import { useDiaryTextStore } from 'stores/diaryTextStore'
 
 const DiaryWritePage = () => {
   // 한국 기준 오늘 날짜 포맷팅 (예: "2025년 1월 16일 목요일")
@@ -13,11 +15,12 @@ const DiaryWritePage = () => {
     weekday: 'long',
   })
 
+  const location = useLocation()
+
   const { mutate } = usePostDiary()
 
   // 초기 텍스트는 빈 문자열로 설정
-  const [diaryText, setDiaryText] = useState('')
-  const navigate = useNavigate()
+  const { diaryText, setDiaryText } = useDiaryTextStore()
 
   // "저장하기" 버튼 핸들러: /api/diary/save 엔드포인트 호출
   const handleSave = async () => {
@@ -28,21 +31,14 @@ const DiaryWritePage = () => {
     }
   }
 
+  const { mutate: requestFeedback } = usePostDiaryFeedback()
+
   // "완료하기" 버튼 핸들러: /api/diary/feedback 엔드포인트 호출 후 다이어리 상세 페이지로 이동
   const handleFeedback = async () => {
-    try {
-      const response = await fakeApiCall('/api/diary/feedback', {
-        text: diaryText,
-      })
-      // Type assertion to ensure response has the expected structure
-      const typedResponse = response as { message: string; diary_id?: string }
-      alert(typedResponse.message)
-      if (typedResponse.diary_id) {
-        navigate(`/diary/${typedResponse.diary_id}`)
-      }
-    } catch (error) {
-      console.error(error)
-      alert('완료 처리에 실패했습니다. 다시 시도해주세요.')
+    if (diaryText.trim()) {
+      requestFeedback(diaryText.trim())
+    } else {
+      alert('아무 내용도 작성하지 않았어요.')
     }
   }
 
@@ -53,25 +49,14 @@ const DiaryWritePage = () => {
     }
   }
 
-  // 더미 API 호출 함수 (엔드포인트에 따라 1초 후에 더미 데이터 반환)
-  const fakeApiCall = (endpoint: string, data: unknown) => {
-    console.log(`API 호출 [${endpoint}] 데이터:`, data)
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        if (endpoint === '/api/diary/save') {
-          resolve({
-            message: 'Diary successfully saved',
-            diary_id: 1,
-          })
-        } else if (endpoint === '/api/diary/feedback') {
-          resolve({
-            message: 'Diary successfully accepted',
-            diary_id: 1,
-          })
-        }
-      }, 1000)
-    })
-  }
+  useEffect(() => {
+    if (location.state?.prevText) {
+      setDiaryText(location.state.prevText)
+    }
+    return () => {
+      setDiaryText('')
+    }
+  }, [location])
 
   return (
     <div className="min-h-screen w-full items-center justify-center bg-background-primary">

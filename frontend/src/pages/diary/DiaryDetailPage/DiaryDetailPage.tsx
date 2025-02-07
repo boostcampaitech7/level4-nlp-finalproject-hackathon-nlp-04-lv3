@@ -1,12 +1,13 @@
 import useDiary from 'hooks/useDiary'
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { SlicedTextType } from 'types/diary'
 import getSlicedTexts from 'utils/getSlicedTexts'
 import { RoughNotation } from 'react-rough-notation'
 import TitleBar from './TItleBar'
 import Button from 'components/Button'
 import araboogie from '../../../assets/araboogie100.svg?react'
+import { useDiaryTextStore } from 'stores/diaryTextStore'
 
 interface LineData {
   // SVG 경로를 그릴 때 필요한 점들
@@ -310,6 +311,23 @@ const DiaryDetailPage = () => {
     return feedbacks
   }
 
+  const today = new Date()
+  const formattedDate = new Intl.DateTimeFormat('ko-KR', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  })
+    .format(today)
+    .replace(/\. /g, '-')
+    .replace('.', '')
+
+  const navigate = useNavigate()
+  const handleClickModify = () => {
+    if (diary && diary.status === 0) {
+      navigate('/diary/write', { state: { prevText: diary.text } })
+    }
+  }
+
   return (
     <>
       <div
@@ -330,9 +348,15 @@ const DiaryDetailPage = () => {
                   {diary.status === 3 ? (
                     <>
                       <p className="text-red-200 body-m">
-                        ⚠️ 일기에서 AI 윤리에 위반되는 내용이 감지되었습니다.
+                        {
+                          '⚠️ 일기에서 AI 윤리에 위반되는 내용이 감지되었습니다.'
+                        }
                       </p>
-                      <p className="text-text-primary">{diary.review}</p>
+                      <p className="text-text-primary">
+                        {
+                          '일기에서 아라부기 AI Safety 규정에 위반되는 내용이 감지되었습니다. AI 윤리를 위반하는 내용을 작성하여 제출하는 경우, 일기에 대한 피드백이 이루어지지 않으며, AI 윤리를 우회하려는 시도가 지속적으로 관찰되는 경우 계정이 탈퇴 처리될 수 있으므로 주의해주시기 바랍니다.'
+                        }
+                      </p>
                     </>
                   ) : (
                     <p>
@@ -381,10 +405,19 @@ const DiaryDetailPage = () => {
               </div>
               <div className="flex items-center justify-center gap-x-[22px]">
                 <Button
-                  text={diary && diary?.status === 0 ? '수정' : '제출완료'}
+                  text={
+                    diary && diary?.status === 0
+                      ? formattedDate !== diary?.createdAt
+                        ? '제출 불가'
+                        : '수정'
+                      : '제출완료'
+                  }
                   size="small"
-                  disabled={diary && diary?.status >= 1}
-                  onClick={() => console.log('수정 페이지...')}
+                  disabled={
+                    diary &&
+                    (diary?.status >= 1 || formattedDate !== diary?.createdAt)
+                  }
+                  onClick={handleClickModify}
                 />
               </div>
             </div>
