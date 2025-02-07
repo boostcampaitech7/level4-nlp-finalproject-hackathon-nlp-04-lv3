@@ -1,4 +1,4 @@
-import json, os
+import json, os, re
 from fastapi import Depends, APIRouter, HTTPException, status
 from services.text_explain.text_explain import CompletionExecutor
 from schemas.text_explain import TextExplainRequest
@@ -63,8 +63,16 @@ async def explain_text(
 
         # 응답 생성
         response = complete_executor.execute(prompt)
+        response_text = response["result"]["message"]["content"]
+        content = re.sub(
+            r"1. 글의 주제 :.*?\n2. 주요 키워드 :.*?\n3. 핵심 개념 여부 :.*?\n",
+            "",
+            response_text,
+            flags=re.DOTALL,
+        )
+        ai_data = {"status": response["status"]["code"], "content": content}
 
-        return response
+        return ai_data
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
