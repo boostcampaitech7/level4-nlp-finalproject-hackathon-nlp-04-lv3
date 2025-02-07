@@ -1,8 +1,8 @@
-import customAxios from './authenticatedAxios'
+import authenticatedAxios from './authenticatedAxios'
 import { DiaryListType } from 'types/diary'
 
 const getDiaryList = async (pageNum: number) => {
-  const axios = customAxios()
+  const axios = authenticatedAxios()
 
   return axios
     .get(`/api/diary/page/${pageNum}`)
