@@ -32,11 +32,14 @@ def generate_vocab_answer(
     previous_chat = vocab_chat_request.previous
     current_chat = vocab_chat_request.question
 
-    if current_chat == "1":  # '유의어' 버튼
+    if current_chat == "이 단어의 유의어를 알려줘.":  # '유의어' 버튼
         current_chat = prompt["synonym_prompt"]
-    elif current_chat == "2":  # '반의어' 버튼
+    elif current_chat == "이 단어의 반의어를 알려줘.":  # '반의어' 버튼
         current_chat = prompt["antonym_prompt"]
-    elif current_chat == "3":  # '대화 예문' 버튼
+    elif (
+        current_chat
+        == "이 단어를 활용해서 일상 생활에서 발생할 수 있는 대화 예시를 만들어줘."
+    ):  # '대화 예문' 버튼
         current_chat = prompt["communication_prompt"]
 
     current_response = complete_executor.execute(

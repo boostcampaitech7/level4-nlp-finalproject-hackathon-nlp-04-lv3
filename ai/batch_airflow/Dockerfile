@@ -1,7 +1,7 @@
 # python 버전 설정
 FROM python:3.10.13-slim
 
-# 작업 디렉토리 /backend 폴더 만들기
+# 작업 디렉토리 /ai/batch_airflow 폴더 만들기
 WORKDIR /ai/batch_airflow
 
 # 빌드 시 환경 변수를 ARG로 설정
@@ -21,7 +21,7 @@ RUN apt update && apt install -y curl postgresql-client python3-dev build-essent
 COPY pyproject.toml poetry.lock ./
 RUN poetry install --no-root
 
-# 백엔드 코드 복사
+# batch-airflow 코드 복사
 COPY dags/ /ai/batch_airflow/dags/
 COPY run_scheduler_webserver.sh /ai/batch_airflow/
 COPY prompt.json /ai/batch_airflow/
