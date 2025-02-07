@@ -3,12 +3,10 @@ import { TitleBar } from './TitleBar'
 import TextContent from '../TextQuizPage/TextContent'
 import { useNavigate, useParams } from 'react-router-dom'
 import useTextData from 'hooks/useText'
-import useTextQuizSolve from 'hooks/temp.useTextQuizSolve'
 import TextQuizResultCard from './TextQuizResultCard'
 import Button from 'components/Button'
 import { useQueryClient } from '@tanstack/react-query'
 import { TextDataType } from 'types/text'
-import { TextQuizSolveType } from 'types/textQuizSolve'
 import Modal from 'components/Modal'
 import useTextQuizResult from 'hooks/useTextQuizResult'
 
@@ -23,7 +21,6 @@ const TextQuizResultPage = () => {
     return isNaN(parsedQuizId) ? 0 : parsedQuizId
   }, [quiz_id])
   const { data: textData, isLoading: isTextLoading } = useTextData(tId)
-  // const { data: textQuizSolve, isLoading: isTextQuizSolveLoading } = useTextQuizSolve(qId)
   const { data: textQuizResult, isLoading: isTextQuizResultLoading } =
     useTextQuizResult(qId)
 
@@ -36,16 +33,6 @@ const TextQuizResultPage = () => {
       queryClient.setQueryData<TextDataType>(['textData'], textData)
     }
   }, [isTextLoading])
-
-  // useEffect(() => {
-  //   if (!isTextQuizSolveLoading) {
-  //     queryClient.setQueryData<TextQuizSolveType>(
-  //       ['textQuizSolve'],
-  //       textQuizSolve,
-  //     )
-  //     console.log(textQuizSolve)
-  //   }
-  // }, [isTextQuizSolveLoading])
 
   useEffect(() => {
     window.scrollTo(0, 0)

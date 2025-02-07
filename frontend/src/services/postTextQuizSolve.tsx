@@ -1,7 +1,7 @@
-import { TextQuizSolveType } from 'types/textQuiz'
+import { QuizSolveType } from 'types/quiz'
 import authenticatedAxios from './authenticatedAxios'
 
-const postTextQuizSolve = async ({ quizId, userAnswer }: TextQuizSolveType) => {
+const postTextQuizSolve = async ({ quizId, userAnswer }: QuizSolveType) => {
   const axios = authenticatedAxios()
   return axios
     .post(

@@ -1,4 +1,4 @@
-import { TextQuizListType } from 'types/textQuiz'
+import { QuizListType } from 'types/quiz'
 import authenticatedAxios from './authenticatedAxios'
 
 const getTextQuizList = (textId: number) => {
@@ -12,7 +12,7 @@ const getTextQuizList = (textId: number) => {
       }
       const { data } = res
       console.log(data)
-      const textQuizList: TextQuizListType = {
+      const textQuizList: QuizListType = {
         userLevel: data.user_level,
         levelData: data.level_data.map((quiz: any) => {
           return {

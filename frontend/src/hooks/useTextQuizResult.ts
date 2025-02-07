@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query'
 import { getTextQuizResult } from 'services'
-import { TextQuizResultType } from 'types/textQuiz'
+import { QuizResultType } from 'types/quiz'
 
 const useTextQuizResult = (quizId: number) => {
-  return useQuery<TextQuizResultType>({
+  return useQuery<QuizResultType>({
     queryKey: ['textQuizResult'],
     queryFn: () => getTextQuizResult(quizId),
     enabled: !!quizId,

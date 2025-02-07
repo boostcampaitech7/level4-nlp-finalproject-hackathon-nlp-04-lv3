@@ -1,4 +1,4 @@
-import { TextQuizType } from 'types/textQuiz'
+import { QuizType } from 'types/quiz'
 import authenticatedAxios from './authenticatedAxios'
 
 const getTextQuiz = async (quizId: number) => {
@@ -11,7 +11,7 @@ const getTextQuiz = async (quizId: number) => {
         throw new Error('퀴즈 데이터를 불러오는 데 실패했습니다.')
       }
       const { data } = res
-      const textQuiz: TextQuizType = {
+      const textQuiz: QuizType = {
         question: data?.question || [],
         options: data?.options || [],
       }

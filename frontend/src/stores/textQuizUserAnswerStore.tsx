@@ -1,8 +1,8 @@
-import { TextQuizSolveType } from 'types/textQuiz'
+import { QuizSolveType } from 'types/quiz'
 import { create } from 'zustand'
 
 interface TextQuizUserAnswerState {
-  textQuizSolve: TextQuizSolveType
+  textQuizSolve: QuizSolveType
   setQuizId: (quizId: number) => void
   setAnswer: (questionIdx: number, answer: number) => void
   resetQuizSolve: () => void
