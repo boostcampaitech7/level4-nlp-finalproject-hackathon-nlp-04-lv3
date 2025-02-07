@@ -1,6 +1,6 @@
 import authenticatedAxios from './authenticatedAxios'
 
-export const getVocabByNumberData = (vocabId: number) => {
+const getVocabByNumber = async (vocabId: number) => {
   const axios = authenticatedAxios()
   return axios
     .get(`/api/vocab/${vocabId}`)
@@ -35,3 +35,5 @@ export const getVocabByNumberData = (vocabId: number) => {
       throw new Error('Failed to get vocab data')
     })
 }
+
+export default getVocabByNumber

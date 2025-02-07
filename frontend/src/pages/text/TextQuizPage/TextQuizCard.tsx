@@ -1,5 +1,5 @@
 import Button from 'components/Button'
-import { useTextQuizUserAnswerStore } from 'stores/textQuizUserAnswerStore'
+import { useQuizUserAnswerStore } from 'stores/quizUserAnswerStore'
 
 interface TextQuizProps {
   questionIdx: number
@@ -8,10 +8,10 @@ interface TextQuizProps {
 }
 
 const TextQuizCard = ({ questionIdx, question, options }: TextQuizProps) => {
-  const { textQuizSolve, setAnswer } = useTextQuizUserAnswerStore()
+  const { quizSolve, setAnswer } = useQuizUserAnswerStore()
 
   const changeAnswer = (answer: number) => {
-    if (textQuizSolve.userAnswer[questionIdx] === answer) {
+    if (quizSolve.userAnswer[questionIdx] === answer) {
       setAnswer(questionIdx, -1)
     } else {
       setAnswer(questionIdx, answer)
@@ -27,7 +27,7 @@ const TextQuizCard = ({ questionIdx, question, options }: TextQuizProps) => {
             <Button
               key={index}
               text={option}
-              color={`${textQuizSolve.userAnswer[questionIdx] === index + 1 ? 'purple' : 'white'}`}
+              color={`${quizSolve.userAnswer[questionIdx] === index + 1 ? 'purple' : 'white'}`}
               size="xsmall"
               alignCenter={false}
               onClick={() => changeAnswer(index + 1)}

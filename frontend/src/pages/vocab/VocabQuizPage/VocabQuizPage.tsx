@@ -1,114 +1,14 @@
 // VocabQuizPage.tsx
 import { useEffect, useMemo, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import Button from 'components/Button'
 import Modal from 'components/Modal'
 import ProgressBar from 'components/ProgressBar'
 import useVocabQuiz from 'hooks/useVocabQuiz'
-
-interface QuizData {
-  quiz_id: number
-  question: [string, string, string]
-  options: [
-    string,
-    string,
-    string,
-    string,
-    string,
-    string,
-    string,
-    string,
-    string,
-    string,
-    string,
-    string,
-  ]
-}
-
-interface QuizResultData {
-  quiz_id: number
-  question: [string, string, string]
-  options: [
-    string,
-    string,
-    string,
-    string,
-    string,
-    string,
-    string,
-    string,
-    string,
-    string,
-    string,
-    string,
-  ]
-  answer: [number, number, number]
-  user_answer: number[]
-  correct: boolean[]
-  answer_explain: [
-    string,
-    string,
-    string,
-    string,
-    string,
-    string,
-    string,
-    string,
-    string,
-    string,
-    string,
-    string,
-  ]
-}
-
-const dummyQuizData: QuizData = {
-  quiz_id: 111234567,
-  question: [
-    "다음 중 '독실한'이 올바르게 사용된 문장을 고르세요.",
-    "'독실한'의 뜻으로 알맞은 것은?",
-    "'독실한'과 유사한 단어를 고르세요.",
-  ],
-  options: [
-    '그는 독실한 신앙심으로 매일 기도한다.',
-    '그녀는 독실한 운동 실력으로 상을 받았다.',
-    '독실한 맛이 나는 음식이 좋다.',
-    '그는 독실한 옷차림으로 파티에 참석했다.',
-    '깊고 성실한 태도를 가진',
-    '빠르고 날렵한',
-    '화려하고 눈에 띄는',
-    '느긋하고 여유로운',
-    '집중하는',
-    '충실한',
-    '산만한',
-    '방탕한',
-  ],
-}
-
-const dummyQuizResult: QuizResultData = {
-  quiz_id: 111234567,
-  question: dummyQuizData.question,
-  options: dummyQuizData.options,
-  answer: [0, 0, 1],
-  user_answer: [],
-  correct: [],
-  answer_explain: [
-    '신앙심과 연결되어 올바른 사용입니다.',
-    "'운동 실력'과는 어울리지 않는 표현입니다.",
-    "'맛'과 연결되어 잘못된 사용입니다.",
-    '단정한 옷차림과 같은 표현이 더 적절합니다.',
-    "'독실한'의 의미와 맞습니다.",
-    "'독실한'과는 무관합니다.",
-    '화려하고 눈에 띄는',
-    '느긋하고 여유로운',
-    '집중하는',
-    '충실한',
-    '산만한',
-    '방탕한',
-  ],
-}
+import usePostVocabQuizSolve from 'hooks/usePostVocabQuizSolve'
+import { useQuizUserAnswerStore } from 'stores/quizUserAnswerStore'
 
 const VocabQuizPage = () => {
-  const navigate = useNavigate()
   const { vocab_id, quiz_id } = useParams<{
     vocab_id: string
     quiz_id: string
@@ -124,8 +24,12 @@ const VocabQuizPage = () => {
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [selectedOption, setSelectedOption] = useState<number | null>(null)
-  const [userAnswers, setUserAnswers] = useState<number[]>([])
+
+  const { quizSolve, setQuizId, setAnswer } = useQuizUserAnswerStore()
   const [showModal, setShowModal] = useState(false)
+  useEffect(() => {
+    setQuizId(qId)
+  }, [qId])
 
   const { data: vocabQuiz, isLoading: isQuizLoading } = useVocabQuiz(qId)
 
@@ -135,13 +39,11 @@ const VocabQuizPage = () => {
   }, [vocabId, qId])
 
   useEffect(() => {
-    setSelectedOption(userAnswers[currentQuestionIndex] ?? null)
-  }, [currentQuestionIndex, userAnswers])
+    setSelectedOption(quizSolve.userAnswer[currentQuestionIndex] ?? null)
+  }, [currentQuestionIndex, quizSolve.userAnswer])
 
   const handleOptionSelect = (index: number) => {
-    const newAnswers = [...userAnswers]
-    newAnswers[currentQuestionIndex] = index
-    setUserAnswers(newAnswers)
+    setAnswer(currentQuestionIndex, index + 1)
     setSelectedOption(index)
 
     if (currentQuestionIndex < 2) {
@@ -149,21 +51,21 @@ const VocabQuizPage = () => {
     }
   }
 
+  const { mutate: submitQuizSolve } = usePostVocabQuizSolve(vocabId)
   const handleResultCheck = () => {
-    const isAllAnswered = vocabQuiz?.question.every(
-      (_, index) => userAnswers[index] !== undefined,
-    )
+    const isAllAnswered = quizSolve.userAnswer.every((answer, _) => {
+      return [1, 2, 3, 4].includes(answer)
+    })
     if (!isAllAnswered) {
       setShowModal(true)
       return
     }
-
-    navigate(`/vocab/${vocabId}/quiz/${qId}/result`)
+    submitQuizSolve(quizSolve)
   }
   // 프로그레스 바 클릭 핸들러 수정
   const handleProgressClick = (index: number) => {
     setCurrentQuestionIndex(index)
-    setSelectedOption(userAnswers[index] ?? null)
+    setSelectedOption(quizSolve.userAnswer[index] ?? null)
   }
   if (isQuizLoading || !vocabQuiz) {
     return (
@@ -235,7 +137,7 @@ const VocabQuizPage = () => {
         isOpen={showModal}
         onClose={() => setShowModal(false)}
         title="⚠️ 미완료된 문제"
-        message={`${vocabQuiz.question.length - userAnswers.filter(Boolean).length}개의 문제가 남았습니다!`}
+        message={`${vocabQuiz.question.length - quizSolve.userAnswer.filter(Boolean).length}개의 문제가 남았습니다!`}
       />
     </div>
   )

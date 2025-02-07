@@ -1,12 +1,12 @@
 import useTextData from 'hooks/useText'
 import { TitleBar } from '../TextDetailPage/TitleBar'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { useEffect, useMemo } from 'react'
 import TextContent from './TextContent'
 import TextQuizCard from './TextQuizCard'
 import useTextQuiz from 'hooks/useTextQuiz'
 import Button from 'components/Button'
-import { useTextQuizUserAnswerStore } from 'stores/textQuizUserAnswerStore'
+import { useQuizUserAnswerStore } from 'stores/quizUserAnswerStore'
 import { useQueryClient } from '@tanstack/react-query'
 import { TextDataType } from 'types/text'
 import usePostTextQuizSolve from 'hooks/usePostTextQuizSolve'
@@ -24,8 +24,7 @@ const TextQuizPage = () => {
   const { data: textData, isLoading: isTextLoading } = useTextData(textId)
   const { data: textQuiz, isLoading: isQuizLoading } = useTextQuiz(qId)
 
-  const { textQuizSolve, setQuizId, resetQuizSolve } =
-    useTextQuizUserAnswerStore()
+  const { quizSolve, setQuizId } = useQuizUserAnswerStore()
   useEffect(() => {
     setQuizId(qId)
   }, [qId])
@@ -45,11 +44,11 @@ const TextQuizPage = () => {
   const { mutate } = usePostTextQuizSolve(textId)
 
   const handleClickSubmit = () => {
-    if (textQuizSolve.quizId == -1) {
+    if (quizSolve.quizId == -1) {
       alert('오류가 발생했습니다. 새로고침 후 다시 이용해보세요.')
     } else {
       let unsolved: string[] = []
-      textQuizSolve.userAnswer.forEach((answer, idx) => {
+      quizSolve.userAnswer.forEach((answer, idx) => {
         if (![1, 2, 3, 4].includes(answer)) {
           unsolved.push(`${idx + 1}번`)
         }
@@ -59,7 +58,7 @@ const TextQuizPage = () => {
           `아직 ${unsolved.join(', ')} 문제를 안 풀었어요. 모든 문제를 풀어주세요.`,
         )
       } else {
-        mutate(textQuizSolve)
+        mutate(quizSolve)
       }
     }
   }

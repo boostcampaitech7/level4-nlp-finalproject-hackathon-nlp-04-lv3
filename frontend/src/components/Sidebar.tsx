@@ -12,7 +12,7 @@ import { useSidebarStore } from '../stores/sidebarStore'
 import { useAuthStore } from '../stores/authStore'
 import SearchModal from './SearchModal'
 import LoginPopup from '../pages/MainPage/GuestMainPage/LoginPopup'
-import { getVocabByNumberData } from '../services/getVocabByNumber'
+import getVocabByNumber from '../services/getVocabByNumber'
 import useLogout from 'hooks/useLogout'
 
 const Sidebar = () => {
@@ -82,7 +82,7 @@ const Sidebar = () => {
                 const randomVocabId = Math.floor(Math.random() * 10) + 1
                 try {
                   // 백엔드에서 단어 데이터를 받아옴
-                  const vocabData = await getVocabByNumberData(randomVocabId)
+                  const vocabData = await getVocabByNumber(randomVocabId)
                   // 데이터를 받아온 후 사이드바를 닫고 /vocab/{vocab_id} 페이지로 이동하면서 데이터를 state로 전달
                   closeSidebarWithNavigate(`/vocab/${randomVocabId}`, vocabData)
                 } catch (error) {

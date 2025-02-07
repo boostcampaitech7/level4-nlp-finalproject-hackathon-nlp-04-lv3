@@ -1,7 +1,7 @@
 import authenticatedAxios from './authenticatedAxios'
 import { TextDataType } from 'types/text'
 
-const getText = (textId: number) => {
+const getText = async (textId: number) => {
   const axios = authenticatedAxios()
 
   return axios

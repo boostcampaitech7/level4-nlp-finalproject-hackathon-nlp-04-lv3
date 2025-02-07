@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import getVocabQuiz from 'services/getVocabQuiz'
+import { getVocabQuiz } from 'services'
 import { QuizType } from 'types/quiz'
 
 const useVocabQuiz = (vocabId: number) => {

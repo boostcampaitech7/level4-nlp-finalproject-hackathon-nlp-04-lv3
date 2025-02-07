@@ -1,18 +1,15 @@
 import { useMutation } from '@tanstack/react-query'
 import { useNavigate } from 'react-router'
-import { postTextQuizSolve } from 'services'
-import { useQuizUserAnswerStore } from 'stores/quizUserAnswerStore'
+import { postVocabQuizSolve } from 'services'
 
-const usePostTextQuizSolve = (textId: number) => {
+const usePostVocabQuizSolve = (vocabId: number) => {
   const navigate = useNavigate()
-  const { resetQuizSolve } = useQuizUserAnswerStore()
 
   return useMutation({
-    mutationFn: postTextQuizSolve,
+    mutationFn: postVocabQuizSolve,
     onSuccess: (quizId: number) => {
       alert('퀴즈 풀이를 성공적으로 제출하였습니다.')
-      resetQuizSolve()
-      navigate(`/text/${textId}/quiz/${quizId}/result`)
+      navigate(`/vocab/${vocabId}/quiz/${quizId}/result`)
     },
     onError: (err: any) => {
       console.error('퀴즈 풀이 제출 실패:', err)
@@ -21,4 +18,4 @@ const usePostTextQuizSolve = (textId: number) => {
   })
 }
 
-export default usePostTextQuizSolve
+export default usePostVocabQuizSolve

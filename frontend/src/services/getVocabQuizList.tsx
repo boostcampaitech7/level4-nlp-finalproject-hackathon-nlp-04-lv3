@@ -1,7 +1,7 @@
 import authenticatedAxios from './authenticatedAxios'
 import { VocabQuizListType } from 'types/vocab'
 
-const getVocabQuizList = (vocabId: number) => {
+const getVocabQuizList = async (vocabId: number) => {
   const axios = authenticatedAxios()
 
   return axios
