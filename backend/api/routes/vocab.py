@@ -17,6 +17,9 @@ from core.database import get_session
 from core.security import validate_access_token, oauth2_scheme
 
 
+load_dotenv(find_dotenv())
+
+
 router = APIRouter(prefix="/vocab", tags=["vocab"])
 
 # AI 서버 URL - 임시
