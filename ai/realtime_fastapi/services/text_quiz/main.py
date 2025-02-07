@@ -6,6 +6,8 @@ import logging
 import openai
 from quiz_generator import QuizGenerator
 from dotenv import load_dotenv, find_dotenv
+from hcx_tuning import CreateTaskExecutor
+
 
 # 환경 변수 로드
 load_dotenv(find_dotenv())
@@ -129,11 +131,40 @@ def generate_hyperclova_dataset():
     )
 
 
+def tune_model():
+    task_executor = CreateTaskExecutor()
+
+    # 튜닝 파라미터 설정
+    task_name = "quiz_tuning_task"
+    model = "HCX-003"  # 사용할 모델 (변경 가능)
+    train_epochs = "8"
+    learning_rate = "1e-4"
+    dataset_file_path = "tuning_quiz_dataset.jsonl"  # JSONL 데이터셋 경로
+
+    logger.info(
+        f"🔍 튜닝 시작: {task_name}, 모델: {model}, Epochs: {train_epochs}, LR: {learning_rate}"
+    )
+
+    # 튜닝 요청 실행
+    tuning_result = task_executor.execute(
+        task_name, model, train_epochs, learning_rate, dataset_file_path
+    )
+
+    # 튜닝 결과 출력
+    logger.info(f"🚀 튜닝 결과: {tuning_result}")
+
+    print(tuning_result)
+
+
 if __name__ == "__main__":
     while True:
         try:
+            # 1. 퀴즈 데이터 생성
             generate_hyperclova_dataset()
             break  # 성공적으로 실행되면 종료
         except Exception as e:
             logger.error(f"❌ 예상치 못한 에러 발생: {e}, 30초 후 재시작")
             time.sleep(30)  # 30초 대기 후 다시 실행
+
+    # 2. 데이터 생성 완료 후, 튜닝 실행
+    tune_model()
