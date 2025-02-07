@@ -15,7 +15,7 @@ const getText = async (textId: number) => {
       const text: TextDataType = {
         text_id: data.text_id,
         title: data.title,
-        text: data.content.map((sentence: string) => {
+        content: data.content.map((sentence: string) => {
           return sentence.trim()
         }),
         category: data.category,

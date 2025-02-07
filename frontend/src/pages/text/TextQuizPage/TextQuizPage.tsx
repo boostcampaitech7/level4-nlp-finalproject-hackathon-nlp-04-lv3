@@ -70,7 +70,7 @@ const TextQuizPage = () => {
           <TitleBar title={textData.title} category={textData.category} />
           <div className="flex gap-x-[40px]">
             <div className="sticky top-[126px] flex flex-col gap-y-[20px]">
-              <TextContent text={textData.text} />
+              <TextContent text={textData.content} />
               <div className="flex justify-center gap-x-[22px]">
                 <Button
                   text="제출하기"

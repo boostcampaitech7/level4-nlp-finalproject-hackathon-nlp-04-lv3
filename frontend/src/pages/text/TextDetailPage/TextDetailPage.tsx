@@ -31,7 +31,7 @@ const TextDetailPage = () => {
   }
 
   useEffect(() => {
-    if (textId > 0) {
+    if (textId >= 0) {
       refetch()
       window.scrollTo(0, 0)
     }
