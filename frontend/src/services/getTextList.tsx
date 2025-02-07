@@ -1,4 +1,4 @@
-import { TextListType } from 'types/textList'
+import { TextListType } from 'types/text'
 import customAxios from './customAxios'
 
 const getTextList = async (pageNum: number) => {

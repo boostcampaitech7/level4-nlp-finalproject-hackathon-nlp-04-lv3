@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { getTextList } from 'services'
-import { TextListType } from 'types/textList'
+import { TextListType } from 'types/text'
 
 const useTextList = () => {
   const [pageNum, setPageNum] = useState<number>(1)
