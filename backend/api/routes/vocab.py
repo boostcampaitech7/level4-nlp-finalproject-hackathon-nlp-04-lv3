@@ -126,6 +126,7 @@ async def request_vocab_chatbot_response(
                 AI_SERVER_URL + "/ai/vocab/chat",
                 json={
                     "vocab": vocab_data.vocab,
+                    "explain": vocab_data.easy_explain[0],
                     "question": question,
                     "previous": previous,
                 },
