@@ -1,9 +1,8 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import IconButton from './IconButton'
 import {
   FaMagnifyingGlass,
   FaRegFileWord,
-  FaRegStar,
   FaRegCircleUser,
 } from 'react-icons/fa6'
 import { CgNotes } from 'react-icons/cg'
@@ -29,7 +28,7 @@ const Sidebar = () => {
     navigate(path, { state })
   }
 
-  const { mutate: logout } = useLogout()
+  const { refetch: logout } = useLogout()
   const handleLogout = () => {
     closeSidebar()
     logout()

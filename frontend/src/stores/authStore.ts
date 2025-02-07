@@ -42,5 +42,5 @@ export const useAuthStore = create<AuthState>((set) => ({
     const isAuthenticated = !!token
     set({ isAuthenticated, token: token || null })
     return isAuthenticated
-  }
+  },
 }))

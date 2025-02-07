@@ -1,6 +1,6 @@
 import customAxios from './customAxios'
 
-const postLogout = async () => {
+const logout = async () => {
   const axios = customAxios()
 
   return axios
@@ -18,4 +18,4 @@ const postLogout = async () => {
     })
 }
 
-export default postLogout
+export default logout

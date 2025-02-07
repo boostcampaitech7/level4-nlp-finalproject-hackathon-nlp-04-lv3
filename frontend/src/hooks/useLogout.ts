@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router'
 import { logout } from 'services'
 import { useAuthStore } from 'stores/authStore'
@@ -7,17 +7,15 @@ const useLogout = () => {
   const navigate = useNavigate()
   const { logout: setLogout } = useAuthStore()
 
-  return useMutation({
-    mutationFn: logout,
-    onSuccess: () => {
-      alert('로그아웃 되었습니다.')
+  return useQuery({
+    queryKey: ['auth/logout'],
+    queryFn: async () => {
+      await logout()
+      alert('로그아웃되었습니다.')
       setLogout()
-      navigate(`/auth/login`)
+      navigate('/auth/login')
     },
-    onError: (err: any) => {
-      console.error('로그아웃 실패: ', err)
-      alert('로그아웃에 실패했습니다.')
-    },
+    enabled: false,
   })
 }
 
