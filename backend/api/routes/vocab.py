@@ -21,7 +21,7 @@ router = APIRouter(prefix="/vocab", tags=["vocab"])
 AI_SERVER_URL = "http://ai-server.com"
 
 
-# 글 목록 조회
+# 단어 랜덤으로 조회
 @router.get("/random", response_model=VocabDetailDTO, status_code=status.HTTP_200_OK)
 def get_text_list(
     token: str = Depends(oauth2_scheme),
