@@ -133,7 +133,7 @@ async def generate_save_feedback(api, session, conn, diary_id, text):
     if check_jailbreaking(feedback):
         feedbacks, review = None, None
         status = 3
-        logger.waring(f"jailbreaking: {text}")
+        logger.warning(f"jailbreaking: {text}")
     else:
         feedbacks, review = parse_feedback_review(text, feedback)
         status = 2

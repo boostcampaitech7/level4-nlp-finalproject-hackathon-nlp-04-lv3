@@ -3,6 +3,8 @@ from sqlmodel import Session, select, func
 from sqlalchemy import desc
 from math import ceil
 import httpx
+import os
+from dotenv import load_dotenv, find_dotenv
 
 from models.text import Texts
 from models.text_conversation import TextConversations
@@ -11,10 +13,13 @@ from core.database import get_session
 from core.security import validate_access_token, oauth2_scheme
 
 
+load_dotenv(find_dotenv())
+
+
 router = APIRouter(prefix="/text", tags=["text"])
 
 # AI 서버 URL - 임시
-AI_SERVER_URL = "http://ai-server.com"
+AI_SERVER_URL = os.getenv("AI_SERVER_URL")
 
 
 # 글 목록 조회
@@ -223,7 +228,7 @@ async def request_text_chatbot_response(
         if ai_data["status"]["code"] != "20000":
             raise HTTPException(
                 status_code=500,
-                detail=f"AI 서버 응답 오류: {ai_data["status"]["message"]}",
+                detail=f"AI 서버 응답 오류: {ai_data['status']['message']}",
             )
 
         # 6. 응답 데이터를 추출

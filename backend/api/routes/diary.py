@@ -123,8 +123,10 @@ def fetch_diary_by_page(
 
     total_page_count = None
     if page_num == 1:
-        statement = select(func.count(Diaries)).where(Diaries.user_id == user_id)
-        diary_count = session.exec(statement).scalar()
+        statement = select(func.count(Diaries.diary_id)).where(
+            Diaries.user_id == user_id
+        )
+        diary_count = session.exec(statement).first()
         total_page_count = max(ceil(diary_count / 10), 1)
 
     # 3. 응답 데이터 생성

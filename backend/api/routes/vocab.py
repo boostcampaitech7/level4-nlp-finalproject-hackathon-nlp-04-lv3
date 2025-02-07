@@ -1,6 +1,8 @@
 from fastapi import APIRouter, HTTPException, Depends, status, Path
-from sqlmodel import Session, select, desc
+from sqlmodel import Session, select, desc, func
 import httpx
+import os
+from dotenv import load_dotenv, find_dotenv
 
 from models.vocab import Vocabs
 from models.vocab_conversation import VocabConversations
@@ -15,10 +17,37 @@ from core.database import get_session
 from core.security import validate_access_token, oauth2_scheme
 
 
+load_dotenv(find_dotenv())
+
+
 router = APIRouter(prefix="/vocab", tags=["vocab"])
 
 # AI 서버 URL - 임시
-AI_SERVER_URL = "http://ai-server.com"
+AI_SERVER_URL = os.getenv("AI_SERVER_URL")
+
+
+# 단어 랜덤으로 조회
+@router.get("/random", response_model=VocabDetailDTO, status_code=status.HTTP_200_OK)
+def get_text_list(
+    token: str = Depends(oauth2_scheme),
+    session: Session = Depends(get_session),
+):
+    # 1. 토큰 검증
+    validate_access_token(token)
+
+    # 2. DB에서 긴 글 데이터 중 임의로 3개 추출 후 반환
+    vocab_data = session.exec(select(Vocabs).order_by(func.random()).limit(1)).first()
+
+    # 3. 응답 데이터 생성
+    return VocabDetailDTO(
+        vocab_id=vocab_data.vocab_id,
+        vocab=vocab_data.vocab,
+        hanja=vocab_data.hanja,
+        dict_mean=vocab_data.dict_mean,
+        easy_explain=vocab_data.easy_explain,
+        correct_example=vocab_data.correct_example,
+        incorrect_example=vocab_data.incorrect_example,
+    )
 
 
 # 단어 설명 조회
@@ -126,6 +155,7 @@ async def request_vocab_chatbot_response(
                 AI_SERVER_URL + "/ai/vocab/chat",
                 json={
                     "vocab": vocab_data.vocab,
+                    "explain": vocab_data.easy_explain[0],
                     "question": question,
                     "previous": previous,
                 },
@@ -136,7 +166,7 @@ async def request_vocab_chatbot_response(
         if ai_data["status"]["code"] != "20000":
             raise HTTPException(
                 status_code=500,
-                detail=f"AI 서버 응답 오류: {ai_data["status"]["message"]}",
+                detail=f"AI 서버 응답 오류: {ai_data['status']['message']}",
             )
 
         # 6. 응답 데이터를 추출
