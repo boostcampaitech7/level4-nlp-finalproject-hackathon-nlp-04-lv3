@@ -5,6 +5,7 @@ interface ChatListState {
   chatList: ChatType[]
   addPrevChatList: (prevChatList: ChatType[]) => void
   addNewChat: (newChat: ChatType) => void
+  resetChatList: () => void
 }
 
 export const useChatListStore = create<ChatListState>()((set) => ({
@@ -15,4 +16,5 @@ export const useChatListStore = create<ChatListState>()((set) => ({
     })),
   addNewChat: (newChat) =>
     set((state) => ({ chatList: [...state.chatList, newChat] })),
+  resetChatList: () => set({ chatList: [] }),
 }))

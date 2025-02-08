@@ -1,8 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react'
-import {
-  ChatMessage as ChatMessageType,
-  ChatbotActionType,
-} from '../types/chat'
+import { ChatbotActionType } from '../types/chat'
 import ChatMessage from './ChatMessage'
 import { FaPaperPlane } from 'react-icons/fa'
 import 'styles/scrollbar.css'
