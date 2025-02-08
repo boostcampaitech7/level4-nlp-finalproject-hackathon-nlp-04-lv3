@@ -49,10 +49,9 @@ const ChatInterface = ({
     return isNaN(parsedId) ? 0 : parsedId
   }, [text_id])
 
-  const useChatList = useTextChatList
   const { chatList, addNewChat } = useChatListStore()
 
-  const { refetch } = useChatList(textId)
+  const { refetch } = useTextChatList(textId)
   useEffect(() => {
     refetch()
   }, [])
