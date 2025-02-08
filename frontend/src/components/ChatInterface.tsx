@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react'
 import {
   ChatMessage as ChatMessageType,
-  ChatAction,
   ChatbotActionType,
 } from '../types/chat'
 import ChatMessage from './ChatMessage'
@@ -13,16 +12,7 @@ import { useChatListStore } from 'stores/chatListStore'
 import 'styles/scrollbar.css'
 import usePostTextChat from 'hooks/text/usePostTextChat'
 
-// interface Message {
-//   userMessage: string
-//   botMessage: string
-//   timestamp: string
-// }
-
 interface ChatInterfaceProps {
-  type: 'text' | 'vocab'
-  vocabId?: string
-  messages?: ChatMessageType[]
   actions?: ChatbotActionType[]
   onSendMessage?: (message: string) => void
   className?: string
@@ -36,9 +26,8 @@ const ChatInterface = ({
   width = 'w-[400px]',
   height = 'h-[600px]',
 }: ChatInterfaceProps) => {
-  // const [localMessages, setLocalMessages] = useState<Message[]>([])
   const [inputValue, setInputValue] = useState('')
-  // const [conversationId, setConversationId] = useState<string | null>(null)
+
   // const [isLoading, setIsLoading] = useState(false)
   const chatContainerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -49,12 +38,18 @@ const ChatInterface = ({
     return isNaN(parsedId) ? 0 : parsedId
   }, [text_id])
 
-  const { chatList, addNewChat } = useChatListStore()
+  const { chatList, addNewChat, resetChatList } = useChatListStore()
 
   const { refetch } = useTextChatList(textId)
   useEffect(() => {
     refetch()
   }, [])
+
+  useEffect(() => {
+    return () => {
+      resetChatList()
+    }
+  }, [resetChatList])
 
   // 스크롤을 아래로 이동
   useEffect(() => {

@@ -18,13 +18,6 @@ const EasyExplainArea = () => {
     setTextAccount(undefined)
   }
 
-  useEffect(() => {
-    if (isFetching) {
-      console.log('로딩 중...')
-    } else if (textAccount) {
-      console.log(textAccount)
-    }
-  }, [textAccount, isFetching])
   return (
     <div className="flex h-[240px] flex-col gap-y-[10px] rounded-[32px] bg-surface-primary-2 p-[16px]">
       <div className="text-text-primary button-l">

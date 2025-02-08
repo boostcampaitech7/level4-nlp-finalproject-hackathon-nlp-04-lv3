@@ -15,7 +15,7 @@ const usePostTextChat = (textId: number) => {
       if (userChat && assistantChat) {
         const chatSet: TextChatSetType = {
           chatId: assistantChat?.id,
-          focused: assistantChat?.focused || userChat?.focused,
+          focused: assistantChat?.focused || userChat?.focused || '',
           question: userChat?.text,
           answer: assistantChat?.text,
         }

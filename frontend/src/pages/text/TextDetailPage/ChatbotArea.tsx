@@ -1,11 +1,7 @@
 import ChatInterface from 'components/ChatInterface'
-import { useCallback } from 'react'
-import { useTextChatMessagesStore } from 'stores/textChatmessagesStore'
-import { ChatbotActionType, ChatMessage } from 'types/chat'
+import { ChatbotActionType } from 'types/chat'
 
 const ChatbotArea = () => {
-  const { messages, addMessage } = useTextChatMessagesStore()
-
   const chatActions: ChatbotActionType[] = [
     {
       id: '1',
@@ -19,23 +15,10 @@ const ChatbotArea = () => {
     },
   ]
 
-  const handleSendMessage = useCallback((content: string) => {
-    const newMessage: ChatMessage = {
-      id: Date.now().toString(),
-      content,
-      type: 'user',
-      timestamp: new Date(),
-    }
-    addMessage(newMessage)
-  }, [])
-
   return (
     <div>
       <ChatInterface
-        type="text"
-        messages={messages}
         actions={chatActions}
-        onSendMessage={handleSendMessage}
         width="w-[346px]"
         height="h-[464px]"
       />
