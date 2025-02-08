@@ -1,4 +1,4 @@
-import { FaRegBell, FaBars } from 'react-icons/fa6'
+import { FaBars } from 'react-icons/fa6'
 import Button from './Button'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useSidebarStore } from '../stores/sidebarStore'
@@ -9,7 +9,6 @@ const Header = () => {
   const navigate = useNavigate()
   const { isAuthenticated } = useAuthStore()
   const location = useLocation()
-
 
   const handleClickUserButton = () => {
     if (isAuthenticated) {

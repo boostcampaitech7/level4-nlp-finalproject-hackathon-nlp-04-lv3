@@ -1,5 +1,5 @@
-import { TodayText, QuizData, VocabData } from '../types/mainPage';
-import customAxios from './customAxios';
+import { TodayText, QuizData } from '../types/mainPage'
+import authenticatedAxios from './authenticatedAxios'
 
 // 실제로는 fetch API를 사용하거나 axios를 사용하여 데이터를 가져오세요.
 export const fetchTodayTexts = async (): Promise<TodayText[]> => {
@@ -24,12 +24,13 @@ export const fetchTodayTexts = async (): Promise<TodayText[]> => {
           text_id: 511278049,
           title: '1984',
           category: '디스토피아',
-          content: '모든 동물은 평등하다. 하지만 어떤 동물은 다른 동물들보다 더 평등하다.',
+          content:
+            '모든 동물은 평등하다. 하지만 어떤 동물은 다른 동물들보다 더 평등하다.',
         },
-      ]);
-    }, 500)
-  );
-};
+      ])
+    }, 500),
+  )
+}
 
 export const fetchTodayQuizzes = async (): Promise<QuizData[]> => {
   // 예시를 위해 더미 데이터를 반환
@@ -71,7 +72,9 @@ export const fetchTodayQuizzes = async (): Promise<QuizData[]> => {
           quiz_correct: [false, true, false, false],
           quiz_user_answer: [1],
           quiz_answer: ['행복'],
-          quiz_answer_explain: ['행복은 사람의 심리적 안정감과 만족감을 의미합니다.'],
+          quiz_answer_explain: [
+            '행복은 사람의 심리적 안정감과 만족감을 의미합니다.',
+          ],
         },
         {
           record_id: 125,
@@ -80,7 +83,9 @@ export const fetchTodayQuizzes = async (): Promise<QuizData[]> => {
           hanja: '友情',
           dict_mean: '우정의 사전적 의미',
           easy_explain: ['우정이란 친구 사이의 정이 깊은 관계입니다.'],
-          correct_example: ['우정은 서로가 서로를 도와주고 아껴주는 마음입니다.'],
+          correct_example: [
+            '우정은 서로가 서로를 도와주고 아껴주는 마음입니다.',
+          ],
           incorrect_example: '우정은 단순히 이해관계로 맺어지는 것이 아닙니다.',
           quiz_id: 791,
           quiz_level: 3,
@@ -89,29 +94,46 @@ export const fetchTodayQuizzes = async (): Promise<QuizData[]> => {
           quiz_correct: [false, false, true, false],
           quiz_user_answer: [2],
           quiz_answer: ['우정'],
-          quiz_answer_explain: ['우정은 친구 간의 애정, 정서적 유대감, 상호 신뢰 등을 포괄하는 개념입니다.'],
+          quiz_answer_explain: [
+            '우정은 친구 간의 애정, 정서적 유대감, 상호 신뢰 등을 포괄하는 개념입니다.',
+          ],
         },
-      ]);
-    }, 500)
-  );
-};
+      ])
+    }, 500),
+  )
+}
 
 export const getVocabData = (vocab: string) => {
-  const axios = customAxios()
+  const axios = authenticatedAxios()
   return axios
-  .get(`api/main/vocab/${vocab}`)
-  .then((res) => {
-    const {data} = res
-    if (res.status != 200) {
+    .get(`api/main/vocab/${vocab}`)
+    .then((res) => {
+      const { data } = res
+      if (res.status != 200) {
+        throw new Error('Failed to get vocab data')
+      }
+      console.log(data)
+      const {
+        vocab_id,
+        vocab,
+        hanja,
+        dict_mean,
+        easy_explain,
+        correct_example,
+        incorrect_example,
+      } = data
+      return {
+        vocab_id,
+        vocab,
+        hanja,
+        dict_mean,
+        easy_explain,
+        correct_example,
+        incorrect_example,
+      }
+    })
+    .catch((err) => {
+      console.log(err)
       throw new Error('Failed to get vocab data')
-    }
-    console.log(data)
-    const {vocab_id, vocab, hanja, dict_mean, easy_explain, correct_example, incorrect_example} = data
-    return {vocab_id, vocab, hanja, dict_mean, easy_explain, correct_example, incorrect_example}
-  })
-  .catch((err) => {
-    console.log(err)
-    throw new Error('Failed to get vocab data')
-  })
-
-};
+    })
+}

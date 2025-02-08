@@ -1,9 +1,8 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import IconButton from './IconButton'
 import {
   FaMagnifyingGlass,
   FaRegFileWord,
-  FaRegStar,
   FaRegCircleUser,
 } from 'react-icons/fa6'
 import { CgNotes } from 'react-icons/cg'
@@ -13,10 +12,11 @@ import { useSidebarStore } from '../stores/sidebarStore'
 import { useAuthStore } from '../stores/authStore'
 import SearchModal from './SearchModal'
 import LoginPopup from '../pages/MainPage/GuestMainPage/LoginPopup'
-import { getVocabByNumberData } from '../services/getVocabByNumber';
+import getVocabByNumber from '../services/getVocabByNumber'
+import useLogout from 'hooks/useLogout'
 
 const Sidebar = () => {
-  const { isAuthenticated, logout } = useAuthStore()
+  const { isAuthenticated } = useAuthStore()
   const { isSidebarOpen, closeSidebar } = useSidebarStore()
   const navigate = useNavigate()
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false)
@@ -24,14 +24,14 @@ const Sidebar = () => {
 
   // 사이드바를 닫고 해당 페이지로 이동하는 함수
   const closeSidebarWithNavigate = (path: string, state?: any) => {
-    closeSidebar();
-    navigate(path, { state });
-  };
-
-  const handleLogout = () => {
-    logout()
     closeSidebar()
-    navigate('/auth/login')
+    navigate(path, { state })
+  }
+
+  const { refetch: logout } = useLogout()
+  const handleLogout = () => {
+    closeSidebar()
+    logout()
   }
 
   // 인증이 필요한 작업을 처리하는 래퍼 함수
@@ -60,12 +60,18 @@ const Sidebar = () => {
           <IconButton
             icon={FaMagnifyingGlass}
             text="검색"
-            onClick={() => handleAuthenticatedAction(() => setIsSearchModalOpen(true))}
+            onClick={() =>
+              handleAuthenticatedAction(() => setIsSearchModalOpen(true))
+            }
           />
           <IconButton
             icon={LuBookOpenText}
             text="긴 글 학습"
-            onClick={() => handleAuthenticatedAction(() => closeSidebarWithNavigate('/text/list'))}
+            onClick={() =>
+              handleAuthenticatedAction(() =>
+                closeSidebarWithNavigate('/text/list'),
+              )
+            }
           />
           <IconButton
             icon={FaRegFileWord}
@@ -73,14 +79,14 @@ const Sidebar = () => {
             onClick={() =>
               handleAuthenticatedAction(async () => {
                 // 1부터 100 사이의 랜덤한 vocab_id 생성
-                const randomVocabId = Math.floor(Math.random() * 10) + 1;
+                const randomVocabId = Math.floor(Math.random() * 10) + 1
                 try {
                   // 백엔드에서 단어 데이터를 받아옴
-                  const vocabData = await getVocabByNumberData(randomVocabId);
+                  const vocabData = await getVocabByNumber(randomVocabId)
                   // 데이터를 받아온 후 사이드바를 닫고 /vocab/{vocab_id} 페이지로 이동하면서 데이터를 state로 전달
-                  closeSidebarWithNavigate(`/vocab/${randomVocabId}`, vocabData);
+                  closeSidebarWithNavigate(`/vocab/${randomVocabId}`, vocabData)
                 } catch (error) {
-                  console.error('단어 데이터를 가져오지 못했습니다.', error);
+                  console.error('단어 데이터를 가져오지 못했습니다.', error)
                 }
               })
             }
@@ -88,7 +94,11 @@ const Sidebar = () => {
           <IconButton
             icon={CgNotes}
             text="일기"
-            onClick={() => handleAuthenticatedAction(() => closeSidebarWithNavigate('/diary/list'))}
+            onClick={() =>
+              handleAuthenticatedAction(() =>
+                closeSidebarWithNavigate('/diary/list'),
+              )
+            }
           />
         </div>
         {isAuthenticated && (
@@ -103,7 +113,7 @@ const Sidebar = () => {
       {isSearchModalOpen && (
         <SearchModal onClose={() => setIsSearchModalOpen(false)} />
       )}
-      <LoginPopup 
+      <LoginPopup
         isOpen={isLoginPopupOpen}
         onClose={() => setIsLoginPopupOpen(false)}
       />

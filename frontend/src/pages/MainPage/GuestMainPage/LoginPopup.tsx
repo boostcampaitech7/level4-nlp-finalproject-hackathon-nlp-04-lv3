@@ -1,4 +1,3 @@
-import React from 'react'
 import { useNavigate } from 'react-router-dom'
 
 interface LoginPopupProps {
@@ -6,9 +5,9 @@ interface LoginPopupProps {
   onClose: () => void
 }
 
-const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
+const LoginPopup = ({ isOpen, onClose }: LoginPopupProps) => {
   const navigate = useNavigate()
-  
+
   if (!isOpen) return null
 
   const handleLogin = () => {
@@ -23,33 +22,33 @@ const LoginPopup: React.FC<LoginPopupProps> = ({ isOpen, onClose }) => {
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
       onClick={onClose}
     >
       <div
-        className="w-[708px] h-[190px] bg-surface-secondary rounded-[32px] flex items-center justify-center"
+        className="flex h-[190px] w-[708px] items-center justify-center rounded-[32px] bg-surface-secondary"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="w-full h-full flex flex-col">
-          <div className="flex-1 flex items-center justify-center">
-            <div className="headline-s text-text-primary">
+        <div className="flex h-full w-full flex-col">
+          <div className="flex flex-1 items-center justify-center">
+            <div className="text-text-primary headline-s">
               로그인이 필요한 서비스입니다
             </div>
           </div>
-          <div className="h-[90px] border-t border-text-primary flex">
+          <div className="flex h-[90px] border-t border-text-primary">
             <div
-              className="flex-1 border-r border-text-primary flex items-center justify-center transition-colors duration-200 hover:bg-black/5 group cursor-pointer"
+              className="group flex flex-1 cursor-pointer items-center justify-center border-r border-text-primary transition-colors duration-200 hover:bg-black/5"
               onClick={handleLogin}
             >
-              <div className="body-m text-text-tertiary transition-all duration-200] group-hover:scale-105">
+              <div className="duration-200] text-text-tertiary transition-all body-m group-hover:scale-105">
                 로그인하기
               </div>
             </div>
             <div
-              className="flex-1 flex items-center justify-center transition-colors duration-200 hover:bg-black/5 group cursor-pointer"
+              className="group flex flex-1 cursor-pointer items-center justify-center transition-colors duration-200 hover:bg-black/5"
               onClick={handleSignup}
             >
-              <div className="body-m text-text-tertiary transition-all duration-200] group-hover:scale-105">
+              <div className="duration-200] text-text-tertiary transition-all body-m group-hover:scale-105">
                 회원가입하러 가기
               </div>
             </div>

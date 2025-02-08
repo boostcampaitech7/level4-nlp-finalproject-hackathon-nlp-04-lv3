@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router'
-import customAxios from './axiosWithNoToken'
+import basicAxios from './basicAxios'
 import { useAuthStore } from 'stores/authStore'
-import Cookies from 'js-cookie'
 
 interface loginData {
   username: string
@@ -9,7 +8,7 @@ interface loginData {
 }
 
 const useLogin = () => {
-  const axios = customAxios()
+  const axios = basicAxios()
   const navigate = useNavigate()
   const setAuth = useAuthStore((state) => state.setAuth)
 
@@ -30,12 +29,8 @@ const useLogin = () => {
         if (res.status !== 200) {
           throw new Error('로그인 실패.')
         }
-        console.log(data)
         const accessToken = data.access_token || ''
-        console.log(accessToken)
-        // localStorage.setItem('token', accessToken)
         setAuth(accessToken)
-        console.log(Cookies.get('access_token'))
         navigate('/')
       })
       .catch((err) => {

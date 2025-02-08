@@ -9,10 +9,10 @@ interface PageSelectorProps {
 const PageSelector = ({ setPageNum }: PageSelectorProps) => {
   const { currentPage, totalPages } = useDiaryListPageStore()
   const getPageNumbers = (): number[] => {
-    // 전체 페이지가 5 이하라면 그냥 1 ~ totalPages
-    if (totalPages <= 5) {
-      return Array.from({ length: totalPages }, (_, i) => i + 1)
-    }
+    // // 전체 페이지가 5 이하라면 그냥 1 ~ totalPages
+    // if (totalPages <= 5) {
+    //   return Array.from({ length: totalPages }, (_, i) => i + 1)
+    // }
 
     // 현재 페이지가 1~3 사이라면 처음부터 5페이지까지
     if (currentPage <= 3) {
@@ -51,6 +51,7 @@ const PageSelector = ({ setPageNum }: PageSelectorProps) => {
             key={pageNumber}
             pageNumber={pageNumber}
             setPageNum={setPageNum}
+            disabled={pageNumber > totalPages}
           />
         )
       })}

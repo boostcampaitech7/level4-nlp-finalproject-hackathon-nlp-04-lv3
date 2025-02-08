@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import { useRef } from 'react'
 import { useTextAnimation } from '../../../hooks/useTextAnimation'
 
 interface TextAnimationWrapperProps {
@@ -12,12 +12,12 @@ interface TextAnimationWrapperProps {
   className?: string
 }
 
-export const TextAnimationWrapper: React.FC<TextAnimationWrapperProps> = ({
+const TextAnimationWrapper = ({
   children,
   textSelector,
   config,
   className = '',
-}) => {
+}: TextAnimationWrapperProps) => {
   const containerRef = useRef<HTMLDivElement>(null)
   useTextAnimation(containerRef, textSelector, config)
 
@@ -27,3 +27,5 @@ export const TextAnimationWrapper: React.FC<TextAnimationWrapperProps> = ({
     </div>
   )
 }
+
+export default TextAnimationWrapper
