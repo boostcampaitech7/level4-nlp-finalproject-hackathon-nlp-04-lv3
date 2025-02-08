@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { ChatMessage as ChatMessageType, ChatAction } from '../../../types/chat'
-import { ChatMessage } from './ChatMessage'
+import ChatMessage from './ChatMessage'
 import { FaPaperPlane } from 'react-icons/fa'
 import '../../../styles/safari.css'
 
@@ -14,7 +14,7 @@ interface ChatInterfaceProps {
   messageSize?: string
 }
 
-export const ChatInterface: React.FC<ChatInterfaceProps> = ({
+const ChatInterface = ({
   messages,
   actions = [],
   onSendMessage,
@@ -22,7 +22,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
   width = 'w-[400px]',
   height = 'h-[600px]',
   messageSize = 'text-[22px]',
-}) => {
+}: ChatInterfaceProps) => {
   const [inputValue, setInputValue] = useState('')
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -45,10 +45,10 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
 
   return (
     <div
-      className={`flex flex-col bg-surface-primary-2 rounded-[32px] shadow-lg ${width} ${height} ${className}`}
+      className={`flex flex-col rounded-[32px] bg-surface-primary-2 shadow-lg ${width} ${height} ${className}`}
     >
       {/* 채팅 메시지 영역 */}
-      <div className="flex-1 p-6 overflow-y-auto space-y-4">
+      <div className="flex-1 space-y-4 overflow-y-auto p-6">
         {messages.map((message, index) => (
           <ChatMessage
             key={message.id}
@@ -62,13 +62,13 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
 
       {/* 액션 버튼 영역 */}
       {actions.length > 0 && (
-        <div className="py-2 px-4">
-          <div className="flex flex-wrap gap-2 justify-center">
+        <div className="px-4 py-2">
+          <div className="flex flex-wrap justify-center gap-2">
             {actions.map((action) => (
               <button
                 key={action.id}
                 onClick={action.onClick}
-                className="button-s px-4 py-2 bg-button-secondary-1 rounded-[14px] text-text-secondary hover:bg-[#d8d8d8] transition-colors whitespace-nowrap"
+                className="whitespace-nowrap rounded-[14px] bg-button-secondary-1 px-4 py-2 text-text-secondary transition-colors button-s hover:bg-[#d8d8d8]"
               >
                 {action.label}
               </button>
@@ -87,12 +87,12 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
             onChange={(e) => setInputValue(e.target.value)}
             placeholder="메세지를 입력하기"
             disabled
-            className="button-s flex-1 min-w-0 py-2 px-4 bg-surface-secondary rounded-2xl text-text-intermidiate outline-none"
+            className="text-text-intermidiate min-w-0 flex-1 rounded-2xl bg-surface-secondary px-4 py-2 outline-none button-s"
           />
           <button
             type="submit"
             disabled
-            className="flex-shrink-0 flex h-[40px] w-[40px] items-center justify-center rounded-full bg-surface-primary-1 opacity-50"
+            className="flex h-[40px] w-[40px] flex-shrink-0 items-center justify-center rounded-full bg-surface-primary-1 opacity-50"
           >
             <FaPaperPlane size={16} />
           </button>
@@ -101,3 +101,5 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
     </div>
   )
 }
+
+export default ChatInterface

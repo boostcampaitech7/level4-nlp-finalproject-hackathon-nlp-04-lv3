@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react'
-import { VocabCard } from './VocabCard'
+import { useState, useEffect } from 'react'
+import VocabCard from './VocabCard'
 import { VocabDetailType } from './types'
 import Button from 'components/Button'
-import { VocabChatInterface } from 'components/VocabChatInterface'
+import VocabChatInterface from 'components/VocabChatInterface'
 import { useNavigate, useParams } from 'react-router-dom'
 import TutorialOverlay from './TutorialOverlay' // 경로에 맞게 수정
 import ExplanationCarousel from './ExplanationCarousel'
 import { getVocabByNumber } from 'services' // 경로에 맞게 수정
 
-export const VocabDetailPage: React.FC = () => {
+const VocabDetailPage = () => {
   const { vocab_id } = useParams()
   const navigate = useNavigate()
 

@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import { useRef } from 'react'
 import { useCardAnimation } from '../../../hooks/useCardAnimation'
 import { AnimationPreset, animationPresets } from '../../../animations/presets'
 
@@ -10,13 +10,13 @@ interface AnimationWrapperProps {
   className?: string
 }
 
-export const AnimationWrapper: React.FC<AnimationWrapperProps> = ({
+const AnimationWrapper = ({
   children,
   cardSelector,
   preset = 'fanOut',
   config = {},
   className = '',
-}) => {
+}: AnimationWrapperProps) => {
   const containerRef = useRef<HTMLDivElement>(null)
 
   // 프리셋과 커스텀 설정을 병합
@@ -37,3 +37,5 @@ export const AnimationWrapper: React.FC<AnimationWrapperProps> = ({
     </div>
   )
 }
+
+export default AnimationWrapper

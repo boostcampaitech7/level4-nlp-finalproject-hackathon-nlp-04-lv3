@@ -1,4 +1,4 @@
-import { TodayText, QuizData, VocabData } from '../types/mainPage'
+import { TodayText, QuizData } from '../types/mainPage'
 import authenticatedAxios from './authenticatedAxios'
 
 // 실제로는 fetch API를 사용하거나 axios를 사용하여 데이터를 가져오세요.

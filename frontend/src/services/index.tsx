@@ -1,14 +1,16 @@
 // 0. 메인, 유저
 export { default as logout } from './logout'
+export { default as getTodayTextList } from './getTodayTextList'
 
 // 1. 긴 글 학습
 export { default as getText } from './getText'
-export { default as getTextAcount } from './temp.getTextAcount'
+export { default as getTextAcount } from './getTextAcount'
 export { default as getTextQuiz } from './getTextQuiz'
 export { default as getTextList } from './getTextList'
 export { default as getTextQuizList } from './getTextQuizList'
 export { default as postTextQuizSolve } from './postTextQuizSolve'
 export { default as getTextQuizResult } from './getTextQuizResult'
+export { default as getTextChatList } from './getTextChatList'
 
 // 2. 단어 학습
 export { default as getVocabByNumber } from './getVocabByNumber'

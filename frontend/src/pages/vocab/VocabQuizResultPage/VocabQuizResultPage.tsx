@@ -1,44 +1,43 @@
-// VocabQuizResultPage.tsx
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import Button from 'components/Button'
 import useVocabQuizResult from 'hooks/useVocabQuizResult'
 
-interface QuizResultData {
-  quiz_id: number
-  question: [string, string, string]
-  options: [
-    string,
-    string,
-    string,
-    string,
-    string,
-    string,
-    string,
-    string,
-    string,
-    string,
-    string,
-    string,
-  ]
-  answer: [number, number, number]
-  user_answer: number[]
-  correct: boolean[]
-  answer_explain: [
-    string,
-    string,
-    string,
-    string,
-    string,
-    string,
-    string,
-    string,
-    string,
-    string,
-    string,
-    string,
-  ]
-}
+// interface QuizResultData {
+//   quiz_id: number
+//   question: [string, string, string]
+//   options: [
+//     string,
+//     string,
+//     string,
+//     string,
+//     string,
+//     string,
+//     string,
+//     string,
+//     string,
+//     string,
+//     string,
+//     string,
+//   ]
+//   answer: [number, number, number]
+//   user_answer: number[]
+//   correct: boolean[]
+//   answer_explain: [
+//     string,
+//     string,
+//     string,
+//     string,
+//     string,
+//     string,
+//     string,
+//     string,
+//     string,
+//     string,
+//     string,
+//     string,
+//   ]
+// }
 
 const VocabQuizResultPage = () => {
   const navigate = useNavigate()
@@ -46,10 +45,10 @@ const VocabQuizResultPage = () => {
     vocab_id: string
     quiz_id: string
   }>()
-  const vocabId = useMemo(() => {
-    const parsedId = parseInt(vocab_id || '', 10)
-    return isNaN(parsedId) ? 0 : parsedId
-  }, [vocab_id])
+  // const vocabId = useMemo(() => {
+  //   const parsedId = parseInt(vocab_id || '', 10)
+  //   return isNaN(parsedId) ? 0 : parsedId
+  // }, [vocab_id])
   const qId = useMemo(() => {
     const parsedQuizId = parseInt(quiz_id || '', 10)
     return isNaN(parsedQuizId) ? 0 : parsedQuizId

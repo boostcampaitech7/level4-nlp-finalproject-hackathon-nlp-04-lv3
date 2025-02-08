@@ -1,5 +1,5 @@
-import { ChatInterface } from 'components/ChatInterface'
-import { useCallback, useState } from 'react'
+import ChatInterface from 'components/ChatInterface'
+import { useCallback } from 'react'
 import { useTextChatMessagesStore } from 'stores/textChatmessagesStore'
 import { ChatAction, ChatMessage } from 'types/chat'
 
@@ -48,6 +48,7 @@ const ChatbotArea = () => {
   return (
     <div>
       <ChatInterface
+        type="text"
         messages={messages}
         actions={chatActions}
         onSendMessage={handleSendMessage}

@@ -47,3 +47,22 @@ export interface QuizResultType {
   userAnswer: [number, number, number]
   correct: [boolean, boolean, boolean]
 }
+
+export interface VocabReviewQuizType {
+  recordId: number
+  vocabId: number
+  vocab: string
+  hanja: string
+  dictMean: string
+  easyExplain: string
+  correctExample: string[]
+  incorrectExample: string
+  quizId: number
+  quizLevel: number
+  quizQuestion: string[]
+  quizOptions: string[]
+  quizCorrect: boolean[]
+  quizUserAnswer: number[]
+  quizAnswer: string[]
+  quizAnswerExplain: string[]
+}

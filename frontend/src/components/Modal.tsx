@@ -1,4 +1,3 @@
-import React from 'react'
 import Button from './Button'
 
 interface ModalProps {
@@ -10,29 +9,27 @@ interface ModalProps {
   onConfirm?: () => void
 }
 
-const Modal: React.FC<ModalProps> = ({
+const Modal = ({
   isOpen,
   onClose,
   title,
   message,
   confirmText = '확인',
-  onConfirm
-}) => {
+  onConfirm,
+}: ModalProps) => {
   if (!isOpen) return null
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="fixed inset-0 bg-button-inverse opacity-30" onClick={onClose}></div>
-      <div className="relative bg-surface-primary-2 z-50 w-full max-w-md p-6 rounded-[32px] shadow-lg">
-        <h2 className="mb-4 body-s font-bold">{title}</h2>
+      <div
+        className="fixed inset-0 bg-button-inverse opacity-30"
+        onClick={onClose}
+      ></div>
+      <div className="relative z-50 w-full max-w-md rounded-[32px] bg-surface-primary-2 p-6 shadow-lg">
+        <h2 className="mb-4 font-bold body-s">{title}</h2>
         <p className="mb-6 text-text-secondary caption-s">{message}</p>
         <div className="flex justify-end gap-2">
-          <Button
-            text="닫기"
-            onClick={onClose}
-            color="grey"
-            size="small"
-          />
+          <Button text="닫기" onClick={onClose} color="grey" size="small" />
           {onConfirm && (
             <Button
               text={confirmText}

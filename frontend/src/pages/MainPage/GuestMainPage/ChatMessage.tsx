@@ -1,5 +1,4 @@
-import React from 'react'
-import { ChatMessage as ChatMessageType } from '../../types/chat'
+import { ChatMessage as ChatMessageType } from 'types/chat'
 
 interface ChatMessageProps {
   message: ChatMessageType
@@ -7,27 +6,24 @@ interface ChatMessageProps {
   index: number
 }
 
-export const ChatMessage: React.FC<ChatMessageProps> = ({
-  message,
-  messageSize,
-}) => {
+const ChatMessage = ({ message, messageSize }: ChatMessageProps) => {
   return (
     <div
       className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
     >
       <div
-        className={`px-6 py-3 rounded-3xl max-w-[80%] ${
+        className={`max-w-[80%] rounded-3xl px-6 py-3 ${
           message.type === 'user'
-            ? 'bg-surface-secondary rounded-tr-none'
-            : 'bg-background-secondary rounded-tl-none'
+            ? 'rounded-tr-none bg-surface-secondary'
+            : 'rounded-tl-none bg-background-secondary'
         }`}
       >
-        <p
-          className={`text-text-primary ${messageSize} caption-s`}
-        >
+        <p className={`text-text-primary ${messageSize} caption-s`}>
           {message.content}
         </p>
       </div>
     </div>
   )
 }
+
+export default ChatMessage

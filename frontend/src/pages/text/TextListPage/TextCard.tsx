@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router'
-import { TextCardType } from 'types/textList'
+import { TextCardType } from 'types/text'
 
 const TextCard = ({ textId, title, category }: TextCardType) => {
   const navigate = useNavigate()

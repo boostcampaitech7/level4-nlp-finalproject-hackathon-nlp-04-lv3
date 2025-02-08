@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { getTextAcount } from 'services'
-import { TextAccountType } from 'types'
+import { TextAccountType } from 'types/textAccount'
 
 interface TextAccountProps {
   textId: number

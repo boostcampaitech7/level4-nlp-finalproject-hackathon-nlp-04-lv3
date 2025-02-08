@@ -1,52 +1,9 @@
 import { useNavigate, useParams } from 'react-router-dom'
-import { useState, useEffect, useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import Button from 'components/Button'
-// /@ts-expect-error TypeScript 타입 체크를 무시하기 위해 추가
 import goodSticker from '../../assets/good_sticker.svg?react'
 import useTextQuizList from 'hooks/useTextQuizList'
-
-interface LevelData {
-  level: number
-  is_solved: boolean
-  quiz_id: number
-}
-
-interface UserLevelData {
-  user_level: number
-  level_data: LevelData[]
-}
-
-// 더미 데이터
-const dummyLevelData: UserLevelData = {
-  user_level: 4,
-  level_data: [
-    {
-      level: 1,
-      is_solved: true,
-      quiz_id: 511278047,
-    },
-    {
-      level: 2,
-      is_solved: true,
-      quiz_id: 511272848,
-    },
-    {
-      level: 3,
-      is_solved: false,
-      quiz_id: 517678047,
-    },
-    {
-      level: 4,
-      is_solved: false,
-      quiz_id: 511209047,
-    },
-    {
-      level: 5,
-      is_solved: false,
-      quiz_id: 511223047,
-    },
-  ],
-}
+import useVocabQuizList from 'hooks/useVocabQuizList'
 
 const QuizLevelSelectionPage = ({ section = 'text' }: { section: string }) => {
   const navigate = useNavigate()
@@ -57,7 +14,7 @@ const QuizLevelSelectionPage = ({ section = 'text' }: { section: string }) => {
     return isNaN(parsedId) ? 0 : parsedId
   }, [item_id])
 
-  const useQuizList = section === 'text' ? useTextQuizList : useTextQuizList // TODO: useVocabQuizList 만들기
+  const useQuizList = section === 'text' ? useTextQuizList : useVocabQuizList
   const { data: quizList, isFetching, refetch } = useQuizList(itemId)
 
   useEffect(() => {

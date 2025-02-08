@@ -123,6 +123,7 @@ const MainPage = () => {
   const [searchTerm, setSearchTerm] = useState('')
   // 오늘의 글
   const [todayTexts, setTodayTexts] = useState<TodayText[]>([])
+  // const { }
   // 퀴즈
   const [quizData, setQuizData] = useState<QuizData[]>([])
   // 문제 풀이 중일 때: 현재 문제 인덱스

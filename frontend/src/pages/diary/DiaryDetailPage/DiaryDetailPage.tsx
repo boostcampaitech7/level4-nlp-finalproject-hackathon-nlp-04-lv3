@@ -7,7 +7,6 @@ import { RoughNotation } from 'react-rough-notation'
 import TitleBar from './TItleBar'
 import Button from 'components/Button'
 import araboogie from '../../../assets/araboogie100.svg?react'
-import { useDiaryTextStore } from 'stores/diaryTextStore'
 
 interface LineData {
   // SVG 경로를 그릴 때 필요한 점들
@@ -51,6 +50,10 @@ const DiaryDetailPage = () => {
   useEffect(() => {
     if (diary) {
       setSlicedTexts(getSlicedTexts(diary))
+      slicedTexts?.forEach(() => {
+        textRefs.push(useRef<HTMLSpanElement>(null))
+        feedbackRefs.push(useRef<HTMLDivElement>(null))
+      })
     }
   }, [diary])
 
@@ -60,14 +63,16 @@ const DiaryDetailPage = () => {
   const containerRef = useRef<HTMLDivElement>(null)
 
   // 본문 구절 span의 ref
-  const textRefs = useRef<(HTMLSpanElement | null)[]>([])
+  // const textRefs = useRef<(HTMLSpanElement | undefined)[]>([])
+  const textRefs: React.RefObject<HTMLSpanElement | null>[] = []
   // 본문 구절 span의 화면상 위치를 계산하여 저장
   const [textPositions, setTextPositions] = useState<Position[]>([])
 
   const [isFocused, setIsFocused] = useState<boolean[]>([])
 
   // 피드백 div의 ref
-  const feedbackRefs = useRef<(HTMLDivElement | null)[]>([])
+  // const feedbackRefs = useRef<(HTMLDivElement | undefined)[]>([])
+  const feedbackRefs: React.RefObject<HTMLDivElement | null>[] = []
   // 피드백 div의 위치(top, height)
   const [feedbackPositions, setFeedbackPositions] = useState<Position[]>([])
 
@@ -82,9 +87,9 @@ const DiaryDetailPage = () => {
     const containerRect = containerRef.current.getBoundingClientRect()
 
     // 각 구절이 화면상에서 어느 위치에 있는지 계산
-    const newPositions = textRefs.current.map((textRef) => {
-      if (!textRef) return { top: 0, left: 0, width: 0, height: 0 }
-      const rect = textRef.getBoundingClientRect()
+    const newPositions = textRefs.map((textRef) => {
+      if (!textRef.current) return { top: 0, left: 0, width: 0, height: 0 }
+      const rect = textRef.current.getBoundingClientRect()
 
       // 컨테이너를 기준으로 한 상대적 top 계산
       const offsetTop = rect.top - containerRect.top
@@ -214,7 +219,7 @@ const DiaryDetailPage = () => {
         isLeft = !isLeft
         return (
           <span
-            ref={(el) => (textRefs.current[idx] = el)}
+            ref={textRefs[idx]}
             key={`t-${idx}`}
             className={`${isFocused[idx] && (isLeft ? 'bg-red-500' : 'bg-blue-400')}`}
           >
@@ -234,7 +239,7 @@ const DiaryDetailPage = () => {
         )
       } else {
         return (
-          <span key={`t-${idx}`} ref={(el) => (textRefs.current[idx] = el)}>
+          <span key={`t-${idx}`} ref={textRefs[idx]}>
             {slicedText.text}
           </span>
         )
@@ -284,7 +289,7 @@ const DiaryDetailPage = () => {
 
       return (
         <div
-          ref={(el) => (feedbackRefs.current[idx] = el)}
+          ref={feedbackRefs[idx]}
           key={`f-${idx}`}
           className={`absolute w-[256px] whitespace-pre-line rounded-[16px] bg-surface-tertiary p-[20px] font-bold text-text-primary transition-all duration-300 ease-in-out feedback-m ${feedbackSide} ${isFocused[idx] ? focusStyles : 'hover:cursor-pointer hover:bg-line'}`}
           style={{

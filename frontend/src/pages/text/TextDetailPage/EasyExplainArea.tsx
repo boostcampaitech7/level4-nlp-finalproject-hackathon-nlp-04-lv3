@@ -2,7 +2,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import Button from 'components/Button'
 import useTextAccount from 'hooks/temp.useTextAccount'
 import { useEffect, useState } from 'react'
-import { TextAccountType } from 'types'
+import { TextAccountType } from 'types/textAccount'
 
 const EasyExplainArea = () => {
   const { data, isFetching } = useTextAccount()
