@@ -67,8 +67,7 @@ const ChatInterface = ({
             {actions.map((action) => (
               <button
                 key={action.id}
-                onClick={action.onClick}
-                className="whitespace-nowrap rounded-[14px] bg-button-secondary-1 px-4 py-2 text-text-secondary transition-colors button-s hover:bg-[#d8d8d8]"
+                className="pointer-events-none whitespace-nowrap rounded-[14px] bg-button-secondary-1 px-4 py-2 text-text-secondary opacity-80 button-s"
               >
                 {action.label}
               </button>

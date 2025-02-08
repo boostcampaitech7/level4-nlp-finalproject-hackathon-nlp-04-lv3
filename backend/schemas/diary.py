@@ -14,8 +14,15 @@ class DiaryBookmarkDTO(BaseModel):
 
 class DiaryDayDTO(BaseModel):
     diary_id: int
+    text: str
     day: date
     status: int
+
+
+class DiaryListDTO(BaseModel):
+    page_num: int
+    diaries: List[DiaryDayDTO]
+    total_page_count: Optional[int] = None
 
 
 class DiaryExtendedDTO(BaseModel):

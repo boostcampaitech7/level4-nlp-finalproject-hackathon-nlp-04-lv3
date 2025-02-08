@@ -109,7 +109,7 @@ def fetch_record_by_page(
         select(StudyRecords)
         .where(StudyRecords.user_id == user_id)
         .order_by(desc(StudyRecords.created_at))
-        .offset(page_num * 10)
+        .offset((page_num - 1) * 10)
         .limit(10)
     )
     study_records = session.exec(statement).all()
@@ -141,7 +141,7 @@ def fetch_record_by_page(
                         record_id=study_record.record_id,
                         quiz_level=text_quiz.level,
                         title=text.title,
-                        content=text.content[:100],
+                        content=" ".join(text.content[:2]),
                         category=text.category,
                     )
                 )
@@ -175,7 +175,7 @@ def fetch_vocab_record_by_page(
             StudyRecords.vocab_quiz_id.isnot(None),  # None 비교 수정
         )
         .order_by(desc(StudyRecords.created_at))
-        .offset(page_num * 10)
+        .offset((page_num - 1) * 10)
         .limit(10)
     )
     study_records = session.exec(statement).all()
@@ -218,7 +218,7 @@ def fetch_vocab_record_by_page(
             StudyRecords.text_quiz_id.isnot(None),  # None 비교 수정
         )
         .order_by(desc(StudyRecords.created_at))
-        .offset(page_num * 10)
+        .offset((page_num - 1) * 10)
         .limit(10)
     )
     study_records = session.exec(statement).all()
@@ -233,7 +233,7 @@ def fetch_vocab_record_by_page(
                 record_id=study_record.record_id,
                 quiz_level=text_quiz.level,
                 title=text.title,
-                content=text.content[:100],
+                content=" ".join(text.content[:2]),
                 category=text.category,
             )
         )

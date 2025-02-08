@@ -12,7 +12,7 @@ const ChatMessage = ({ message, messageSize }: ChatMessageProps) => {
       className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
     >
       <div
-        className={`max-w-[80%] rounded-3xl px-6 py-3 ${
+        className={`max-w-[80%] rounded-3xl px-6 py-2 ${
           message.type === 'user'
             ? 'rounded-tr-none bg-surface-secondary'
             : 'rounded-tl-none bg-background-secondary'

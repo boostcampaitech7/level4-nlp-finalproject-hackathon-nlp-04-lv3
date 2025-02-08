@@ -430,11 +430,11 @@ const MainPage = () => {
               {todayTexts.map((text) => (
                 <div
                   key={text.text_id}
-                  className="w-full rounded-3xl bg-surface-primary-2 p-[34px] py-5"
+                  className="flex w-full max-w-full flex-col gap-2 overflow-hidden rounded-3xl bg-surface-primary-2 p-[34px] py-5"
                 >
                   <div className="mb-2.5 flex items-center justify-between">
-                    <div>
-                      <span className="text-text-primary body-l">
+                    <div className="flex items-center">
+                      <span className="inline-block max-w-[480px] truncate text-text-primary body-l">
                         {text.title}{' '}
                       </span>
                       <span className="text-text-secondary body-m">
@@ -453,7 +453,9 @@ const MainPage = () => {
                       plusClasses="min-w-[120px] whitespace-nowrap"
                     />
                   </div>
-                  <p className="text-text-secondary body-s">{text.content}</p>
+                  <p className="max-w-[700px] truncate text-text-secondary body-s">
+                    {text.content}
+                  </p>
                 </div>
               ))}
             </div>
