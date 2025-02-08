@@ -1,2 +1,2 @@
 export { default as MainPage } from './MainPage'
-export { GuestMainPage } from './GuestMainPage/GuestMainPage'
+export { default as GuestMainPage } from './GuestMainPage/GuestMainPage'

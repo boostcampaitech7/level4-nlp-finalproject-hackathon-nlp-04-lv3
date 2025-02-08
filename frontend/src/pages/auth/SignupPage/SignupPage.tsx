@@ -2,13 +2,13 @@ import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { FaEye, FaEyeSlash } from 'react-icons/fa'
 import Button from 'components/Button'
-import { ReactComponent as AraboogieImage } from '../../../assets/araboogie100.svg'
-import { ChatInterface } from '../../MainPage/GuestMainPage/GuestChatInterface'
+import AraboogieImage from '/assets/araboogie100.svg?react'
+import ChatInterface from '../../MainPage/GuestMainPage/GuestChatInterface'
 
 const SignupPage = () => {
   // 팝업 제거
-  localStorage.removeItem('popupShown');
-  const navigate = useNavigate();
+  localStorage.removeItem('popupShown')
+  const navigate = useNavigate()
 
   // 비밀번호/비밀번호 확인 보이기 토글
   const [showPassword, setShowPassword] = useState(false)
@@ -19,16 +19,16 @@ const SignupPage = () => {
     name: '',
     username: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
   })
 
   // 아이디 중복확인 여부
   const [isUsernameAvailable, setIsUsernameAvailable] = useState(false)
   // 에러 상태
   const [validationErrors, setValidationErrors] = useState({
-    passwordMismatch: false,   // 비밀번호 != 비밀번호 확인
-    missingFields: false,      // 입력 누락
-    usernameFormat: false,     // 아이디 규칙에 부합하는지?
+    passwordMismatch: false, // 비밀번호 != 비밀번호 확인
+    missingFields: false, // 입력 누락
+    usernameFormat: false, // 아이디 규칙에 부합하는지?
     usernamePasswordSame: false, // 아이디와 비밀번호 같은지?
     passwordComplexity: false, // 비밀번호가 정규식 규칙에 부합하는지?
   })
@@ -36,23 +36,29 @@ const SignupPage = () => {
   // "입력 전까지는 경고문 안 보이게" → 포커스 여부로 제어
   const [hasIDFocused, setHasIDFocused] = useState(false)
   const [hasPasswordFocused, setHasPasswordFocused] = useState(false)
-  const [hasConfirmPasswordFocused, setHasConfirmPasswordFocused] = useState(false)
+  const [hasConfirmPasswordFocused, setHasConfirmPasswordFocused] =
+    useState(false)
 
   // 실시간 유효성 검사
   useEffect(() => {
     // 아이디 규칙 (예시) : 여기서는 '8자 이상'만 체크(혹은 A-Za-z0-9 등등)
-    const usernameRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z0-9]{4,12}$/;
+    const usernameRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z0-9]{4,12}$/
 
     // 아이디와 비밀번호 같은지 확인
     const isUsernamePasswordSame = formData.username === formData.password
 
     // 비밀번호 복잡도: 영문 + 숫자 + 특수문자(@$!%*#?&) + 공백X + 8~20자
-    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])(?!.*\s)[A-Za-z\d@$!%*#?&]{8,20}$/
+    const passwordRegex =
+      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])(?!.*\s)[A-Za-z\d@$!%*#?&]{8,20}$/
 
     // 에러 갱신
     setValidationErrors({
       passwordMismatch: formData.password !== formData.confirmPassword,
-      missingFields: !formData.name || !formData.username || !formData.password || !formData.confirmPassword,
+      missingFields:
+        !formData.name ||
+        !formData.username ||
+        !formData.password ||
+        !formData.confirmPassword,
       usernameFormat: !usernameRegex.test(formData.username),
       usernamePasswordSame: isUsernamePasswordSame,
       passwordComplexity: !passwordRegex.test(formData.password),
@@ -66,14 +72,14 @@ const SignupPage = () => {
     !validationErrors.usernameFormat &&
     !validationErrors.usernamePasswordSame &&
     !validationErrors.passwordComplexity &&
-    isUsernameAvailable  // 아이디 중복확인까지 마쳐야 함
+    isUsernameAvailable // 아이디 중복확인까지 마쳐야 함
 
   // input onChange
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }))
     // 아이디 바뀌면 중복확인 상태 초기화
     if (name === 'username') {
@@ -86,7 +92,9 @@ const SignupPage = () => {
     // 더미 로직: 'existingUser'이면 이미 있는 아이디
     const dummyCheck = formData.username !== 'existingUser'
     setIsUsernameAvailable(dummyCheck)
-    alert(dummyCheck ? '사용 가능한 아이디입니다.' : '이미 사용 중인 아이디입니다.')
+    alert(
+      dummyCheck ? '사용 가능한 아이디입니다.' : '이미 사용 중인 아이디입니다.',
+    )
   }
 
   // 폼 전송
@@ -100,23 +108,26 @@ const SignupPage = () => {
     }
 
     // 성공 시 페이지 이동
-    navigate('/auth/signup/survey', { state: { signupData: formData } });
+    navigate('/auth/signup/survey', { state: { signupData: formData } })
   }
 
   // 비밀번호 표시 토글
   const togglePasswordVisibility = () => setShowPassword(!showPassword)
-  const toggleConfirmPasswordVisibility = () => setShowConfirmPassword(!showConfirmPassword)
+  const toggleConfirmPasswordVisibility = () =>
+    setShowConfirmPassword(!showConfirmPassword)
 
   return (
-    <div className="h-[calc(100vh-126px)] flex justify-center items-start bg-background-primary pt-20">
-      <div className="max-w-6xl w-full px-4">
+    <div className="flex min-h-[calc(100vh-126px)] items-start justify-center bg-background-primary pb-5 pt-20">
+      <div className="w-full max-w-6xl px-4">
         <div className="flex gap-10">
           {/* 왼쪽 회원가입 폼 */}
-          <div className="flex-1 max-w-[510px]">
+          <div className="max-w-[510px] flex-1">
             <div className="mb-6">
               <h1 className="text-4xl">
-                <span className="text-main text-[35px] font-['PartialSans']">아라부기</span>
-                <span className="text-text-intermediate body-l ml-2">
+                <span className="font-['PartialSans'] text-[35px] text-main">
+                  아라부기
+                </span>
+                <span className="ml-2 text-text-intermediate body-l">
                   와 함께 문해력을 길러보세요!
                 </span>
               </h1>
@@ -130,7 +141,7 @@ const SignupPage = () => {
                 placeholder="이름"
                 value={formData.name}
                 onChange={handleInputChange}
-                className="w-full h-20 px-5 rounded-2xl body-s placeholder-[#707070] bg-surface-primary-2"
+                className="h-20 w-full rounded-2xl bg-surface-primary-2 px-5 text-text-primary placeholder-[#707070] body-s"
               />
 
               {/* 아이디 + 중복확인 */}
@@ -142,23 +153,29 @@ const SignupPage = () => {
                   value={formData.username}
                   onChange={handleInputChange}
                   onFocus={() => setHasIDFocused(true)}
-                  className="flex-1 h-20 px-5 rounded-2xl body-s placeholder-[#707070] bg-surface-primary-2"
+                  className="h-20 flex-1 rounded-2xl bg-surface-primary-2 px-5 text-text-primary placeholder-[#707070] body-s"
                 />
                 <Button
                   text="중복확인"
                   size="large"
                   color="purple"
                   onClick={handleDuplicateCheck}
-                  type="button" // ✅ 이 부분 추가
-                  // 아래 2개 prop 추가
-                  disabled={validationErrors.usernameFormat || !formData.username}
+                  type="button" //
+                  //
+                  disabled={
+                    validationErrors.usernameFormat || !formData.username
+                  }
                   plusClasses={`${validationErrors.usernameFormat || !formData.username ? 'opacity-50 cursor-not-allowed' : ''}`}
                 />
               </div>
               {/* 아이디 에러 (포커스 여부 상관없이 즉시 표시 가능하면 아래처럼)^[A-Za-z0-9]{4,12}$/; */}
-              {hasIDFocused && !isUsernameAvailable && validationErrors.usernameFormat && (
-                <p className="text-red-500 body-s -mt-4">아이디는 영어+숫자 4~12자를 사용해야 합니다.</p>
-              )}
+              {hasIDFocused &&
+                !isUsernameAvailable &&
+                validationErrors.usernameFormat && (
+                  <p className="-mt-4 text-red-500 body-s">
+                    아이디는 영어+숫자 4~12자를 사용해야 합니다.
+                  </p>
+                )}
 
               {/* 비밀번호 */}
               <div className="relative">
@@ -169,32 +186,28 @@ const SignupPage = () => {
                   value={formData.password}
                   onChange={handleInputChange}
                   onFocus={() => setHasPasswordFocused(true)}
-                  className="w-full h-20 px-5 rounded-2xl body-s placeholder-[#707070] bg-surface-primary-2 pr-16"
+                  className="h-20 w-full rounded-2xl bg-surface-primary-2 px-5 pr-16 text-text-primary placeholder-[#707070] body-s"
                 />
                 <button
                   type="button"
-                  tabIndex={-1} // ✅ 탭 이동 차단
+                  tabIndex={-1} //
                   onClick={togglePasswordVisibility}
-                  className="absolute right-5 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-gray-500 hover:text-gray-700"
+                  className="absolute right-5 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center text-gray-500 hover:text-gray-700"
                 >
-                  {showPassword ? <FaEyeSlash size={24} /> : <FaEye size={24} />}
+                  {showPassword ? (
+                    <FaEyeSlash size={24} />
+                  ) : (
+                    <FaEye size={24} />
+                  )}
                 </button>
               </div>
-
-              {/* 비밀번호 경고: 포커스한 뒤부터만 표시 */}
-              {hasPasswordFocused && validationErrors.passwordComplexity && (
-                <p className="text-red-500 body-s">
-                  비밀번호는 영문, 숫자, 특수문자를 포함하고, 공백 없이 8~20자여야 합니다.
-                </p>
-              )}
-              {hasPasswordFocused && validationErrors.usernamePasswordSame && (
-                <p className="text-red-500 body-s">
-                  아이디와 비밀번호가 동일할 수 없습니다.
-                </p>
-              )}
-              {hasPasswordFocused && !isUsernameAvailable && validationErrors.usernamePasswordSame && (
-                <p className="text-red-500 body-s -mt-4">아이디와 비밀번호가 같을 수 없습니다.</p>
-              )}
+              {hasPasswordFocused &&
+                !isUsernameAvailable &&
+                validationErrors.usernamePasswordSame && (
+                  <p className="-mt-4 text-red-500 body-s">
+                    아이디와 비밀번호가 같을 수 없습니다.
+                  </p>
+                )}
 
               {/* 비밀번호 확인 */}
               <div className="relative">
@@ -205,24 +218,29 @@ const SignupPage = () => {
                   value={formData.confirmPassword}
                   onChange={handleInputChange}
                   onFocus={() => setHasConfirmPasswordFocused(true)}
-                  className="w-full h-20 px-5 rounded-2xl body-s placeholder-[#707070] bg-surface-primary-2 pr-16"
+                  className="h-20 w-full rounded-2xl bg-surface-primary-2 px-5 pr-16 text-text-primary placeholder-[#707070] body-s"
                 />
                 <button
                   type="button"
-                  tabIndex={-1} // ✅ 탭 이동 차단
+                  tabIndex={-1} //
                   onClick={toggleConfirmPasswordVisibility}
-                  className="absolute right-5 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-gray-500 hover:text-gray-700"
+                  className="absolute right-5 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center text-gray-500 hover:text-gray-700"
                 >
-                  {showConfirmPassword ? <FaEyeSlash size={24} /> : <FaEye size={24} />}
+                  {showConfirmPassword ? (
+                    <FaEyeSlash size={24} />
+                  ) : (
+                    <FaEye size={24} />
+                  )}
                 </button>
               </div>
 
               {/* 비밀번호 확인 경고: 포커스한 뒤부터만 표시 */}
-              {hasConfirmPasswordFocused && validationErrors.passwordMismatch && (
-                <p className="text-red-500 body-s">
-                  비밀번호와 비밀번호 확인이 일치하지 않습니다.
-                </p>
-              )}
+              {hasConfirmPasswordFocused &&
+                validationErrors.passwordMismatch && (
+                  <p className="text-red-500 body-s">
+                    비밀번호와 비밀번호 확인이 일치하지 않습니다.
+                  </p>
+                )}
 
               {/* 필수 입력 누락: 여기서는 모든 칸이 비거나 하면 자동으로 표시 */}
               {validationErrors.missingFields && (
@@ -257,24 +275,35 @@ const SignupPage = () => {
           </div>
 
           {/* 오른쪽 챗봇 섹션 */}
-          <div className="flex-1 relative">
+          <div className="relative h-[800px] flex-1">
             <div className="absolute left-0 top-0 w-full">
-              <h2 className="body-m mb-4">
-                글을 읽다 <span className="text-accent-purple">모르는 단어,<br/>이해 안 되는 문장</span>을 만났을 때,
+              <h2 className="mb-4 body-m">
+                글을 읽다{' '}
+                <span className="text-accent-purple">
+                  모르는 단어,
+                  <br />
+                  이해 안 되는 문장
+                </span>
+                을 만났을 때,
               </h2>
               <div className="text-right">
-                <span className="text-main text-[30px] font-['PartialSans']">부기 챗봇</span>
+                <span className="font-['PartialSans'] text-[30px] text-main">
+                  부기 챗봇
+                </span>
                 <span className="text-text-primary body-l">
-                  이 여러분을<br/>도와드릴게요.
+                  이 여러분을
+                  <br />
+                  도와드릴게요.
                 </span>
               </div>
             </div>
-            <div className="pl-10 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform pl-10">
               <div className="relative">
-                <AraboogieImage
-                  className="absolute -left-[150px] -top-[30px] w-[250px] h-[250px] transform scale-x-[-1]"
+                <img
+                  src={AraboogieImage}
+                  className="absolute -left-[150px] -top-[30px] h-[250px] w-[250px] scale-x-[-1] transform"
                 />
-                <div className="relative left-[-80px] -top-[-165px] transform rotate-[10deg] origin-bottom-right">
+                <div className="relative -top-[-165px] left-[-80px] origin-bottom-right rotate-[10deg] transform">
                   <ChatInterface
                     messages={[
                       {
@@ -285,10 +314,11 @@ const SignupPage = () => {
                       },
                       {
                         id: '2',
-                        content: '...',
+                        content:
+                          '주인공은 희망과 기대감을 느끼고 있을 것 같아요!',
                         type: 'bot',
                         timestamp: new Date(),
-                      }
+                      },
                     ]}
                     actions={[
                       { id: '1', label: '비슷한 말', onClick: () => {} },
@@ -305,7 +335,7 @@ const SignupPage = () => {
             </div>
           </div>
         </div>
-      </div> 
+      </div>
     </div>
   )
 }

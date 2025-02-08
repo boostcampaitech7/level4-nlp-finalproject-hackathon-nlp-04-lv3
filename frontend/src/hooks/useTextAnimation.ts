@@ -1,4 +1,4 @@
-import { useEffect, RefObject } from 'react'
+import { useEffect } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
@@ -33,7 +33,7 @@ const defaultConfig: TextAnimationConfig = {
 }
 
 export const useTextAnimation = (
-  containerRef: RefObject<HTMLElement>,
+  containerRef: React.RefObject<HTMLDivElement | null>,
   textSelector: string,
   config: TextAnimationConfig = {},
 ) => {

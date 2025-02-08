@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import TitleBar from './TItleBar'
 import DiaryCard from './DiaryCard'
-import useDiaryList from 'hooks/temp.useDiaryList'
+import useDiaryList from 'hooks/useDiaryList'
 import { useDiaryListPageStore } from 'stores/diaryListPageStore'
 import PageSelector from './PageSelector'
 
@@ -48,7 +48,7 @@ const DiaryListPage = () => {
     }
 
     let prevYM = ''
-    const diaryCards = diaryList?.diarys.map((diary) => {
+    const diaryCards = diaryList?.diaries.map((diary) => {
       const currentYM = getYM(diary.day)
 
       if (prevYM != currentYM) {

@@ -1,4 +1,4 @@
-import useTextList from 'hooks/temp.useTextList'
+import useTextList from 'hooks/useTextList'
 import TextCard from './TextCard'
 import PageSelector from './PageSelector'
 import { useTextListPageStore } from 'stores/textListPageStore'

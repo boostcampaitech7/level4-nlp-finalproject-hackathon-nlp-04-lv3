@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import { useRef } from 'react'
 import { useImageAnimation } from '../../../hooks/useImageAnimation'
 
 interface ImageAnimationWrapperProps {
@@ -8,12 +8,12 @@ interface ImageAnimationWrapperProps {
   className?: string
 }
 
-export const ImageAnimationWrapper: React.FC<ImageAnimationWrapperProps> = ({
+const ImageAnimationWrapper = ({
   children,
   imageSelector,
   config,
   className = '',
-}) => {
+}: ImageAnimationWrapperProps) => {
   const containerRef = useRef<HTMLDivElement>(null)
   useImageAnimation(containerRef, imageSelector, config)
 
@@ -23,3 +23,5 @@ export const ImageAnimationWrapper: React.FC<ImageAnimationWrapperProps> = ({
     </div>
   )
 }
+
+export default ImageAnimationWrapper

@@ -1,69 +1,27 @@
 import { useNavigate, useParams } from 'react-router-dom'
-import { useState, useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import Button from 'components/Button'
-// /@ts-expect-error TypeScript 타입 체크를 무시하기 위해 추가
-import goodSticker from '../../assets/good_sticker.svg?react'
-
-interface LevelData {
-  level: number
-  is_solved: boolean
-  quiz_id: number
-}
-
-interface UserLevelData {
-  user_level: number
-  level_data: LevelData[]
-}
-
-// 더미 데이터
-const dummyLevelData: UserLevelData = {
-  user_level: 4,
-  level_data: [
-    {
-      level: 1,
-      is_solved: true,
-      quiz_id: 511278047,
-    },
-    {
-      level: 2,
-      is_solved: true,
-      quiz_id: 511272848,
-    },
-    {
-      level: 3,
-      is_solved: false,
-      quiz_id: 517678047,
-    },
-    {
-      level: 4,
-      is_solved: false,
-      quiz_id: 511209047,
-    },
-    {
-      level: 5,
-      is_solved: false,
-      quiz_id: 511223047,
-    },
-  ],
-}
+import goodSticker from '/assets/good_sticker.svg?react'
+import useTextQuizList from 'hooks/useTextQuizList'
+import useVocabQuizList from 'hooks/useVocabQuizList'
 
 const QuizLevelSelectionPage = ({ section = 'text' }: { section: string }) => {
   const navigate = useNavigate()
   const { vocab_id, text_id } = useParams()
-  const [levelData, setLevelData] = useState<UserLevelData | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const item_id = section === 'text' ? text_id : vocab_id
+  const itemId = useMemo(() => {
+    const parsedId = parseInt(item_id || '', 10)
+    return isNaN(parsedId) ? 0 : parsedId
+  }, [item_id])
+
+  const useQuizList = section === 'text' ? useTextQuizList : useVocabQuizList
+  const { data: quizList, isFetching, refetch } = useQuizList(itemId)
 
   useEffect(() => {
-    // 더미 데이터를 사용하여 API 호출 시뮬레이션
-    const simulateApiCall = () => {
-      setTimeout(() => {
-        setLevelData(dummyLevelData)
-        setIsLoading(false)
-      }, 500) // 0.5초 딜레이로 로딩 상태 표시
+    if (itemId) {
+      refetch()
     }
-
-    simulateApiCall()
-  }, [])
+  }, [itemId])
 
   const handleQuizStart = (level: number) => {
     if (section === 'vocab') {
@@ -101,14 +59,6 @@ const QuizLevelSelectionPage = ({ section = 'text' }: { section: string }) => {
     return '매우 어려워요. 깊이 있는 학습 후 도전해보세요!'
   }
 
-  if (isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        Loading...
-      </div>
-    )
-  }
-
   return (
     <div className="flex min-h-screen w-full justify-center bg-background-primary">
       <div className="w-full max-w-[960px] px-4">
@@ -116,70 +66,74 @@ const QuizLevelSelectionPage = ({ section = 'text' }: { section: string }) => {
           <div className="mb-8">
             <h1 className="mb-2 text-text-primary title-m">퀴즈 난이도 선택</h1>
           </div>
-          <div className="space-y-5">
-            {levelData?.level_data.map((data) => (
-              <div
-                key={data.level}
-                className="flex w-full items-center justify-between rounded-[32px] bg-surface-primary-2 px-8 py-6"
-              >
-                <div className="flex items-center gap-4">
-                  <div>
-                    <div className="flex items-center gap-4">
-                      <div className="text-text-primary title-m">
-                        난이도 {data.level}
-                      </div>
-                      {data.is_solved && (
-                        <div className="relative -my-2 flex h-[55px] w-[55px] items-center justify-center overflow-hidden">
-                          <img
-                            className="-translate-y-0.3 absolute h-full w-full scale-[1.5] transform object-contain"
-                            src={goodSticker}
-                            alt="완료"
-                          />
+          {isFetching ? (
+            <div>퀴즈 풀이 기록을 불러오는 중이에요.</div>
+          ) : (
+            <div className="space-y-5">
+              {quizList?.levelData?.map((data) => (
+                <div
+                  key={data.level}
+                  className="flex w-full items-center justify-between rounded-[32px] bg-surface-primary-2 px-8 py-6"
+                >
+                  <div className="flex items-center gap-4">
+                    <div>
+                      <div className="flex items-center gap-4">
+                        <div className="text-text-primary title-m">
+                          난이도 {data.level}
                         </div>
-                      )}
-                    </div>
-                    <div className="text-text-primary body-m">
-                      {getLevelDescription(
-                        data.level,
-                        data.is_solved,
-                        levelData.user_level,
-                      )}
+                        {data.isSolved && (
+                          <div className="relative -my-2 flex h-[55px] w-[55px] items-center justify-center overflow-hidden">
+                            <img
+                              className="-translate-y-0.3 absolute h-full w-full scale-[1.5] transform object-contain"
+                              src={goodSticker}
+                              alt="완료"
+                            />
+                          </div>
+                        )}
+                      </div>
+                      <div className="text-text-primary body-m">
+                        {getLevelDescription(
+                          data.level,
+                          data.isSolved,
+                          quizList?.userLevel,
+                        )}
+                      </div>
                     </div>
                   </div>
+                  <div className="flex gap-4">
+                    {data.isSolved ? (
+                      <>
+                        <Button
+                          size="small"
+                          color="grey"
+                          text={'다시 풀기'}
+                          onClick={() => handleQuizStart(data.level)}
+                          plusClasses="px-[10px]"
+                        />
+                        <Button
+                          size="small"
+                          color="grey"
+                          text={'정답 보기'}
+                          onClick={() => handleQuizResult(data.level)}
+                          plusClasses="px-[10px]"
+                        />
+                      </>
+                    ) : (
+                      data.level <= quizList?.userLevel && (
+                        <Button
+                          size="small"
+                          color="purple"
+                          text={'퀴즈 풀기'}
+                          onClick={() => handleQuizStart(data.level)}
+                          plusClasses="px-[10px]"
+                        />
+                      )
+                    )}
+                  </div>
                 </div>
-                <div className="flex gap-4">
-                  {data.is_solved ? (
-                    <>
-                      <Button
-                        size="small"
-                        color="grey"
-                        text={'다시 풀기'}
-                        onClick={() => handleQuizStart(data.level)}
-                        plusClasses="px-[10px]"
-                      />
-                      <Button
-                        size="small"
-                        color="grey"
-                        text={'정답 보기'}
-                        onClick={() => handleQuizResult(data.level)}
-                        plusClasses="px-[10px]"
-                      />
-                    </>
-                  ) : (
-                    data.level <= levelData.user_level && (
-                      <Button
-                        size="small"
-                        color="purple"
-                        text={'퀴즈 풀기'}
-                        onClick={() => handleQuizStart(data.level)}
-                        plusClasses="px-[10px]"
-                      />
-                    )
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

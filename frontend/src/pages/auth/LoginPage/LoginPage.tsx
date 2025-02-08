@@ -1,21 +1,21 @@
 // LoginPage.tsx
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { FaEye, FaEyeSlash } from 'react-icons/fa'
-import { ReactComponent as AraboogieWithBackground } from '../../../assets/araboogie_with_background.svg'
+import AraboogieWithBackground from '/assets/araboogie_with_background.svg?react'
 import Button from 'components/Button'
-import { useAuthStore } from '../../../stores/authStore'
+// import { useAuthStore } from '../../../stores/authStore'
 import useLogin from 'services/login'
 
 const LoginPage = () => {
-  const navigate = useNavigate()
-  const setAuth = useAuthStore((state) => state.setAuth)
+  // const navigate = useNavigate()
+  // const setAuth = useAuthStore((state) => state.setAuth)
   const [showPassword, setShowPassword] = useState(false)
   const [credentials, setCredentials] = useState({
     username: '',
-    password: ''
+    password: '',
   })
-  const [error, setError] = useState('')
+  const [error, _] = useState('')
   const [keepLoggedIn, setKeepLoggedIn] = useState(false) // 체크박스 상태 관리
 
   const togglePasswordVisibility = () => {
@@ -24,27 +24,31 @@ const LoginPage = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
-    setCredentials(prev => ({
+    setCredentials((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }))
   }
   const login = useLogin()
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     login({ username: credentials.username, password: credentials.password })
   }
 
   return (
-    <div className="min-w-[1440px] min-h-screen flex justify-center items-start bg-background-primary pt-20">
-      <div className="flex gap-10 max-w-6xl w-full px-4">
+    <div className="flex min-h-screen min-w-[1440px] items-start justify-center bg-background-primary pt-20">
+      <div className="flex w-full max-w-6xl gap-10 px-4">
         {/* 왼쪽 로그인 폼 */}
-        <div className="flex-1 max-w-[510px]">
+        <div className="max-w-[510px] flex-1">
           <div className="mb-6">
             <h1 className="text-4xl">
-              <span className="text-main text-[35px] font-['PartialSans']">아라부기</span>
-              <span className="text-text-intermediate body-l ml-2">와 함께 문해력을 길러보세요!</span>
+              <span className="font-['PartialSans'] text-[35px] text-main">
+                아라부기
+              </span>
+              <span className="ml-2 text-text-intermediate body-l">
+                와 함께 문해력을 길러보세요!
+              </span>
             </h1>
           </div>
 
@@ -55,22 +59,22 @@ const LoginPage = () => {
               placeholder="아이디"
               value={credentials.username}
               onChange={handleInputChange}
-              className="w-full h-20 px-5 rounded-2xl body-s placeholder-[#707070] bg-surface-primary-2"
+              className="h-20 w-full rounded-2xl bg-surface-primary-2 px-5 placeholder-[#707070] body-s"
             />
-            
+
             <div className="relative">
               <input
-                type={showPassword ? "text" : "password"}
+                type={showPassword ? 'text' : 'password'}
                 name="password"
                 placeholder="비밀번호"
                 value={credentials.password}
                 onChange={handleInputChange}
-                className="w-full h-20 px-5 rounded-2xl body-s placeholder-[#707070] bg-surface-primary-2 pr-16"
+                className="h-20 w-full rounded-2xl bg-surface-primary-2 px-5 pr-16 placeholder-[#707070] body-s"
               />
               <button
                 type="button"
                 onClick={togglePasswordVisibility}
-                className="absolute right-5 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-gray-500 hover:text-gray-700"
+                className="absolute right-5 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center text-gray-500 hover:text-gray-700"
                 tabIndex={-1}
               >
                 {showPassword ? <FaEyeSlash size={24} /> : <FaEye size={24} />}
@@ -82,7 +86,7 @@ const LoginPage = () => {
             <label className="flex items-center gap-2.5 body-s">
               <input
                 type="checkbox"
-                className="w-6 h-6 rounded-full border-2"
+                className="h-6 w-6 rounded-full border-2"
                 checked={keepLoggedIn}
                 onChange={(e) => setKeepLoggedIn(e.target.checked)}
               />
@@ -107,8 +111,11 @@ const LoginPage = () => {
         </div>
 
         {/* 오른쪽 이미지 */}
-        <div className="flex-1 max-w-[606px]">
-          <AraboogieWithBackground className="w-full h-[786px] rounded-[37px]" />
+        <div className="max-w-[606px] flex-1">
+          <img
+            src={AraboogieWithBackground}
+            className="h-[786px] w-full rounded-[37px]"
+          />
         </div>
       </div>
     </div>

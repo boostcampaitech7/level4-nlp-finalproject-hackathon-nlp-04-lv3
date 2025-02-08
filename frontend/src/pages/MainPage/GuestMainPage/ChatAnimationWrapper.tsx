@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useRef, useEffect } from 'react'
+import { useLayoutEffect, useRef, useEffect } from 'react'
 import gsap from 'gsap'
 import ScrollTrigger from 'gsap/ScrollTrigger'
 
@@ -10,10 +10,10 @@ interface ChatAnimationWrapperProps {
   className?: string
 }
 
-export const ChatAnimationWrapper: React.FC<ChatAnimationWrapperProps> = ({
+const ChatAnimationWrapper = ({
   children,
   className = '',
-}) => {
+}: ChatAnimationWrapperProps) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const timelineRef = useRef<gsap.core.Timeline | null>(null)
 
@@ -27,10 +27,10 @@ export const ChatAnimationWrapper: React.FC<ChatAnimationWrapperProps> = ({
     }
 
     // 초기 상태 설정
-    gsap.set(el, { 
-      opacity: 0, 
+    gsap.set(el, {
+      opacity: 0,
       y: 50,
-      scale: 0.95
+      scale: 0.95,
     })
 
     // 새로운 타임라인 생성
@@ -40,7 +40,7 @@ export const ChatAnimationWrapper: React.FC<ChatAnimationWrapperProps> = ({
         start: 'top bottom-=100',
         end: 'top center',
         toggleActions: 'play none none reverse',
-      }
+      },
     })
 
     tl.to(el, {
@@ -61,7 +61,7 @@ export const ChatAnimationWrapper: React.FC<ChatAnimationWrapperProps> = ({
       if (timelineRef.current) {
         timelineRef.current.kill()
       }
-      ScrollTrigger.getAll().forEach(st => st.kill())
+      ScrollTrigger.getAll().forEach((st) => st.kill())
     }
   }, [])
 
@@ -86,10 +86,10 @@ export const ChatAnimationWrapper: React.FC<ChatAnimationWrapperProps> = ({
 
     // dialog 요소만 관찰
     const dialogs = document.querySelectorAll('dialog')
-    dialogs.forEach(dialog => {
+    dialogs.forEach((dialog) => {
       observer.observe(dialog, {
         attributes: true,
-        attributeFilter: ['open']
+        attributeFilter: ['open'],
       })
     })
 
@@ -104,3 +104,5 @@ export const ChatAnimationWrapper: React.FC<ChatAnimationWrapperProps> = ({
     </div>
   )
 }
+
+export default ChatAnimationWrapper
