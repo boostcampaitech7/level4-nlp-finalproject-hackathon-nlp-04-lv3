@@ -25,8 +25,8 @@ class TextStudyRecordDTO(BaseModel):
     record_id: int
     text_id: int
     title: str
-    content: str
-    type: str
+    content: List[str]
+    type: bool
     category: str
     quiz_id: int
     quiz_level: int

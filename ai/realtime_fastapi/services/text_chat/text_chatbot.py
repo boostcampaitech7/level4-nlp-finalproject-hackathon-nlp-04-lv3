@@ -1,7 +1,5 @@
-from fastapi import APIRouter, HTTPException
-from dotenv import load_dotenv
-import requests
 import logging
+import requests
 
 
 class CompletionExecutor:
@@ -22,13 +20,21 @@ class CompletionExecutor:
             "seed": 0,
         }
 
-    def execute(self, content):
+    def execute(self, text, focused, prev_chat, current_chat):
         headers = {
             "Authorization": f"Bearer {self._api_key}",
             "Content-Type": "application/json; charset=utf-8",
         }
-        prompt = [{"role": "system", "content": self.system_prompt}]
-        prompt.append({"role": "user", "content": content})
+        prompt = [
+            {
+                "role": "system",
+                "content": self.system_prompt.format(text=text),
+            }
+        ]
+        for chat in prev_chat[::-1]:
+            prompt.append({"role": "user", "content": chat["question"]})
+            prompt.append({"role": "assistant", "content": chat["answer"]})
+        prompt.append({"role": "user", "content": current_chat})
 
         self.request_data["messages"] = prompt
         print(self.request_data)
