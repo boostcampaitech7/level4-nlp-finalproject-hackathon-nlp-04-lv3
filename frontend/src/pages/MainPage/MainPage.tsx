@@ -398,11 +398,11 @@ const MainPage = () => {
               {todayTexts.map((text) => (
                 <div
                   key={text.text_id}
-                  className="w-full p-[34px] py-5 bg-surface-primary-2 rounded-3xl"
+                  className="w-full p-[34px] py-5 bg-surface-primary-2 rounded-3xl flex flex-col gap-2 max-w-full overflow-hidden"
                 >
                   <div className="flex justify-between items-center mb-2.5">
-                    <div>
-                      <span className="body-l text-text-primary">{text.title} </span>
+                    <div className="flex items-center">
+                      <span className="body-l text-text-primary truncate max-w-[480px] inline-block">{text.title} </span>
                       <span className="body-m text-text-secondary">/ {text.category}</span>
                     </div>
                     <Button
@@ -413,7 +413,7 @@ const MainPage = () => {
                       plusClasses="min-w-[120px] whitespace-nowrap"
                     />
                   </div>
-                  <p className="body-s text-text-secondary">{text.content}</p>
+                  <p className="body-s text-text-secondary truncate max-w-[700px]">{text.content}</p>
                 </div>
               ))}
             </div>
