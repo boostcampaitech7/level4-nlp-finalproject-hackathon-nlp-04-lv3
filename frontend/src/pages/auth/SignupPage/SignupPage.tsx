@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { FaEye, FaEyeSlash } from 'react-icons/fa'
 import Button from 'components/Button'
-import AraboogieImage from '../../../assets/araboogie100.svg?react'
+import AraboogieImage from '/assets/araboogie100.svg?react'
 import ChatInterface from '../../MainPage/GuestMainPage/GuestChatInterface'
 
 const SignupPage = () => {

@@ -1,6 +1,6 @@
 import { Button } from 'components'
 import { useNavigate } from 'react-router'
-import goodSticker from '../../../assets/good_sticker.svg?react'
+import goodSticker from '/assets/good_sticker.svg?react'
 
 interface TitleBarProps {
   createdAt: string

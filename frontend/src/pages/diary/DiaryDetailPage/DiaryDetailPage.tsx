@@ -6,7 +6,7 @@ import getSlicedTexts from 'utils/getSlicedTexts'
 import { RoughNotation } from 'react-rough-notation'
 import TitleBar from './TItleBar'
 import Button from 'components/Button'
-import araboogie from '../../../assets/araboogie100.svg?react'
+import araboogie from '/assets/araboogie100.svg?react'
 
 interface LineData {
   // SVG 경로를 그릴 때 필요한 점들

@@ -106,56 +106,56 @@ body {
 
 @font-face {
   font-family: 'PretendardBlack';
-  src: url('/src/assets/fonts/Pretendard-Black.otf') format('opentype');
+  src: url('/assets/fonts/Pretendard-Black.otf') format('opentype');
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'PretendardBold';
-  src: url('/src/assets/fonts/Pretendard-Bold.otf') format('opentype');
+  src: url('/assets/fonts/Pretendard-Bold.otf') format('opentype');
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'PretendardSemiBold';
-  src: url('/src/assets/fonts/Pretendard-SemiBold.otf') format('opentype');
+  src: url('/assets/fonts/Pretendard-SemiBold.otf') format('opentype');
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'PretendardExtraBold';
-  src: url('/src/assets/fonts/Pretendard-ExtraBold.otf') format('opentype');
+  src: url('/assets/fonts/Pretendard-ExtraBold.otf') format('opentype');
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'PretendardMedium';
-  src: url('/src/assets/fonts/Pretendard-Medium.otf') format('opentype');
+  src: url('/assets/fonts/Pretendard-Medium.otf') format('opentype');
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'PretendardRegular';
-  src: url('/src/assets/fonts/Pretendard-Regular.otf') format('opentype');
+  src: url('/assets/fonts/Pretendard-Regular.otf') format('opentype');
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'PartialSans';
-  src: url('/src/assets/fonts/PartialSansKR-Regular.otf') format('opentype');
+  src: url('/assets/fonts/PartialSansKR-Regular.otf') format('opentype');
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'NanumSaRangHae';
-  src: url('/src/assets/fonts/NanumSaRangHaeADeur.ttf') format('truetype');
+  src: url('/assets/fonts/NanumSaRangHaeADeur.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }

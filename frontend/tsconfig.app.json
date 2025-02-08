@@ -25,8 +25,6 @@
     "paths": {
       "animations": ["src/animations"],
       "animations/*": ["src/animations/*"],
-      "assets": ["src/assets"],
-      "assets/*": ["src/assets/*"],
       "components": ["src/components"],
       "components/*": ["src/components/*"],
       "hooks": ["src/hooks"],

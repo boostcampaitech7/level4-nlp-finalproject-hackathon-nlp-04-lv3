@@ -76,7 +76,7 @@ const GuestMainPage = () => {
           }}
         >
           <img
-            src="/src/assets/araboogie100.svg"
+            src="/assets/araboogie100.svg"
             alt="아라부기 캐릭터"
             className="animated-image h-full w-full object-contain opacity-70"
           />

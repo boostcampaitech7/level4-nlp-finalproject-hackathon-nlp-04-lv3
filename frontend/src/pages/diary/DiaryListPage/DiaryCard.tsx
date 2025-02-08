@@ -1,6 +1,6 @@
 import { FaChevronRight } from 'react-icons/fa6'
 import { DiaryCardType } from 'types/diary'
-import goodSticker from '../../../assets/good_sticker.svg?react'
+import goodSticker from '/assets/good_sticker.svg?react'
 import { PiWarningBold } from 'react-icons/pi'
 import { useNavigate } from 'react-router'
 

@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom'
 import { useEffect, useMemo } from 'react'
 import Button from 'components/Button'
-import goodSticker from '../../assets/good_sticker.svg?react'
+import goodSticker from '/assets/good_sticker.svg?react'
 import useTextQuizList from 'hooks/useTextQuizList'
 import useVocabQuizList from 'hooks/useVocabQuizList'
 
