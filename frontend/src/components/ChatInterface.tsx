@@ -7,6 +7,7 @@ import { useParams } from 'react-router-dom'
 import useTextChatList from 'hooks/useTextChatList'
 import { useChatListStore } from 'stores/chatListStore'
 import 'styles/scrollbar.css'
+import usePostTextChat from 'hooks/text/usePostTextChat'
 
 // interface Message {
 //   userMessage: string
@@ -26,7 +27,6 @@ interface ChatInterfaceProps {
 }
 
 const ChatInterface = ({
-  type,
   actions = [],
   className = '',
   width = 'w-[400px]',
@@ -39,18 +39,16 @@ const ChatInterface = ({
   const chatContainerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  // 대화 내역 불러오기 (vocabId가 있을 때만)
-  const { vocab_id, text_id } = useParams()
-  const item_id = type === 'text' ? text_id : vocab_id
-  const itemId = useMemo(() => {
-    const parsedId = parseInt(item_id || '', 10)
+  const { text_id } = useParams()
+  const textId = useMemo(() => {
+    const parsedId = parseInt(text_id || '', 10)
     return isNaN(parsedId) ? 0 : parsedId
-  }, [item_id])
+  }, [text_id])
 
-  const useChatList = type === 'text' ? useTextChatList : useTextChatList
+  const useChatList = useTextChatList
   const { chatList, addNewChat } = useChatListStore()
 
-  const { refetch } = useChatList(itemId)
+  const { refetch } = useChatList(textId)
   useEffect(() => {
     refetch()
   }, [])
@@ -58,7 +56,6 @@ const ChatInterface = ({
   // 스크롤을 아래로 이동
   useEffect(() => {
     if (chatContainerRef.current) {
-      // chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
       chatContainerRef.current.scrollTo({
         top: chatContainerRef.current.scrollHeight,
         behavior: 'smooth',
@@ -158,15 +155,19 @@ const ChatInterface = ({
   //   }
   // }
 
+  const { submitQuestion } = usePostTextChat(textId)
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // sendMessage(inputValue)
-    addNewChat({
-      id: `user-new-${chatList.length}`,
-      text: inputValue,
-      role: 'user',
-    })
-    // 인풋 지우기
+    if (inputValue) {
+      addNewChat({
+        id: chatList.length,
+        text: inputValue,
+        focused: '',
+        role: 'user',
+      })
+      setInputValue('')
+      submitQuestion(inputValue, '')
+    }
   }
 
   return (
@@ -178,8 +179,13 @@ const ChatInterface = ({
         ref={chatContainerRef}
         className="custom-scrollbar-small flex-1 space-y-4 overflow-y-auto px-6 pb-6"
       >
-        {chatList.map((chat) => {
-          return <ChatMessage chat={chat} />
+        {chatList.map((chat, idx) => {
+          return (
+            <ChatMessage
+              key={`${chat.role}-msg-wrapper-${chat.id}-${idx}`}
+              chat={chat}
+            />
+          )
         })}
 
         {/* {isLoading && (

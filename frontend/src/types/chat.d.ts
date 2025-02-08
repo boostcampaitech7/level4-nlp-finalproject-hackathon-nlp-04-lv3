@@ -13,15 +13,16 @@ export interface ChatAction {
 
 // 채팅 메세지 한 건의 타입
 export interface ChatType {
-  id: string
+  id: number
   text: string
+  focused: string
   role: 'user' | 'assistant'
 }
 
 // 챗봇 대화내역의 질문-답변 한 쌍
 export interface TextChatSetType {
   chatId: number
-  focused: string | null
+  focused: string
   question: string
   answer: string
 }
@@ -31,4 +32,12 @@ export interface TextChatPageType {
   textId: number
   pageNum: number
   chats: TextChatSetType[]
+}
+
+// 챗봇 대화 요청 데이터 타입
+export interface TextChatRequestType {
+  textId: number
+  focused: string
+  question: string
+  previous: TextChatSetType[]
 }

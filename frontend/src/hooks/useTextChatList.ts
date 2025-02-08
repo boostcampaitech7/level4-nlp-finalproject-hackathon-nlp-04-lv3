@@ -19,15 +19,17 @@ const useTextChatList = (textId: number) => {
       } else {
         // store update
         let prevChatList: ChatType[] = []
-        textChatList.chats.forEach((chat) => {
+        textChatList.chats.reverse().forEach((chat) => {
           prevChatList.push({
-            id: `user-${chat.chatId}`,
+            id: chat.chatId,
             text: chat.question,
+            focused: chat.focused,
             role: 'user',
           })
           prevChatList.push({
-            id: `assistant-${chat.chatId}`,
+            id: chat.chatId,
             text: chat.answer,
+            focused: chat.focused,
             role: 'assistant',
           })
         })

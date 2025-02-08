@@ -12,6 +12,8 @@ export { default as postTextQuizSolve } from './postTextQuizSolve'
 export { default as getTextQuizResult } from './getTextQuizResult'
 export { default as getTextChatList } from './getTextChatList'
 
+export { default as postTextChat } from './text/postTextChat'
+
 // 2. 단어 학습
 export { default as getVocabByNumber } from './getVocabByNumber'
 export { default as getVocabQuiz } from './getVocabQuiz'

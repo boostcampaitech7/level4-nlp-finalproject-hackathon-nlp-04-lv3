@@ -7,6 +7,7 @@ interface ChatMessageProps {
 const ChatMessage = ({ chat }: ChatMessageProps) => {
   return (
     <div
+      key={`${chat.role}-msg-${chat.id}`}
       className={`flex ${chat.role === 'user' ? 'justify-end' : 'justify-start'}`}
     >
       <div
