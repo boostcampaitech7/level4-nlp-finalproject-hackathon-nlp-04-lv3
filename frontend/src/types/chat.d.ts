@@ -41,3 +41,9 @@ export interface TextChatRequestType {
   question: string
   previous: TextChatSetType[]
 }
+
+export interface ChatbotActionType {
+  id: string
+  label: string
+  question: string
+}

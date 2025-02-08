@@ -1,5 +1,9 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react'
-import { ChatMessage as ChatMessageType, ChatAction } from '../types/chat'
+import {
+  ChatMessage as ChatMessageType,
+  ChatAction,
+  ChatbotActionType,
+} from '../types/chat'
 import ChatMessage from './ChatMessage'
 import { FaPaperPlane } from 'react-icons/fa'
 import 'styles/scrollbar.css'
@@ -19,7 +23,7 @@ interface ChatInterfaceProps {
   type: 'text' | 'vocab'
   vocabId?: string
   messages?: ChatMessageType[]
-  actions?: ChatAction[]
+  actions?: ChatbotActionType[]
   onSendMessage?: (message: string) => void
   className?: string
   width?: string
@@ -63,98 +67,6 @@ const ChatInterface = ({
     }
   }, [chatList])
 
-  // useEffect(() => {
-  //   const fetchChatHistory = async () => {
-  //     if (!conversationId || !vocabId) return
-
-  //     try {
-  //       const response = await fetch(
-  //         `/api/v1/chatbot/conversations/${conversationId}`,
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${localStorage.getItem('token')}`,
-  //           },
-  //         },
-  //       )
-
-  //       if (!response.ok) {
-  //         throw new Error('Failed to fetch chat history')
-  //       }
-
-  //       const data = await response.json()
-  //       if (data.status === 'success' && Array.isArray(data.data.messages)) {
-  //         setLocalMessages(data.data.messages)
-  //       }
-  //     } catch (error) {
-  //       console.error('Failed to fetch chat history:', error)
-  //     }
-  //   }
-
-  //   fetchChatHistory()
-  // }, [conversationId, vocabId])
-
-  // const sendMessage = async (message: string) => {
-  //   if (!message.trim()) return
-
-  //   if (onSendMessage) {
-  //     onSendMessage(message)
-  //     setInputValue('')
-  //     return
-  //   }
-
-  //   if (!vocabId) return
-
-  //   setIsLoading(true)
-  //   const newMessage: Message = {
-  //     userMessage: message,
-  //     botMessage: '',
-  //     timestamp: new Date().toISOString(),
-  //   }
-  //   setLocalMessages((prev) => [...prev, newMessage])
-  //   setInputValue('')
-
-  //   try {
-  //     const response = await fetch('/api/v1/chatbot/messages', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //         Authorization: `Bearer ${localStorage.getItem('token')}`,
-  //       },
-  //       body: JSON.stringify({
-  //         message,
-  //         vocabId,
-  //         conversationId,
-  //       }),
-  //     })
-
-  //     if (!response.ok) {
-  //       throw new Error('Failed to send message')
-  //     }
-
-  //     const data = await response.json()
-  //     if (data.status === 'success') {
-  //       // 새로운 conversationId가 있다면 저장
-  //       if (data.data.conversationId && !conversationId) {
-  //         setConversationId(data.data.conversationId)
-  //       }
-
-  //       // 봇의 응답을 메시지 목록에 추가
-  //       setLocalMessages((prev) => {
-  //         const updated = [...prev]
-  //         const lastMessage = updated[updated.length - 1]
-  //         if (lastMessage) {
-  //           lastMessage.botMessage = data.data.botMessage
-  //         }
-  //         return updated
-  //       })
-  //     }
-  //   } catch (error) {
-  //     console.error('Failed to send message:', error)
-  //   } finally {
-  //     setIsLoading(false)
-  //   }
-  // }
-
   const { submitQuestion } = usePostTextChat(textId)
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -168,6 +80,17 @@ const ChatInterface = ({
       setInputValue('')
       submitQuestion(inputValue, '')
     }
+  }
+
+  const handleClickActionButton = (question: string) => {
+    addNewChat({
+      id: chatList.length,
+      text: question,
+      focused: '',
+      role: 'user',
+    })
+    setInputValue('')
+    submitQuestion(question, '')
   }
 
   return (
@@ -187,14 +110,6 @@ const ChatInterface = ({
             />
           )
         })}
-
-        {/* {isLoading && (
-          <div className="flex justify-start">
-            <div className="rounded-2xl bg-surface-secondary px-4 py-2">
-              입력 중...
-            </div>
-          </div>
-        )} */}
       </div>
 
       {/* 액션 버튼 영역 */}
@@ -204,7 +119,7 @@ const ChatInterface = ({
             {actions.map((action) => (
               <button
                 key={action.id}
-                onClick={action.onClick}
+                onClick={() => handleClickActionButton(action.question)}
                 className="whitespace-nowrap rounded-[14px] bg-button-secondary-1 px-4 py-2 text-text-secondary transition-colors button-s hover:bg-[#d8d8d8]"
               >
                 {action.label}
