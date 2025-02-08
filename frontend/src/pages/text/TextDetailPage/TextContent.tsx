@@ -1,7 +1,7 @@
 import 'styles/scrollbar.css'
 import 'styles/drag.css'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import useTextAccount from 'hooks/temp.useTextAccount'
+import useTextAccount from '../../../hooks/text/useTextAccount'
 import { ChatType } from 'types/chat'
 import { useParams } from 'react-router'
 import { useChatListStore } from 'stores/chatListStore'

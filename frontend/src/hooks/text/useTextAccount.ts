@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { getTextAcount } from 'services'
-import { TextAccountType } from 'types/textAccount'
 
 interface TextAccountProps {
   textId: number
@@ -15,13 +14,13 @@ const useTextAccount = () => {
     focused: '',
   })
 
-  // TODO: 실제 api 함수 연결 및 훅 세부 설정 구현 예정
-
-  const queryResult = useQuery<TextAccountType>({
+  const queryResult = useQuery<string>({
     queryKey: ['textAccount'],
     queryFn: async () => {
-      const textAccount = await getTextAcount(queryParams)
-      console.log(textAccount)
+      const textAccount = await getTextAcount(
+        queryParams.textId,
+        queryParams.focused,
+      )
       setQueryEnabled(false)
       return textAccount
     },
