@@ -67,8 +67,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
             {actions.map((action) => (
               <button
                 key={action.id}
-                onClick={action.onClick}
-                className="button-s px-4 py-2 bg-button-secondary-1 rounded-[14px] text-text-secondary hover:bg-[#d8d8d8] transition-colors whitespace-nowrap"
+                className="button-s px-4 py-2 bg-button-secondary-1 rounded-[14px] text-text-secondary pointer-events-none opacity-80 whitespace-nowrap"
               >
                 {action.label}
               </button>

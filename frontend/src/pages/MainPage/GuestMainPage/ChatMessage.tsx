@@ -1,5 +1,5 @@
 import React from 'react'
-import { ChatMessage as ChatMessageType } from '../../types/chat'
+import { ChatMessage as ChatMessageType } from '../../../types/chat'
 
 interface ChatMessageProps {
   message: ChatMessageType
@@ -16,7 +16,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
       className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
     >
       <div
-        className={`px-6 py-3 rounded-3xl max-w-[80%] ${
+        className={`px-6 py-2 rounded-3xl max-w-[80%] ${
           message.type === 'user'
             ? 'bg-surface-secondary rounded-tr-none'
             : 'bg-background-secondary rounded-tl-none'

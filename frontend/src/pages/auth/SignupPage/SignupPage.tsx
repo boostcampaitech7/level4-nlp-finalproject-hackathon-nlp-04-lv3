@@ -108,7 +108,7 @@ const SignupPage = () => {
   const toggleConfirmPasswordVisibility = () => setShowConfirmPassword(!showConfirmPassword)
 
   return (
-    <div className="h-[calc(100vh-126px)] flex justify-center items-start bg-background-primary pt-20">
+    <div className="min-h-[calc(100vh-126px)] flex justify-center items-start bg-background-primary pt-20 pb-5">
       <div className="max-w-6xl w-full px-4">
         <div className="flex gap-10">
           {/* 왼쪽 회원가입 폼 */}
@@ -130,7 +130,7 @@ const SignupPage = () => {
                 placeholder="이름"
                 value={formData.name}
                 onChange={handleInputChange}
-                className="w-full h-20 px-5 rounded-2xl body-s placeholder-[#707070] bg-surface-primary-2"
+                className="w-full h-20 px-5 rounded-2xl body-s text-text-primary placeholder-[#707070] bg-surface-primary-2"
               />
 
               {/* 아이디 + 중복확인 */}
@@ -142,15 +142,15 @@ const SignupPage = () => {
                   value={formData.username}
                   onChange={handleInputChange}
                   onFocus={() => setHasIDFocused(true)}
-                  className="flex-1 h-20 px-5 rounded-2xl body-s placeholder-[#707070] bg-surface-primary-2"
+                  className="flex-1 h-20 px-5 rounded-2xl body-s text-text-primary placeholder-[#707070] bg-surface-primary-2"
                 />
                 <Button
                   text="중복확인"
                   size="large"
                   color="purple"
                   onClick={handleDuplicateCheck}
-                  type="button" // ✅ 이 부분 추가
-                  // 아래 2개 prop 추가
+                  type="button" // 
+                  // 
                   disabled={validationErrors.usernameFormat || !formData.username}
                   plusClasses={`${validationErrors.usernameFormat || !formData.username ? 'opacity-50 cursor-not-allowed' : ''}`}
                 />
@@ -169,29 +169,17 @@ const SignupPage = () => {
                   value={formData.password}
                   onChange={handleInputChange}
                   onFocus={() => setHasPasswordFocused(true)}
-                  className="w-full h-20 px-5 rounded-2xl body-s placeholder-[#707070] bg-surface-primary-2 pr-16"
+                  className="w-full h-20 px-5 rounded-2xl body-s text-text-primary placeholder-[#707070] bg-surface-primary-2 pr-16"
                 />
                 <button
                   type="button"
-                  tabIndex={-1} // ✅ 탭 이동 차단
+                  tabIndex={-1} // 
                   onClick={togglePasswordVisibility}
                   className="absolute right-5 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-gray-500 hover:text-gray-700"
                 >
                   {showPassword ? <FaEyeSlash size={24} /> : <FaEye size={24} />}
                 </button>
               </div>
-
-              {/* 비밀번호 경고: 포커스한 뒤부터만 표시 */}
-              {hasPasswordFocused && validationErrors.passwordComplexity && (
-                <p className="text-red-500 body-s">
-                  비밀번호는 영문, 숫자, 특수문자를 포함하고, 공백 없이 8~20자여야 합니다.
-                </p>
-              )}
-              {hasPasswordFocused && validationErrors.usernamePasswordSame && (
-                <p className="text-red-500 body-s">
-                  아이디와 비밀번호가 동일할 수 없습니다.
-                </p>
-              )}
               {hasPasswordFocused && !isUsernameAvailable && validationErrors.usernamePasswordSame && (
                 <p className="text-red-500 body-s -mt-4">아이디와 비밀번호가 같을 수 없습니다.</p>
               )}
@@ -205,11 +193,11 @@ const SignupPage = () => {
                   value={formData.confirmPassword}
                   onChange={handleInputChange}
                   onFocus={() => setHasConfirmPasswordFocused(true)}
-                  className="w-full h-20 px-5 rounded-2xl body-s placeholder-[#707070] bg-surface-primary-2 pr-16"
+                  className="w-full h-20 px-5 rounded-2xl body-s text-text-primary placeholder-[#707070] bg-surface-primary-2 pr-16"
                 />
                 <button
                   type="button"
-                  tabIndex={-1} // ✅ 탭 이동 차단
+                  tabIndex={-1} // 
                   onClick={toggleConfirmPasswordVisibility}
                   className="absolute right-5 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-gray-500 hover:text-gray-700"
                 >
@@ -257,7 +245,7 @@ const SignupPage = () => {
           </div>
 
           {/* 오른쪽 챗봇 섹션 */}
-          <div className="flex-1 relative">
+          <div className="flex-1 relative h-[800px]">
             <div className="absolute left-0 top-0 w-full">
               <h2 className="body-m mb-4">
                 글을 읽다 <span className="text-accent-purple">모르는 단어,<br/>이해 안 되는 문장</span>을 만났을 때,
@@ -285,7 +273,7 @@ const SignupPage = () => {
                       },
                       {
                         id: '2',
-                        content: '...',
+                        content: '주인공은 희망과 기대감을 느끼고 있을 것 같아요!',
                         type: 'bot',
                         timestamp: new Date(),
                       }
