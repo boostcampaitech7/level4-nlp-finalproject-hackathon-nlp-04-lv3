@@ -7,6 +7,7 @@ import ProgressBar from 'components/ProgressBar'
 import useVocabQuiz from 'hooks/useVocabQuiz'
 import usePostVocabQuizSolve from 'hooks/usePostVocabQuizSolve'
 import { useQuizUserAnswerStore } from 'stores/quizUserAnswerStore'
+import { QueryClient } from '@tanstack/react-query'
 
 const VocabQuizPage = () => {
   const { vocab_id, quiz_id } = useParams<{
@@ -25,7 +26,8 @@ const VocabQuizPage = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [selectedOption, setSelectedOption] = useState<number | null>(null)
 
-  const { quizSolve, setQuizId, setAnswer } = useQuizUserAnswerStore()
+  const { quizSolve, setQuizId, setAnswer, resetQuizSolve } =
+    useQuizUserAnswerStore()
   const [showModal, setShowModal] = useState(false)
   useEffect(() => {
     setQuizId(qId)
@@ -33,17 +35,20 @@ const VocabQuizPage = () => {
 
   const { data: vocabQuiz, isLoading: isQuizLoading } = useVocabQuiz(qId)
 
+  const queryClient = new QueryClient()
   useEffect(() => {
-    console.log(vocabId)
-    console.log(qId)
-  }, [vocabId, qId])
+    return () => {
+      queryClient.removeQueries({ queryKey: ['vocabQuiz'] })
+      resetQuizSolve()
+    }
+  }, [])
 
   useEffect(() => {
     setSelectedOption(quizSolve.userAnswer[currentQuestionIndex] ?? null)
   }, [currentQuestionIndex, quizSolve.userAnswer])
 
   const handleOptionSelect = (index: number) => {
-    setAnswer(currentQuestionIndex, index + 1)
+    setAnswer(currentQuestionIndex, index)
     setSelectedOption(index)
 
     if (currentQuestionIndex < 2) {
@@ -54,7 +59,7 @@ const VocabQuizPage = () => {
   const { mutate: submitQuizSolve } = usePostVocabQuizSolve(vocabId)
   const handleResultCheck = () => {
     const isAllAnswered = quizSolve.userAnswer.every((answer, _) => {
-      return [1, 2, 3, 4].includes(answer)
+      return [0, 1, 2, 3].includes(answer)
     })
     if (!isAllAnswered) {
       setShowModal(true)

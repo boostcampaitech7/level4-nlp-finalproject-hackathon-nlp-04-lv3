@@ -20,8 +20,13 @@ const TextQuizResultCard = ({
   correct,
 }: TextQuizSolveProps) => {
   return (
-    <div className="flex w-[345px] flex-col gap-y-[16px] rounded-[32px] bg-white-1 px-[20px] py-[15px]">
+    <div className="flex min-w-[345px] flex-col gap-y-[16px] rounded-[32px] bg-white-1 px-[20px] py-[15px]">
       <div className="font-bold body-s">{`${questionIdx + 1}. ${question}`}</div>
+      <div
+        className={`font-bold body-s ${correct ? 'text-accent-blue' : 'text-accent-red-1'}`}
+      >
+        {correct ? '맞았어요!' : '다시 한 번 볼까요?'}
+      </div>
       <div className="flex flex-col gap-y-[10px]">
         {options.map((option, index) => {
           return (
@@ -36,7 +41,7 @@ const TextQuizResultCard = ({
         })}
       </div>
       <div className="whitespace-pre-line button-s">
-        <span className="text-accent-blue">{`정답: ${answer}`}</span>
+        <span className="font-bold text-accent-blue">{`정답: ${answer}`}</span>
         <span className="text-text-secondary">{` (나의 선택: ${userAnswer})`}</span>
         {`\n설명: ${answerExplain}`}
       </div>

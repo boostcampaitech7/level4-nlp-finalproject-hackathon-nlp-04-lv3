@@ -17,7 +17,7 @@ export { default as getTextAcount } from './text/getTextAcount'
 // 2. 단어 학습
 export { default as getVocabByNumber } from './getVocabByNumber'
 export { default as getVocabQuiz } from './getVocabQuiz'
-export { default as getVocabQuizList } from './getVocabQuizList'
+export { default as getVocabQuizList } from './vocab/getVocabQuizList'
 export { default as postVocabQuizSolve } from './postVocabQuizSolve'
 export { default as getVocabQuizResult } from './getVocabQuizResult'
 
