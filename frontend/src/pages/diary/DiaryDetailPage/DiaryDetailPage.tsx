@@ -7,6 +7,8 @@ import { RoughNotation } from 'react-rough-notation'
 import TitleBar from './TItleBar'
 import Button from 'components/Button'
 import araboogie from '/assets/araboogie100.svg?react'
+import usePostDiaryFeedback from 'hooks/usePostDiaryFeedback'
+import { QueryClient } from '@tanstack/react-query'
 
 interface LineData {
   // SVG 경로를 그릴 때 필요한 점들
@@ -34,13 +36,6 @@ const DiaryDetailPage = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0)
-    return () => {
-      setSlicedTexts([])
-      setTextPositions([])
-      setIsFocused([])
-      setFeedbackPositions([])
-      setLines([])
-    }
   }, [])
 
   useEffect(() => {
@@ -48,14 +43,10 @@ const DiaryDetailPage = () => {
   }, [diaryId])
 
   useEffect(() => {
-    if (diary) {
+    if (!isFetching && diary) {
       setSlicedTexts(getSlicedTexts(diary))
-      slicedTexts?.forEach(() => {
-        textRefs.push(useRef<HTMLSpanElement>(null))
-        feedbackRefs.push(useRef<HTMLDivElement>(null))
-      })
     }
-  }, [diary])
+  }, [isFetching, diary])
 
   // 가장 바깥 div
   const wrapperRef = useRef<HTMLDivElement>(null)
@@ -63,23 +54,23 @@ const DiaryDetailPage = () => {
   const containerRef = useRef<HTMLDivElement>(null)
 
   // 본문 구절 span의 ref
-  // const textRefs = useRef<(HTMLSpanElement | undefined)[]>([])
-  const textRefs: React.RefObject<HTMLSpanElement | null>[] = []
+  const textRefs = useRef<(HTMLSpanElement | null)[]>([])
   // 본문 구절 span의 화면상 위치를 계산하여 저장
   const [textPositions, setTextPositions] = useState<Position[]>([])
 
   const [isFocused, setIsFocused] = useState<boolean[]>([])
 
   // 피드백 div의 ref
-  // const feedbackRefs = useRef<(HTMLDivElement | undefined)[]>([])
-  const feedbackRefs: React.RefObject<HTMLDivElement | null>[] = []
+  const feedbackRefs = useRef<(HTMLDivElement | null)[]>([])
   // 피드백 div의 위치(top, height)
   const [feedbackPositions, setFeedbackPositions] = useState<Position[]>([])
 
   // 본문 구절 - 피드백 연결선 정보
   const [lines, setLines] = useState<LineData[]>([])
 
-  // textPositions 계산산
+  const [showFeedbacks, setShowFeedbacks] = useState<boolean>(false)
+
+  // textPositions 계산
   useLayoutEffect(() => {
     if (!containerRef.current) return
 
@@ -87,9 +78,9 @@ const DiaryDetailPage = () => {
     const containerRect = containerRef.current.getBoundingClientRect()
 
     // 각 구절이 화면상에서 어느 위치에 있는지 계산
-    const newPositions = textRefs.map((textRef) => {
-      if (!textRef.current) return { top: 0, left: 0, width: 0, height: 0 }
-      const rect = textRef.current.getBoundingClientRect()
+    const newPositions = textRefs.current.map((textRef) => {
+      if (!textRef) return { top: 0, left: 0, width: 0, height: 0 }
+      const rect = textRef.getBoundingClientRect()
 
       // 컨테이너를 기준으로 한 상대적 top 계산
       const offsetTop = rect.top - containerRect.top
@@ -104,7 +95,7 @@ const DiaryDetailPage = () => {
     })
 
     setTextPositions(newPositions)
-  }, [slicedTexts])
+  }, [slicedTexts, containerRef, textRefs, setTextPositions])
 
   // feedbackPositions 계산
   useLayoutEffect(() => {
@@ -200,7 +191,6 @@ const DiaryDetailPage = () => {
       const midX = (x1 + x2) / 2
       // 큐빅베지어
       const d = `M ${x1},${y1} C ${midX},${y1} ${midX},${y2} ${x2},${y2}`
-      // console.log(`${idx}번 연결선: ${d}`)
       return {
         d: d,
         color: isLeft
@@ -219,7 +209,9 @@ const DiaryDetailPage = () => {
         isLeft = !isLeft
         return (
           <span
-            ref={textRefs[idx]}
+            ref={(el) => {
+              textRefs.current[idx] = el
+            }}
             key={`t-${idx}`}
             className={`${isFocused[idx] && (isLeft ? 'bg-red-500' : 'bg-blue-400')}`}
           >
@@ -239,7 +231,12 @@ const DiaryDetailPage = () => {
         )
       } else {
         return (
-          <span key={`t-${idx}`} ref={textRefs[idx]}>
+          <span
+            key={`t-${idx}`}
+            ref={(el) => {
+              textRefs.current[idx] = el
+            }}
+          >
             {slicedText.text}
           </span>
         )
@@ -289,7 +286,9 @@ const DiaryDetailPage = () => {
 
       return (
         <div
-          ref={feedbackRefs[idx]}
+          ref={(el) => {
+            feedbackRefs.current[idx] = el
+          }}
           key={`f-${idx}`}
           className={`absolute w-[256px] whitespace-pre-line rounded-[16px] bg-surface-tertiary p-[20px] font-bold text-text-primary transition-all duration-300 ease-in-out feedback-m ${feedbackSide} ${isFocused[idx] ? focusStyles : 'hover:cursor-pointer hover:bg-line'}`}
           style={{
@@ -333,6 +332,30 @@ const DiaryDetailPage = () => {
     }
   }
 
+  const toggleFeedback = () => {
+    setShowFeedbacks((prev) => !prev)
+  }
+
+  const { mutate: requestFeedback } = usePostDiaryFeedback()
+  const handleRequestFeedback = () => {
+    if (diary) {
+      requestFeedback(diary.text)
+      window.location.reload()
+    }
+  }
+
+  const queryClient = new QueryClient()
+  useEffect(() => {
+    return () => {
+      setSlicedTexts([])
+      setTextPositions([])
+      setIsFocused([])
+      setFeedbackPositions([])
+      setLines([])
+      queryClient.removeQueries({ queryKey: ['diary'] })
+    }
+  }, [])
+
   return (
     <>
       <div
@@ -346,6 +369,7 @@ const DiaryDetailPage = () => {
             status={diary?.status || 0}
           />
           <div className="flex flex-col items-center gap-y-[36px] rounded-[16px] py-[36px]">
+            {/* 리뷰 */}
             {diary && diary.status > 0 && (
               <div className="flex w-full items-end justify-end gap-x-[24px] pr-[24px]">
                 <div className="tranform relative max-w-[500px] rotate-[5deg] whitespace-pre-line rounded-[32px] bg-surface-tertiary p-[20px] font-bold text-main feedback-m">
@@ -383,47 +407,89 @@ const DiaryDetailPage = () => {
                 </div>
               </div>
             )}
-            <div className="flex w-[560px] flex-col gap-y-[22px]">
-              <div
-                ref={containerRef}
-                className="relative w-[560px] rounded-[32px] bg-surface-primary-2 p-[20px] leading-loose text-text-primary shadow-[0px_0px_13.199999809265137px_0px_rgba(178,148,250,1.00)] body-m"
-              >
-                {isFetching || !diary
-                  ? '일기를 불러오는 중이에요.'
-                  : displayTexts()}
-                {slicedTexts && feedbackPositions && displayFeedback()}
-                {lines && (
-                  <svg className="pointer-events-none absolute left-0 top-0 z-10 h-full w-full overflow-visible">
-                    {lines?.map((line, idx) => {
-                      return (
-                        <path
-                          key={`l-${idx}`}
-                          d={line.d}
-                          fill="none"
-                          stroke={line.color}
-                          strokeWidth={2}
-                        />
-                      )
-                    })}
-                  </svg>
-                )}
+            <div className="flex flex-col items-center gap-y-[12px]">
+              {diary && diary.status === 2 && (
+                <div className="flex w-[560px] items-center justify-start gap-x-2">
+                  <button
+                    type="button"
+                    onClick={toggleFeedback}
+                    // 토글 배경
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full border-2 border-line transition-colors duration-300 ${showFeedbacks ? 'bg-purple-600' : 'bg-surface-primary-2'} `}
+                  >
+                    {/* 토글 안쪽 원형 슬라이더 */}
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-purple-200 transition-transform duration-300 ${showFeedbacks ? 'translate-x-5' : 'translate-x-1'} `}
+                    />
+                  </button>
+                  <span
+                    onClick={toggleFeedback}
+                    className="text-text-primary button-s hover:cursor-pointer"
+                  >
+                    {showFeedbacks ? '피드백 숨기기' : '피드백 보기'}
+                  </span>
+                </div>
+              )}
+              <div className="flex w-[560px] flex-col gap-y-[22px]">
+                <div
+                  ref={containerRef}
+                  className="relative min-h-[500px] w-[560px] rounded-[32px] bg-surface-primary-2 p-[20px] leading-loose text-text-primary shadow-[0px_0px_13.199999809265137px_0px_rgba(178,148,250,1.00)] body-m"
+                >
+                  {isFetching || !diary
+                    ? '일기를 불러오는 중이에요.'
+                    : displayTexts()}
+                  {slicedTexts &&
+                    feedbackPositions &&
+                    showFeedbacks &&
+                    displayFeedback()}
+                  {slicedTexts &&
+                    feedbackPositions &&
+                    showFeedbacks &&
+                    lines && (
+                      <svg className="pointer-events-none absolute left-0 top-0 z-10 h-full w-full overflow-visible">
+                        {lines?.map((line, idx) => {
+                          return (
+                            <path
+                              key={`l-${idx}`}
+                              d={line.d}
+                              fill="none"
+                              stroke={line.color}
+                              strokeWidth={2}
+                            />
+                          )
+                        })}
+                      </svg>
+                    )}
+                </div>
               </div>
               <div className="flex items-center justify-center gap-x-[22px]">
-                <Button
-                  text={
-                    diary && diary?.status === 0
-                      ? formattedDate !== diary?.createdAt
-                        ? '제출 불가'
-                        : '수정'
-                      : '제출완료'
-                  }
-                  size="small"
-                  disabled={
-                    diary &&
-                    (diary?.status >= 1 || formattedDate !== diary?.createdAt)
-                  }
-                  onClick={handleClickModify}
-                />
+                {!isFetching && diary && (
+                  <>
+                    <Button
+                      text={
+                        diary.status === 0
+                          ? formattedDate !== diary.createdAt
+                            ? '제출 불가'
+                            : '수정하기'
+                          : '제출완료'
+                      }
+                      size="small"
+                      disabled={
+                        diary &&
+                        (diary?.status >= 1 ||
+                          formattedDate !== diary?.createdAt)
+                      }
+                      onClick={handleClickModify}
+                    />
+                    {diary.status === 0 &&
+                      formattedDate === diary.createdAt && (
+                        <Button
+                          text="제출하기"
+                          size="small"
+                          onClick={handleRequestFeedback}
+                        />
+                      )}
+                  </>
+                )}
               </div>
             </div>
           </div>
