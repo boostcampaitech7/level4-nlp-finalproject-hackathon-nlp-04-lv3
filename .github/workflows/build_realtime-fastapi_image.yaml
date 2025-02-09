@@ -44,7 +44,7 @@ jobs:
           docker push ${{ secrets.DOCKER_REPO }}:realtime-fastapi-${{ github.sha }}
           docker push ${{ secrets.DOCKER_REPO }}:realtime-fastapi-latest
 
-deploy:
+depoly:
   needs: build
   runs-on: ubuntu-latest
 

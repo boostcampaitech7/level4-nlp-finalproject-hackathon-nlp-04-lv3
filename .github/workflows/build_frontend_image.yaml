@@ -41,7 +41,7 @@ jobs:
         docker push ${{ secrets.DOCKER_REPO }}:frontend-${{ github.sha }}
         docker push ${{ secrets.DOCKER_REPO }}:frontend-latest
 
-deploy:
+depoly:
   needs: build
   runs-on: ubuntu-latest
 
