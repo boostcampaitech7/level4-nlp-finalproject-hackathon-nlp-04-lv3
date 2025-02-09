@@ -41,22 +41,22 @@ jobs:
         docker push ${{ secrets.DOCKER_REPO }}:frontend-${{ github.sha }}
         docker push ${{ secrets.DOCKER_REPO }}:frontend-latest
 
-deploy:
-  needs: build
-  runs-on: ubuntu-latest
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
 
-  steps:
-    - name: NCP login and pull & run docker image
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.FRONTEND_ADDRESS }}
-        username: ${{ secrets.NCP_USERNAME }}
-        password: ${{ secrets.FRONTEND_PASSWORD }}
-        port: ${{ secrets.NCP_PORT }}
-        script: |
-          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-          sudo docker stop arabugi-frontend || true
-          sudo docker rm -f arabugi-frontend || true
-          sudo docker rmi ${{ secrets.DOCKER_REPO }}:frontend-latest || true
-          sudo docker pull ${{ secrets.DOCKER_REPO }}:frontend-latest
-          docker run -d --name arabugi-frontend -e TZ=Asia/Seoul -p 80:80 ${{ secrets.DOCKER_REPO }}:frontend-latest
+    steps:
+      - name: NCP login and pull & run docker image
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.FRONTEND_ADDRESS }}
+          username: ${{ secrets.NCP_USERNAME }}
+          password: ${{ secrets.FRONTEND_PASSWORD }}
+          port: ${{ secrets.NCP_PORT }}
+          script: |
+            echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+            sudo docker stop arabugi-frontend || true
+            sudo docker rm -f arabugi-frontend || true
+            sudo docker rmi ${{ secrets.DOCKER_REPO }}:frontend-latest || true
+            sudo docker pull ${{ secrets.DOCKER_REPO }}:frontend-latest
+            docker run -d --name arabugi-frontend -e TZ=Asia/Seoul -p 80:80 ${{ secrets.DOCKER_REPO }}:frontend-latest
