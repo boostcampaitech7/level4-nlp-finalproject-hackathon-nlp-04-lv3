@@ -10,16 +10,8 @@ import useIntersectionObserver from 'hooks/useIntersectionObserver'
 import { QueryClient } from '@tanstack/react-query'
 import usePostVocabChat from 'hooks/vocab/usePostVocabChat'
 
-interface Message {
-  userMessage: string
-  botMessage: string
-  timestamp: string
-}
-
 const VocabChatInterface = () => {
-  const [messages, setMessages] = useState<Message[]>([])
   const [inputMessage, setInputMessage] = useState('')
-  const [conversationId, setConversationId] = useState<string | null>(null)
 
   const chatContainerRef = useRef<HTMLDivElement>(null)
 

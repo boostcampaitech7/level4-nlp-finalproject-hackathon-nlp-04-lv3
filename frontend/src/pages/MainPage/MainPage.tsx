@@ -175,7 +175,7 @@ const MainPage = () => {
     const userAnswerIndex = userAnswers[currentQuestionIndex] ?? -1
 
     return (
-      <div className="flex min-h-[463px] w-full flex-col justify-between space-y-[30px] rounded-[32px] bg-surface-primary-2 px-5 pt-12">
+      <div className="flex min-h-[463px] w-full flex-col justify-between space-y-[30px] rounded-[32px] bg-surface-primary-2 px-5 pt-12 text-text-primary">
         {/* 문제 */}
         <div className="space-y-[20px] pt-5 text-center">
           <h3 className="text-start body-l">{currentQuiz.quizQuestion[0]}</h3>
