@@ -2,6 +2,8 @@
 export { default as logout } from './logout'
 export { default as getTodayTextList } from './getTodayTextList'
 export { default as getReviewQuizList } from './getReviewQuizList'
+export { default as checkDuplicate } from './checkDuplicate'
+export { default as signup } from './signup'
 
 // 1. 긴 글 학습
 export { default as getText } from './getText'

@@ -1,11 +1,7 @@
 import { useNavigate } from 'react-router'
 import basicAxios from './basicAxios'
 import { useAuthStore } from 'stores/authStore'
-
-interface loginData {
-  username: string
-  password: string
-}
+import { loginData } from 'types/user'
 
 const useLogin = () => {
   const axios = basicAxios()
