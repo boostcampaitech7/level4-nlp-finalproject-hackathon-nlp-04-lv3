@@ -61,3 +61,10 @@ export interface VocabChatPageType {
   pageNum: number
   chats: VocabChatSetType[]
 }
+
+// 단어어 챗봇 대화 요청 데이터 타입
+export interface VocabChatRequestType {
+  vocabId: number
+  question: string
+  previous: VocabChatSetType[]
+}

@@ -21,6 +21,8 @@ export { default as getVocabQuizList } from './getVocabQuizList'
 export { default as postVocabQuizSolve } from './postVocabQuizSolve'
 export { default as getVocabQuizResult } from './getVocabQuizResult'
 
+export { default as getVocabChatList } from './vocab/getVocabChatList'
+
 // 3. 일기
 export { default as getDiary } from './getDiary'
 export { default as getDiaryList } from './getDiaryList'

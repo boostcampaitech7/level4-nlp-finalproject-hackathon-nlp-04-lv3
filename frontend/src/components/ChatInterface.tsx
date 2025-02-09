@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { ChatbotActionType } from '../types/chat'
 import ChatMessage from './ChatMessage'
 import { FaPaperPlane } from 'react-icons/fa'
-import 'styles/scrollbar.css'
 import { useParams } from 'react-router-dom'
 import useTextChatList from 'hooks/useTextChatList'
 import { useChatListStore } from 'stores/chatListStore'
@@ -92,7 +91,7 @@ const ChatInterface = ({
   const { submitQuestion } = usePostTextChat(textId)
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (inputValue) {
+    if (inputValue.trim()) {
       addNewChat({
         id: chatList.length,
         text: inputValue,
@@ -124,7 +123,7 @@ const ChatInterface = ({
         ref={chatContainerRef}
         className="custom-scrollbar-small flex-1 space-y-4 overflow-y-auto px-6 pb-6"
       >
-        {<div ref={observerRef} />}
+        <div ref={observerRef} />
         {chatList.map((chat, idx) => {
           return (
             <ChatMessage
