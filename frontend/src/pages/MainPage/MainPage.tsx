@@ -5,6 +5,10 @@ import { PiHandsClappingDuotone } from 'react-icons/pi'
 import Button from 'components/Button'
 import ProgressBar from 'components/ProgressBar'
 import authenticatedAxios from 'services/authenticatedAxios'
+import useReviewQuizList from 'hooks/main/useReviewQuizList'
+import { VocabReviewQuizType } from 'types/quiz'
+import useVocabRandom from 'hooks/vocab/useVocabRandom'
+import 'styles/scrollbar.css'
 
 // 오늘의 글 데이터 타입 정의
 interface TodayText {
@@ -12,25 +16,6 @@ interface TodayText {
   title: string
   category: string
   content: string
-}
-
-interface QuizData {
-  record_id: number
-  vocab_id: number
-  vocab: string
-  hanja: string
-  dict_mean: string
-  easy_explain: string[]
-  correct_example: string[]
-  incorrect_example: string
-  quiz_id: number
-  quiz_level: number
-  quiz_question: string[]
-  quiz_options: string[]
-  quiz_correct: boolean[]
-  quiz_user_answer: number[]
-  quiz_answer: string[]
-  quiz_answer_explain: string[]
 }
 
 // 실제로는 fetch API를 사용하거나 axios를 사용하여 데이터를 가져오세요.
@@ -45,77 +30,6 @@ const fetchTodayTexts = async (): Promise<TodayText[]> => {
   }
 }
 
-const fetchTodayQuizzes = async (): Promise<QuizData[]> => {
-  // 예시를 위해 더미 데이터를 반환
-  // 실제로는 서버에서 데이터를 받아옵니다.
-  return new Promise((resolve) =>
-    setTimeout(() => {
-      resolve([
-        {
-          record_id: 123,
-          vocab_id: 456,
-          vocab: '사랑',
-          hanja: '愛',
-          dict_mean: '사랑의 사전적 의미',
-          easy_explain: ['쉽게 풀이한 뜻'],
-          correct_example: ['이것이 올바른 예문입니다.'],
-          incorrect_example: '이건 잘못된 예문입니다.',
-          quiz_id: 789,
-          quiz_level: 1,
-          quiz_question: ['단어의 의미를 선택하세요'],
-          quiz_options: ['기쁨', '사랑', '슬픔', '분노'],
-          quiz_correct: [true, false, false, false],
-          quiz_user_answer: [2],
-          quiz_answer: ['사랑'],
-          quiz_answer_explain: ['사랑은 사람 간의 애정 표현입니다.'],
-        },
-        {
-          record_id: 124,
-          vocab_id: 457,
-          vocab: '행복',
-          hanja: '幸福',
-          dict_mean: '행복의 사전적 의미',
-          easy_explain: ['행복이란 즐겁고 만족스러운 상태입니다.'],
-          correct_example: ['행복은 작은 것에서 시작됩니다.'],
-          incorrect_example: '행복은 단순히 물질로 정의되지 않습니다.',
-          quiz_id: 790,
-          quiz_level: 2,
-          quiz_question: ['다음 중 행복의 정의는 무엇인가요?'],
-          quiz_options: ['불행', '행복', '고난', '사랑'],
-          quiz_correct: [false, true, false, false],
-          quiz_user_answer: [1],
-          quiz_answer: ['행복'],
-          quiz_answer_explain: [
-            '행복은 사람의 심리적 안정감과 만족감을 의미합니다.',
-          ],
-        },
-        {
-          record_id: 125,
-          vocab_id: 458,
-          vocab: '우정',
-          hanja: '友情',
-          dict_mean: '우정의 사전적 의미',
-          easy_explain: ['우정이란 친구 사이의 정이 깊은 관계입니다.'],
-          correct_example: [
-            '우정은 서로가 서로를 도와주고 아껴주는 마음입니다.',
-          ],
-          incorrect_example: '우정은 단순히 이해관계로 맺어지는 것이 아닙니다.',
-          quiz_id: 791,
-          quiz_level: 3,
-          quiz_question: ['다음 중 우정의 정의는 무엇인가요?'],
-          quiz_options: ['이해관계', '원망', '우정', '사랑'],
-          quiz_correct: [false, false, true, false],
-          quiz_user_answer: [2],
-          quiz_answer: ['우정'],
-          quiz_answer_explain: [
-            '우정은 친구 간의 애정, 정서적 유대감, 상호 신뢰 등을 포괄하는 개념입니다.',
-          ],
-        },
-      ])
-    }, 500),
-  )
-}
-
 const MainPage = () => {
   const navigate = useNavigate()
 
@@ -125,7 +39,7 @@ const MainPage = () => {
   const [todayTexts, setTodayTexts] = useState<TodayText[]>([])
   // const { }
   // 퀴즈
-  const [quizData, setQuizData] = useState<QuizData[]>([])
+  const [quizData, setQuizData] = useState<VocabReviewQuizType[]>([])
   // 문제 풀이 중일 때: 현재 문제 인덱스
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   // 사용자 선택 답안 저장 (문제 수와 동일한 길이)
@@ -138,22 +52,26 @@ const MainPage = () => {
   const [currentSolutionIndex, setCurrentSolutionIndex] = useState(0)
   const [showCongrats, setShowCongrats] = useState(false)
 
+  const { data: reviewQuizList, isLoading } = useReviewQuizList()
+
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [texts, quizzes] = await Promise.all([
-          fetchTodayTexts(),
-          fetchTodayQuizzes(),
-        ])
+        const [texts] = await Promise.all([fetchTodayTexts()])
         setTodayTexts(texts)
-        setQuizData(quizzes)
-        setUserAnswers(Array(quizzes.length).fill(null))
       } catch (error) {
         console.error('Failed to load data:', error)
       }
     }
     loadData()
   }, [])
+
+  useEffect(() => {
+    if (!isLoading && reviewQuizList) {
+      setQuizData(reviewQuizList)
+      console.log(reviewQuizList)
+    }
+  }, [isLoading, reviewQuizList])
 
   // 문제 풀이 중: 보기 클릭 시 동작
   const handleAnswerClick = (selectedIndex: number) => {
@@ -257,15 +175,15 @@ const MainPage = () => {
     const userAnswerIndex = userAnswers[currentQuestionIndex] ?? -1
 
     return (
-      <div className="flex min-h-[438px] w-full flex-col justify-between space-y-[30px] rounded-[32px] bg-surface-primary-2 px-5 pt-12">
+      <div className="flex min-h-[463px] w-full flex-col justify-between space-y-[30px] rounded-[32px] bg-surface-primary-2 px-5 pt-12">
         {/* 문제 */}
         <div className="space-y-[20px] pt-5 text-center">
-          <h3 className="body-l">{currentQuiz.quiz_question[0]}</h3>
+          <h3 className="text-start body-l">{currentQuiz.quizQuestion[0]}</h3>
         </div>
 
         {/* 선택지 (2x2 grid) */}
         <div className="grid w-full grid-cols-2 gap-5">
-          {currentQuiz.quiz_options.map((option, index) => (
+          {currentQuiz.quizOptions.map((option, index) => (
             <button
               key={index}
               className={`h-[50px] w-full rounded-[20px] px-5 py-[5px] text-left body-m ${
@@ -296,7 +214,7 @@ const MainPage = () => {
     const quiz = quizData[currentSolutionIndex]
     if (!quiz) return null
     const userIndex = userAnswers[currentSolutionIndex] ?? -1
-    const correctIndex = quiz.quiz_correct.findIndex((c) => c === true)
+    const correctIndex = quiz.quizAnswer[0]
     const isCorrect = userIndex === correctIndex
 
     // OX 표시
@@ -312,24 +230,39 @@ const MainPage = () => {
       return 'text-[#e0e0e0]'
     }
 
+    const getBgColor = (idx: number) => {
+      if (idx === correctIndex) return 'bg-blue-500'
+      if (idx === userIndex) return 'bg-red-700'
+      return 'bg-background-primary'
+    }
+
     return (
-      <div className="flex h-[438px] w-full flex-col items-center justify-between rounded-[32px] bg-surface-primary-2 px-5 pb-5">
+      <div className="flex h-[463px] w-full flex-col items-center justify-between rounded-[32px] bg-surface-primary-2 px-5 pb-5">
         {/* 질문 + 정오 여부 */}
-        <div className="mt-8 flex w-full flex-col justify-center space-x-5 text-center">
-          <h3 className="body-l">{quiz.quiz_question[0]}</h3>
-          <p
-            className={`body-l ${isCorrect ? 'text-accent-blue' : 'text-accent-red-1'}`}
-          >
-            {isCorrect ? '맞았어요!' : '다시 한번 볼까요?'}
+        <div className="mt-8 flex w-full flex-col justify-center gap-y-[12px]">
+          <h3 className="text-start body-l">{quiz.quizQuestion[0]}</h3>
+          <p className="text-start text-text-intermediate body-m">
+            {isCorrect ? (
+              <span className="text-accent-blue">정답이에요!</span>
+            ) : (
+              <span>
+                {`정답은 `}
+                <span className="font-bold text-accent-blue body-l">
+                  {quiz.quizOptions[0]?.toString()}
+                </span>
+                {`이에요. `}
+                <span className="text-accent-red-1">{'다시 한번 볼까요?'}</span>
+              </span>
+            )}
           </p>
         </div>
 
         {/* 선택지 2x2 배치, 앞에 O/X 표시 */}
         <div className="mt-4 grid w-full grid-cols-2 gap-4">
-          {quiz.quiz_options.map((option, i) => (
+          {quiz.quizOptions.map((option, i) => (
             <div
               key={i}
-              className="relative flex h-[50px] w-full items-center gap-3 rounded-[20px] bg-background-primary px-4 py-2"
+              className={`relative flex h-[50px] w-full items-center gap-3 rounded-[20px] px-4 py-2 ${getBgColor(i)}`}
             >
               <div className={`text-3xl font-bold ${getMarkColor(i)}`}>
                 {getMark(i)}
@@ -344,10 +277,10 @@ const MainPage = () => {
         </div>
 
         {/* 하단 해설 (스크롤 가능하도록 설정) */}
-        <div className="bg-white max-h-[150px] w-full flex-grow overflow-y-auto rounded-xl bg-opacity-20 p-4">
+        <div className="bg-white custom-scrollbar-small max-h-[150px] w-full flex-grow overflow-y-auto rounded-xl bg-opacity-20 p-4">
           <h4 className="mb-2 font-semibold body-m">해설</h4>
           <p className="whitespace-pre-line text-text-secondary body-s">
-            {quiz.quiz_answer_explain[0]}
+            {quiz.quizAnswerExplain[0]}
           </p>
         </div>
 
@@ -375,7 +308,7 @@ const MainPage = () => {
     )
   }
   const renderCongrats = () => (
-    <div className="animate-fade-in flex h-[438px] w-full flex-col items-center justify-center gap-6 rounded-[32px] bg-surface-primary-2 p-8">
+    <div className="animate-fade-in flex h-[463px] w-full flex-col items-center justify-center gap-6 rounded-[32px] bg-surface-primary-2 p-8">
       <PiHandsClappingDuotone className="text-accent-yellow animate-bounce text-8xl" />
       <h2 className="text-3xl font-bold text-text-primary">참 잘했어요! 🎉</h2>
       <Button
@@ -386,6 +319,8 @@ const MainPage = () => {
       />
     </div>
   )
+
+  const { navigateToRandomPage } = useVocabRandom()
 
   return (
     <div className="relative">
@@ -424,7 +359,7 @@ const MainPage = () => {
           <div className="flex w-full items-start justify-between gap-5">
             {/* 왼쪽: 오늘의 글 */}
             <div className="flex flex-1 flex-col gap-8">
-              <h2 className="text-[32px] font-semibold text-[#202020]">
+              <h2 className="text-[32px] font-semibold text-text-primary">
                 📖 오늘의 글
               </h2>
               {todayTexts.map((text) => (
@@ -461,26 +396,40 @@ const MainPage = () => {
             </div>
 
             {/* 오른쪽: 문제 풀이 or 해설 보기 */}
-            <div className="relative flex w-[610px] flex-col gap-4">
-              <h2 className="text-[#202020] title-m">🧐 오늘의 복습 퀴즈</h2>
+            <div className="relative flex w-[610px] flex-col gap-8">
+              <h2 className="text-text-primary title-m">🧐 오늘의 복습 퀴즈</h2>
+              {quizData.length === 0 ? (
+                <div className="flex min-h-[463px] w-full flex-col items-center justify-center gap-y-[60px] rounded-[32px] bg-surface-primary-2 px-5 pt-12">
+                  <div className="whitespace-pre-line text-center leading-loose body-m">
+                    {'오늘은 복습 퀴즈가 없어요.\n 내일 다시 확인해보세요.'}
+                  </div>
 
-              {showSolutionButton && !showAllResults && (
-                <Button
-                  text="정답 및 해설"
-                  size="small"
-                  color="purple"
-                  onClick={() => setShowAllResults(true)}
-                  plusClasses="absolute right-4 top-[95px]" /* 우측 16px, 상단 70px */
-                />
+                  <Button
+                    text="단어 공부하러 가기"
+                    size="small"
+                    onClick={navigateToRandomPage}
+                  />
+                </div>
+              ) : (
+                <>
+                  {showSolutionButton && !showAllResults && (
+                    <Button
+                      text="정답 및 해설"
+                      size="small"
+                      color="purple"
+                      onClick={() => setShowAllResults(true)}
+                      plusClasses="absolute right-4 top-[95px]" /* 우측 16px, 상단 70px */
+                    />
+                  )}
+                  <div className="">
+                    {' '}
+                    {/* 컨텐츠 상단 여백 추가 */}
+                    {!showAllResults && renderQuizInProgress()}
+                    {showAllResults &&
+                      (showCongrats ? renderCongrats() : renderSolution())}
+                  </div>
+                </>
               )}
-
-              <div className="mt-4">
-                {' '}
-                {/* 컨텐츠 상단 여백 추가 */}
-                {!showAllResults && renderQuizInProgress()}
-                {showAllResults &&
-                  (showCongrats ? renderCongrats() : renderSolution())}
-              </div>
             </div>
           </div>
         </div>

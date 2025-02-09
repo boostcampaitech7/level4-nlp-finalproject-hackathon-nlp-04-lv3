@@ -3,7 +3,7 @@ import { useEffect, useMemo } from 'react'
 import Button from 'components/Button'
 import goodSticker from '/assets/good_sticker.svg?react'
 import useTextQuizList from 'hooks/useTextQuizList'
-import useVocabQuizList from 'hooks/useVocabQuizList'
+import useVocabQuizList from '../../hooks/vocab/useVocabQuizList'
 
 const QuizLevelSelectionPage = ({ section = 'text' }: { section: string }) => {
   const navigate = useNavigate()
@@ -23,19 +23,19 @@ const QuizLevelSelectionPage = ({ section = 'text' }: { section: string }) => {
     }
   }, [itemId])
 
-  const handleQuizStart = (level: number) => {
+  const handleQuizStart = (quizId: number) => {
     if (section === 'vocab') {
-      navigate(`/vocab/${vocab_id}/quiz/${level}`)
+      navigate(`/vocab/${itemId}/quiz/${quizId}`)
     } else {
-      navigate(`/text/${text_id}/quiz/${level}`)
+      navigate(`/text/${itemId}/quiz/${quizId}`)
     }
   }
 
-  const handleQuizResult = (level: number) => {
+  const handleQuizResult = (quizId: number) => {
     if (section === 'vocab') {
-      navigate(`/vocab/${vocab_id}/quiz/${level}/result`)
+      navigate(`/vocab/${itemId}/quiz/${quizId}/result`)
     } else {
-      navigate(`/text/${text_id}/quiz/${level}/result`)
+      navigate(`/text/${itemId}/quiz/${quizId}/result`)
     }
   }
 
@@ -70,68 +70,70 @@ const QuizLevelSelectionPage = ({ section = 'text' }: { section: string }) => {
             <div>퀴즈 풀이 기록을 불러오는 중이에요.</div>
           ) : (
             <div className="space-y-5">
-              {quizList?.levelData?.map((data) => (
-                <div
-                  key={data.level}
-                  className="flex w-full items-center justify-between rounded-[32px] bg-surface-primary-2 px-8 py-6"
-                >
-                  <div className="flex items-center gap-4">
-                    <div>
-                      <div className="flex items-center gap-4">
-                        <div className="text-text-primary title-m">
-                          난이도 {data.level}
-                        </div>
-                        {data.isSolved && (
-                          <div className="relative -my-2 flex h-[55px] w-[55px] items-center justify-center overflow-hidden">
-                            <img
-                              className="-translate-y-0.3 absolute h-full w-full scale-[1.5] transform object-contain"
-                              src={goodSticker}
-                              alt="완료"
-                            />
+              {quizList?.levelData
+                ?.sort((a, b) => a.level - b.level)
+                .map((data) => (
+                  <div
+                    key={data.level}
+                    className="flex w-full items-center justify-between rounded-[32px] bg-surface-primary-2 px-8 py-6"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div>
+                        <div className="flex items-center gap-4">
+                          <div className="text-text-primary title-m">
+                            난이도 {data.level}
                           </div>
-                        )}
-                      </div>
-                      <div className="text-text-primary body-m">
-                        {getLevelDescription(
-                          data.level,
-                          data.isSolved,
-                          quizList?.userLevel,
-                        )}
+                          {data.isSolved && (
+                            <div className="relative -my-2 flex h-[55px] w-[55px] items-center justify-center overflow-hidden">
+                              <img
+                                className="-translate-y-0.3 absolute h-full w-full scale-[1.5] transform object-contain"
+                                src={goodSticker}
+                                alt="완료"
+                              />
+                            </div>
+                          )}
+                        </div>
+                        <div className="text-text-primary body-m">
+                          {getLevelDescription(
+                            data.level,
+                            data.isSolved,
+                            quizList?.userLevel,
+                          )}
+                        </div>
                       </div>
                     </div>
+                    <div className="flex gap-4">
+                      {data.isSolved ? (
+                        <>
+                          <Button
+                            size="small"
+                            color="grey"
+                            text={'다시 풀기'}
+                            onClick={() => handleQuizStart(data.quizId)}
+                            plusClasses="px-[10px]"
+                          />
+                          <Button
+                            size="small"
+                            color="grey"
+                            text={'정답 보기'}
+                            onClick={() => handleQuizResult(data.quizId)}
+                            plusClasses="px-[10px]"
+                          />
+                        </>
+                      ) : (
+                        data.level <= quizList?.userLevel && (
+                          <Button
+                            size="small"
+                            color="purple"
+                            text={'퀴즈 풀기'}
+                            onClick={() => handleQuizStart(data.quizId)}
+                            plusClasses="px-[10px]"
+                          />
+                        )
+                      )}
+                    </div>
                   </div>
-                  <div className="flex gap-4">
-                    {data.isSolved ? (
-                      <>
-                        <Button
-                          size="small"
-                          color="grey"
-                          text={'다시 풀기'}
-                          onClick={() => handleQuizStart(data.level)}
-                          plusClasses="px-[10px]"
-                        />
-                        <Button
-                          size="small"
-                          color="grey"
-                          text={'정답 보기'}
-                          onClick={() => handleQuizResult(data.level)}
-                          plusClasses="px-[10px]"
-                        />
-                      </>
-                    ) : (
-                      data.level <= quizList?.userLevel && (
-                        <Button
-                          size="small"
-                          color="purple"
-                          text={'퀴즈 풀기'}
-                          onClick={() => handleQuizStart(data.level)}
-                          plusClasses="px-[10px]"
-                        />
-                      )
-                    )}
-                  </div>
-                </div>
-              ))}
+                ))}
             </div>
           )}
         </div>

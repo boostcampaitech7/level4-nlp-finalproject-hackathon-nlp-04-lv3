@@ -1,6 +1,7 @@
 // 0. 메인, 유저
 export { default as logout } from './logout'
 export { default as getTodayTextList } from './getTodayTextList'
+export { default as getReviewQuizList } from './getReviewQuizList'
 
 // 1. 긴 글 학습
 export { default as getText } from './getText'
@@ -17,9 +18,11 @@ export { default as getTextAcount } from './text/getTextAcount'
 // 2. 단어 학습
 export { default as getVocabByNumber } from './getVocabByNumber'
 export { default as getVocabQuiz } from './getVocabQuiz'
-export { default as getVocabQuizList } from './getVocabQuizList'
+export { default as getVocabQuizList } from './vocab/getVocabQuizList'
 export { default as postVocabQuizSolve } from './postVocabQuizSolve'
 export { default as getVocabQuizResult } from './getVocabQuizResult'
+
+export { default as getVocabChatList } from './vocab/getVocabChatList'
 
 // 3. 일기
 export { default as getDiary } from './getDiary'

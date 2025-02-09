@@ -149,7 +149,10 @@ const TextContent = ({ text }: { text: string[] }) => {
           role: 'user',
         }
         addNewChat(newChat)
-        submitQuestion(inputValue, highlightSpanRef.current?.innerText)
+        submitQuestion(
+          `"${highlightSpanRef.current?.innerText}"\n${inputValue}`,
+          highlightSpanRef.current?.innerText,
+        )
       }
       closeTooltip()
     }

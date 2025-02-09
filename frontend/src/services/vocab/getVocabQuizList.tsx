@@ -1,4 +1,4 @@
-import authenticatedAxios from './authenticatedAxios'
+import authenticatedAxios from '../authenticatedAxios'
 import { VocabQuizListType } from 'types/vocab'
 
 const getVocabQuizList = async (vocabId: number) => {
