@@ -45,7 +45,7 @@ jobs:
         docker push ${{ secrets.DOCKER_REPO }}:batch-airflow-${{ github.sha }}
         docker push ${{ secrets.DOCKER_REPO }}:batch-airflow-latest
 
-depoly:
+deploy:
   needs: build
   runs-on: ubuntu-latest
 
