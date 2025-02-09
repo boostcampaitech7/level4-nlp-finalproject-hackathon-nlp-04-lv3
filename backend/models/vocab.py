@@ -20,7 +20,7 @@ CREATE TABLE vocabs (
 class Vocabs(SQLModel, table=True):
     vocab_id: int | None = Field(default=None, primary_key=True)
     vocab: str = Field(sa_column=Column(VARCHAR(100), nullable=False, unique=True))
-    hanja: str | None = Field(default=None, sa_column=Column(TEXT))
+    hanja: List[str] | None = Field(default=None, sa_column=Column(ARRAY(TEXT)))
     dict_mean: str | None = Field(default=None, sa_column=Column(TEXT))
     easy_explain: List[str] = Field(
         default=[], sa_column=Column(ARRAY(TEXT), nullable=False)

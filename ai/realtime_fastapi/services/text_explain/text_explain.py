@@ -1,5 +1,3 @@
-from fastapi import APIRouter, HTTPException
-from dotenv import load_dotenv
 import requests
 import logging
 
