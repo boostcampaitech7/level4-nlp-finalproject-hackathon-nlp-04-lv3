@@ -50,7 +50,7 @@ jobs:
         docker push ${{ secrets.DOCKER_REPO }}:backend-${{ github.sha }}
         docker push ${{ secrets.DOCKER_REPO }}:backend-latest
 
-depoly:
+deploy:
   needs: build
   runs-on: ubuntu-latest
 
