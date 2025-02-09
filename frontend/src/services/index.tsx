@@ -1,6 +1,7 @@
 // 0. 메인, 유저
 export { default as logout } from './logout'
 export { default as getTodayTextList } from './getTodayTextList'
+export { default as getReviewQuizList } from './getReviewQuizList'
 
 // 1. 긴 글 학습
 export { default as getText } from './getText'

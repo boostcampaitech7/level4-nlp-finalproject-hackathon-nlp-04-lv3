@@ -63,6 +63,6 @@ export interface VocabReviewQuizType {
   quizOptions: string[]
   quizCorrect: boolean[]
   quizUserAnswer: number[]
-  quizAnswer: string[]
+  quizAnswer: number[]
   quizAnswerExplain: string[]
 }
