@@ -6,7 +6,7 @@ WORKDIR /frontend
 
 ARG BACKEND_ADDRESS
 
-RUN echo "VITE_API_URL=http://${BACKEND_ADDRESS}:8000" > .env.development
+RUN echo "VITE_API_URL=http://{BACKEND_ADDRESS}:8000" > .env.production
 
 # 의존성 파일 복사 및 설치 (캐싱 최적화)
 COPY package.json package-lock.json ./
