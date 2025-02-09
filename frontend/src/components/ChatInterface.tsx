@@ -8,6 +8,8 @@ import useTextChatList from 'hooks/useTextChatList'
 import { useChatListStore } from 'stores/chatListStore'
 import 'styles/scrollbar.css'
 import usePostTextChat from 'hooks/text/usePostTextChat'
+import useIntersectionObserver from 'hooks/useIntersectionObserver'
+import { QueryClient } from '@tanstack/react-query'
 
 interface ChatInterfaceProps {
   actions?: ChatbotActionType[]
@@ -25,7 +27,6 @@ const ChatInterface = ({
 }: ChatInterfaceProps) => {
   const [inputValue, setInputValue] = useState('')
 
-  // const [isLoading, setIsLoading] = useState(false)
   const chatContainerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -36,27 +37,57 @@ const ChatInterface = ({
   }, [text_id])
 
   const { chatList, addNewChat, resetChatList } = useChatListStore()
+  // 연쇄적인 refetch를 막기 위한 변수들
+  // 최초 대화 내역 로드 여부
+  const [firstLoaded, setFirstLoaded] = useState<boolean>(false)
+  // 이전 대화 내역 로딩 중인지 여부
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  const { refetch } = useTextChatList(textId)
+  const [prevHeight, setPrevHeight] = useState<number>(0)
+  const [prevPage, setPrevPage] = useState<number>(1)
+  const { refetch, isFetching, pageNum } = useTextChatList(textId)
+  const { ref: observerRef } = useIntersectionObserver((entry, observer) => {
+    observer.unobserve(entry.target)
+    setPrevHeight(chatContainerRef.current?.scrollHeight ?? 0)
+    if (!isFetching && pageNum > 0 && firstLoaded && !isLoading) {
+      setIsLoading(true)
+      refetch()
+      setTimeout(() => {
+        setIsLoading(false)
+      }, 500)
+    }
+  })
+
   useEffect(() => {
     refetch()
+    setTimeout(() => {
+      setFirstLoaded(true)
+    }, 500)
   }, [])
 
   useEffect(() => {
-    return () => {
-      resetChatList()
-    }
-  }, [resetChatList])
-
-  // 스크롤을 아래로 이동
-  useEffect(() => {
-    if (chatContainerRef.current) {
+    if (isFetching) return
+    if (chatContainerRef.current && prevPage < pageNum) {
+      chatContainerRef.current.scrollTo({
+        top: chatContainerRef.current.scrollHeight - prevHeight - 50,
+        behavior: 'smooth',
+      })
+      setPrevPage(pageNum)
+    } else if (chatContainerRef.current && pageNum >= 0) {
       chatContainerRef.current.scrollTo({
         top: chatContainerRef.current.scrollHeight,
         behavior: 'smooth',
       })
     }
-  }, [chatList])
+  }, [isFetching, chatList])
+
+  const queryClient = new QueryClient()
+  useEffect(() => {
+    return () => {
+      resetChatList()
+      queryClient.removeQueries({ queryKey: ['textChatList'] })
+    }
+  }, [resetChatList])
 
   const { submitQuestion } = usePostTextChat(textId)
   const handleSubmit = (e: React.FormEvent) => {
@@ -93,6 +124,7 @@ const ChatInterface = ({
         ref={chatContainerRef}
         className="custom-scrollbar-small flex-1 space-y-4 overflow-y-auto px-6 pb-6"
       >
+        {<div ref={observerRef} />}
         {chatList.map((chat, idx) => {
           return (
             <ChatMessage
