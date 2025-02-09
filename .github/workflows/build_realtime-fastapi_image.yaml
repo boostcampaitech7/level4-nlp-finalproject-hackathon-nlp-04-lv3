@@ -1,4 +1,4 @@
-name: Build & Push Arabugi Realtime-FastAPI Image
+name: Build & Deploy Arabugi Realtime-FastAPI Image
 
 on:
   push:
@@ -43,3 +43,23 @@ jobs:
         run: |
           docker push ${{ secrets.DOCKER_REPO }}:realtime-fastapi-${{ github.sha }}
           docker push ${{ secrets.DOCKER_REPO }}:realtime-fastapi-latest
+
+depoly:
+  needs: build
+  runs-on: ubuntu-latest
+
+  steps:
+    - name: NCP login and pull & run docker image
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.AI_ADDRESS }}
+        username: ${{ secrets.NCP_USERNAME }}
+        password: ${{ secrets.AI_PASSWORD }}
+        port: ${{ secrets.NCP_PORT }}
+        script: |
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+          sudo docker stop arabugi-realtime-fastapi || true
+          sudo docker rm -f arabugi-realtime-fastapi || true
+          sudo docker rmi ${{ secrets.DOCKER_REPO }}:realtime-fastapi-latest || true
+          sudo docker pull ${{ secrets.DOCKER_REPO }}:realtime-fastapi-latest
+          docker run -d --name arabugi-realtime-fastapi -e TZ=Asia/Seoul -p 8001:8001 ${{ secrets.DOCKER_REPO }}:realtime-fastapi-latest
