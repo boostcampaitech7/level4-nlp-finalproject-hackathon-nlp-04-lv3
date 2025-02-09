@@ -27,7 +27,7 @@ jobs:
     # Docker 이미지 빌드 (캐시 적용)
     - name: Build Docker Image
       run: |
-        docker build --build-arg DB_HOST=${{ secrets.BACKEND_ADDRESS }} \
+        docker build --build-arg BACKEND_ADDRESS=${{ secrets.BACKEND_ADDRESS }} \
                      --tag ${{ secrets.DOCKER_REPO }}:frontend-${{ github.sha }} ./frontend
 
     # Docker 이미지 태깅 (latest 태그 추가)
