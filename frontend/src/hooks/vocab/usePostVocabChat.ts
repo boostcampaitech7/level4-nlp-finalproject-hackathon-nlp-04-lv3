@@ -4,7 +4,7 @@ import { useChatListStore } from 'stores/chatListStore'
 import { ChatType, VocabChatRequestType, VocabChatSetType } from 'types/chat'
 
 const usePostVocabChat = (vocabId: number) => {
-  const { chatList, addNewChat } = useChatListStore()
+  const { chatList, addNewChat, setScrollDir } = useChatListStore()
 
   const getPreviousChats = (chatList: ChatType[]) => {
     let previousChats: VocabChatSetType[] = []
@@ -30,6 +30,7 @@ const usePostVocabChat = (vocabId: number) => {
   const mutationResults = useMutation({
     mutationFn: postVocabChat,
     onSuccess: (answer: ChatType) => {
+      setScrollDir(-1)
       addNewChat(answer)
     },
     onError: (err: any) => {
@@ -40,6 +41,7 @@ const usePostVocabChat = (vocabId: number) => {
         focused: '',
         role: 'assistant',
       }
+      setScrollDir(-1)
       addNewChat(errorChat)
     },
   })

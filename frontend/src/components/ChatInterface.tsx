@@ -40,7 +40,7 @@ const ChatInterface = ({
   // 연쇄적인 refetch를 막기 위한 변수들
   // 최초 대화 내역 로드 여부
   const [firstLoaded, setFirstLoaded] = useState<boolean>(false)
-  // 이전 대화 내역 로딩 중인지 여부
+  // 대화 목록 불러 오는 동안 옵저버가 또 감지되는 걸 막기 위한 변수
   const [observerStop, setObserverStop] = useState<boolean>(true)
 
   const [prevHeight, setPrevHeight] = useState<number>(0)
@@ -51,7 +51,6 @@ const ChatInterface = ({
     observer.unobserve(entry.target)
     setPrevHeight(chatContainerRef.current?.scrollHeight ?? 0)
     if (!isFetching && pageNum > 0 && firstLoaded) {
-      console.log('??')
       setScrollDir(1)
       refetch()
     }
@@ -94,10 +93,10 @@ const ChatInterface = ({
     }
   }, [])
 
-  const { submitQuestion } = usePostTextChat(textId)
+  const { submitQuestion, isPending } = usePostTextChat(textId)
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (inputValue.trim()) {
+    if (inputValue.trim() && !isPending) {
       setScrollDir(-1)
       addNewChat({
         id: chatList.length,
@@ -153,6 +152,7 @@ const ChatInterface = ({
                 key={action.id}
                 onClick={() => handleClickActionButton(action.question)}
                 className="whitespace-nowrap rounded-[14px] bg-button-secondary-1 px-4 py-2 text-text-secondary transition-colors button-s hover:bg-[#d8d8d8]"
+                disabled={isPending}
               >
                 {action.label}
               </button>
@@ -171,10 +171,12 @@ const ChatInterface = ({
             onChange={(e) => setInputValue(e.target.value)}
             placeholder="궁금한 내용을 물어보세요."
             className="text-text-intermidiate min-w-0 flex-1 rounded-2xl bg-surface-secondary px-4 py-2 outline-none button-s"
+            disabled={isPending}
           />
           <button
             type="submit"
             className="flex h-[40px] w-[40px] flex-shrink-0 items-center justify-center rounded-full bg-surface-primary-1 transition-colors hover:bg-[#d8d8d8]"
+            disabled={isPending}
           >
             <FaPaperPlane size={16} />
           </button>
