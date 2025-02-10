@@ -158,7 +158,7 @@ const VocabChatInterface = () => {
               plusClasses="px-[10px] button-s flex-1 min-w-[92px]"
             />
           </div>
-          <div className="flex h-[47px] w-full items-start justify-center rounded-2xl bg-surface-secondary p-2.5">
+          <div className="flex h-[47px] w-full items-center justify-center rounded-2xl bg-surface-secondary p-2.5">
             <form
               onSubmit={(e) => {
                 e.preventDefault()
@@ -169,12 +169,12 @@ const VocabChatInterface = () => {
               className="w-full"
             >
               <div className="flex items-center gap-2">
-                <div className="flex-1">
+                <div className="flex flex-1 items-center">
                   <input
                     type="text"
                     value={inputMessage}
                     onChange={(e) => setInputMessage(e.target.value)}
-                    placeholder="메시지를 입력해 주세요"
+                    placeholder="궁금한 내용을 물어보세요"
                     className="h-8 w-full bg-transparent text-text-secondary outline-none button-s"
                     disabled={isPending}
                   />

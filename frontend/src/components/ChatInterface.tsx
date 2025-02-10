@@ -24,10 +24,9 @@ const ChatInterface = ({
   width = 'w-[400px]',
   height = 'h-[600px]',
 }: ChatInterfaceProps) => {
-  const [inputValue, setInputValue] = useState('')
+  const [inputMessage, setInputMessage] = useState('')
 
   const chatContainerRef = useRef<HTMLDivElement>(null)
-  const inputRef = useRef<HTMLInputElement>(null)
 
   const { text_id } = useParams()
   const textId = useMemo(() => {
@@ -94,19 +93,17 @@ const ChatInterface = ({
   }, [])
 
   const { submitQuestion, isPending } = usePostTextChat(textId)
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (inputValue.trim() && !isPending) {
-      setScrollDir(-1)
-      addNewChat({
-        id: chatList.length,
-        text: inputValue,
-        focused: '',
-        role: 'user',
-      })
-      setInputValue('')
-      submitQuestion(inputValue, '')
-    }
+  const sendMessage = async (message: string) => {
+    if (!message.trim()) return
+    setScrollDir(-1)
+    addNewChat({
+      id: chatList.length,
+      text: inputMessage,
+      focused: '',
+      role: 'user',
+    })
+    setInputMessage('')
+    submitQuestion(message, '')
   }
 
   const handleClickActionButton = (question: string) => {
@@ -117,7 +114,7 @@ const ChatInterface = ({
       focused: '',
       role: 'user',
     })
-    setInputValue('')
+    setInputMessage('')
     submitQuestion(question, '')
   }
 
@@ -143,10 +140,10 @@ const ChatInterface = ({
         })}
       </div>
 
-      {/* 액션 버튼 영역 */}
-      {actions.length > 0 && (
-        <div className="px-4 py-2">
-          <div className="flex flex-wrap justify-end gap-2">
+      <div className="flex w-full flex-col items-center justify-center gap-3 p-4">
+        {/* 액션 버튼 영역 */}
+        {actions.length > 0 && (
+          <div className="flex w-full justify-end gap-2">
             {actions.map((action) => (
               <button
                 key={action.id}
@@ -158,29 +155,39 @@ const ChatInterface = ({
               </button>
             ))}
           </div>
-        </div>
-      )}
-
-      {/* 입력 영역 */}
-      <div className="p-4">
-        <form onSubmit={handleSubmit} className="flex items-center gap-2">
-          <input
-            ref={inputRef}
-            type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            placeholder="궁금한 내용을 물어보세요."
-            className="text-text-intermidiate min-w-0 flex-1 rounded-2xl bg-surface-secondary px-4 py-2 outline-none button-s"
-            disabled={isPending}
-          />
-          <button
-            type="submit"
-            className="flex h-[40px] w-[40px] flex-shrink-0 items-center justify-center rounded-full bg-surface-primary-1 transition-colors hover:bg-[#d8d8d8]"
-            disabled={isPending}
+        )}
+        {/* 입력 영역 */}
+        <div className="flex h-[47px] w-full items-center justify-center rounded-2xl bg-surface-secondary p-2.5">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault()
+              if (!isPending) {
+                sendMessage(inputMessage)
+              }
+            }}
+            className="w-full"
           >
-            <FaPaperPlane size={16} />
-          </button>
-        </form>
+            <div className="flex items-center gap-2">
+              <div className="flex flex-1 items-center">
+                <input
+                  type="text"
+                  value={inputMessage}
+                  onChange={(e) => setInputMessage(e.target.value)}
+                  placeholder="궁금한 내용을 물어보세요"
+                  className="h-8 w-full bg-transparent text-text-secondary outline-none button-s"
+                  disabled={isPending}
+                />
+              </div>
+              <button
+                type="submit"
+                className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-surface-primary-1 transition-colors hover:bg-button-primary-hover-1 disabled:cursor-not-allowed disabled:opacity-50"
+                disabled={isPending}
+              >
+                <FaPaperPlane size={16} className="text-text-primary" />
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   )
