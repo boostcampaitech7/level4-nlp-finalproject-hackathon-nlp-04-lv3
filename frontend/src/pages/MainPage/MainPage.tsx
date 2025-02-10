@@ -320,7 +320,7 @@ const MainPage = () => {
     </div>
   )
 
-  const { navigateToRandomPage } = useVocabRandom()
+  const { refetch: getRandomVocab } = useVocabRandom()
 
   return (
     <div className="relative">
@@ -407,7 +407,7 @@ const MainPage = () => {
                   <Button
                     text="단어 공부하러 가기"
                     size="small"
-                    onClick={navigateToRandomPage}
+                    onClick={() => getRandomVocab()}
                   />
                 </div>
               ) : (

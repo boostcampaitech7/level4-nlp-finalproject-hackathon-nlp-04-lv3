@@ -30,7 +30,7 @@ const VocabChatInterface = () => {
 
   const [prevHeight, setPrevHeight] = useState<number>(0)
   const [prevPage, setPrevPage] = useState<number>(1)
-  const { refetch, isFetching, pageNum } = useVocabChatList(vocabId)
+  const { refetch, isFetching, pageNum, setPageNum } = useVocabChatList(vocabId)
   const { ref: observerRef } = useIntersectionObserver((entry, observer) => {
     observer.unobserve(entry.target)
     setPrevHeight(chatContainerRef.current?.scrollHeight ?? 0)
@@ -44,6 +44,7 @@ const VocabChatInterface = () => {
   })
 
   useEffect(() => {
+    console.log('1')
     refetch()
     setTimeout(() => {
       setFirstLoaded(true)
@@ -51,7 +52,6 @@ const VocabChatInterface = () => {
   }, [])
 
   useEffect(() => {
-    if (isFetching) return
     if (chatContainerRef.current && prevPage < pageNum) {
       chatContainerRef.current.scrollTo({
         top: chatContainerRef.current.scrollHeight - prevHeight - 50,
@@ -59,20 +59,23 @@ const VocabChatInterface = () => {
       })
       setPrevPage(pageNum)
     } else if (chatContainerRef.current && pageNum >= 0) {
+      console.log(chatContainerRef.current.scrollHeight)
       chatContainerRef.current.scrollTo({
         top: chatContainerRef.current.scrollHeight,
         behavior: 'smooth',
       })
     }
-  }, [isFetching, chatList])
+  }, [chatList])
 
   const queryClient = new QueryClient()
   useEffect(() => {
     return () => {
       resetChatList()
+      setPageNum(0)
+      setPrevPage(1)
       queryClient.removeQueries({ queryKey: ['vocabChatList'] })
     }
-  }, [resetChatList])
+  }, [])
 
   const { submitQuestion } = usePostVocabChat(vocabId)
   const sendMessage = async (message: string) => {
@@ -97,11 +100,15 @@ const VocabChatInterface = () => {
   }
 
   return (
-    <div className="inline-flex w-[345px] flex-col items-center justify-center gap-2.5">
+    <div
+      key={`chatbot-${vocabId}`}
+      className="inline-flex w-[345px] flex-col items-center justify-center gap-2.5"
+    >
       <div className="flex h-[770px] flex-col items-center justify-start overflow-hidden rounded-[32px] border bg-surface-primary-2 pb-[9px] shadow-[0px_0px_8.100000381469727px_5px_rgba(0,0,0,0.05)]">
         <div className="inline-flex h-[770px] w-[345px] flex-col items-center justify-between px-6 py-[17px]">
           {/* Chat history area */}
           <div
+            key={`message-container-${vocabId}`}
             ref={chatContainerRef}
             className="custom-scrollbar-small flex-1 space-y-4 overflow-y-auto"
           >

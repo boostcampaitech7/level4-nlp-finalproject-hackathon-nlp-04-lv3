@@ -7,7 +7,7 @@ import { ChatType } from 'types/chat'
 const useVocabChatList = (vocabId: number) => {
   // 현재까지 조회한 페이지 숫자의 최댓값
   const [pageNum, setPageNum] = useState<number>(0)
-  const { addPrevChatList } = useChatListStore()
+  const { addPrevChatList, chatList } = useChatListStore()
 
   const queryResult = useQuery({
     queryKey: ['vocabChatList'],
@@ -31,15 +31,18 @@ const useVocabChatList = (vocabId: number) => {
             role: 'assistant',
           })
         })
-        addPrevChatList(prevChatList)
-        setPageNum((prev) => prev + 1)
+        if (prevChatList[0]?.text !== chatList[0]?.text) {
+          console.log('132')
+          addPrevChatList(prevChatList)
+          setPageNum((prev) => prev + 1)
+        }
       }
       return vocabChatList
     },
     enabled: false,
   })
 
-  return { ...queryResult, pageNum }
+  return { ...queryResult, pageNum, setPageNum }
 }
 
 export default useVocabChatList
