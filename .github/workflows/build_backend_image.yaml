@@ -1,4 +1,4 @@
-name: Build & Push Arabugi Backend Image
+name: Build & Deploy Arabugi Backend Image
 
 on:
   push:
@@ -49,3 +49,23 @@ jobs:
       run: |
         docker push ${{ secrets.DOCKER_REPO }}:backend-${{ github.sha }}
         docker push ${{ secrets.DOCKER_REPO }}:backend-latest
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: NCP login and pull & run docker image
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.BACKEND_ADDRESS }}
+          username: ${{ secrets.NCP_USERNAME }}
+          password: ${{ secrets.BACKEND_PASSWORD }}
+          port: ${{ secrets.NCP_PORT }}
+          script: |
+            echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+            sudo docker stop arabugi-backend || true
+            sudo docker rm -f arabugi-backend || true
+            sudo docker rmi ${{ secrets.DOCKER_REPO }}:backend-latest || true
+            sudo docker pull ${{ secrets.DOCKER_REPO }}:backend-latest
+            docker run -d --name arabugi-backend -e TZ=Asia/Seoul -p 8000:8000 ${{ secrets.DOCKER_REPO }}:backend-latest

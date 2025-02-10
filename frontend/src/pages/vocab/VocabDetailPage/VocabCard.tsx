@@ -61,9 +61,13 @@ const VocabCard = ({ data, type }: VocabCardProps) => {
             <div className="absolute bottom-full left-1/2 z-50 mb-2 -translate-x-1/2 transform">
               <div className="inline-flex h-auto items-center justify-center gap-2.5 whitespace-normal rounded-xl bg-text-secondary p-2.5 shadow-[0px_0px_12.9px_rgba(0,0,0,0.25)] sm:h-[92px] sm:whitespace-nowrap">
                 <div className="text-text-inverse body-m">
-                  {data.hanja.split('\n').map((line, index) => (
+                  {data.hanja.map((line, index) => (
                     <p key={index} className="break-keep">
-                      {line}
+                      <span>{line.slice(0, line.length - 1)}</span>
+                      <span>{'  '}</span>
+                      <span className="text-accent-highlight">
+                        {line.slice(line.length - 1)}
+                      </span>
                     </p>
                   ))}
                 </div>

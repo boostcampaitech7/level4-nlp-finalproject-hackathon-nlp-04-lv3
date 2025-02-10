@@ -48,24 +48,34 @@ const DiaryListPage = () => {
     }
 
     let prevYM = ''
-    const diaryCards = diaryList?.diaries.map((diary) => {
+    const diaryCards: any[] = []
+    diaryList?.diaries.forEach((diary) => {
       const currentYM = getYM(diary.day)
 
       if (prevYM != currentYM) {
+        const splitter = (
+          <div
+            key={`diary-split-${currentYM}`}
+            className="mb-[10px] min-w-[960px] max-w-[1024px] border-b-2 border-line text-start text-text-primary title-s"
+          >
+            {currentYM}
+          </div>
+        )
         prevYM = currentYM
-        return (
-          <>
-            <div
-              key={`diary-split-${currentYM}`}
-              className="mb-[10px] min-w-[960px] max-w-[1024px] border-b-2 border-line text-start text-text-primary title-s"
-            >
-              {currentYM}
-            </div>
-            <DiaryCard key={`diary-${diary.diaryId}`} diary={diary} />
-          </>
+        diaryCards.push(splitter)
+        diaryCards.push(
+          <DiaryCard
+            key={`diary-${diary.diaryId}-${diary.day}-1`}
+            diary={diary}
+          />,
         )
       } else {
-        return <DiaryCard key={`diary-${diary.diaryId}`} diary={diary} />
+        diaryCards.push(
+          <DiaryCard
+            key={`diary-${diary.diaryId}-${diary.day}-2`}
+            diary={diary}
+          />,
+        )
       }
     })
 
@@ -79,7 +89,10 @@ const DiaryListPage = () => {
     >
       <div className="flex w-4/5 flex-col gap-y-[20px]">
         <TitleBar />
-        <div className="mb-[20px] flex flex-col items-center gap-y-[16px]">
+        <div
+          key={`page-container-${currentPage}`}
+          className="mb-[20px] flex flex-col items-center gap-y-[16px]"
+        >
           {displayDiaryList()}
         </div>
         <PageSelector setPageNum={setPageNum} />

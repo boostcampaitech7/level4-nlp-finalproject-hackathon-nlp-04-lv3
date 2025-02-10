@@ -1,43 +1,7 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import Button from 'components/Button'
 import useVocabQuizResult from 'hooks/useVocabQuizResult'
-
-// interface QuizResultData {
-//   quiz_id: number
-//   question: [string, string, string]
-//   options: [
-//     string,
-//     string,
-//     string,
-//     string,
-//     string,
-//     string,
-//     string,
-//     string,
-//     string,
-//     string,
-//     string,
-//     string,
-//   ]
-//   answer: [number, number, number]
-//   user_answer: number[]
-//   correct: boolean[]
-//   answer_explain: [
-//     string,
-//     string,
-//     string,
-//     string,
-//     string,
-//     string,
-//     string,
-//     string,
-//     string,
-//     string,
-//     string,
-//     string,
-//   ]
-// }
 
 const VocabQuizResultPage = () => {
   const navigate = useNavigate()
@@ -45,10 +9,10 @@ const VocabQuizResultPage = () => {
     vocab_id: string
     quiz_id: string
   }>()
-  // const vocabId = useMemo(() => {
-  //   const parsedId = parseInt(vocab_id || '', 10)
-  //   return isNaN(parsedId) ? 0 : parsedId
-  // }, [vocab_id])
+  const vocabId = useMemo(() => {
+    const parsedId = parseInt(vocab_id || '', 10)
+    return isNaN(parsedId) ? 0 : parsedId
+  }, [vocab_id])
   const qId = useMemo(() => {
     const parsedQuizId = parseInt(quiz_id || '', 10)
     return isNaN(parsedQuizId) ? 0 : parsedQuizId
@@ -59,10 +23,14 @@ const VocabQuizResultPage = () => {
   const { data: vocabQuizResult, isLoading: isVocabQuizResultLoading } =
     useVocabQuizResult(qId)
 
+  useEffect(() => {
+    console.log(vocabQuizResult)
+  }, [vocabQuizResult])
+
   // VocabQuizResultPage.tsx
   const handleNextQuiz = () => {
     // 현재 vocab_id를 숫자로 변환 후 +1 증가
-    const nextVocabId = Number(vocab_id) + 1
+    const nextVocabId = vocabId + 1
     navigate(`/vocab/${nextVocabId}`)
   }
 
@@ -117,16 +85,16 @@ const VocabQuizResultPage = () => {
                       <div className="flex h-20 w-20 items-center justify-center">
                         <div
                           className={`text-[78px] font-semibold ${
-                            index + 1 === correctAnswerIndex
+                            index === correctAnswerIndex
                               ? 'text-accent-blue'
-                              : index + 1 === userAnswerIndex
+                              : index === userAnswerIndex
                                 ? 'text-accent-red-1'
                                 : 'text-[#e0e0e0]'
                           }`}
                         >
-                          {index + 1 === correctAnswerIndex
+                          {index === correctAnswerIndex
                             ? 'O'
-                            : index + 1 === userAnswerIndex
+                            : index === userAnswerIndex
                               ? 'X'
                               : ''}
                         </div>
@@ -134,7 +102,7 @@ const VocabQuizResultPage = () => {
                       <div className="flex-1">
                         <p
                           className={`body-m ${
-                            index + 1 === userAnswerIndex
+                            index === userAnswerIndex
                               ? 'font-bold'
                               : 'font-normal'
                           }`}

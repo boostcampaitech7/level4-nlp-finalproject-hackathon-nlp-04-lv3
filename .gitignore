@@ -6,9 +6,6 @@ __pycache__
 .pytest_cache
 logs/
 
-ai/realtime_fastapi/services/tuning/dictionary/
-ai/realtime_fastapi/services/tuning/preprocessing/*.csv
-
 # Logs
 logs
 *.log

@@ -4,6 +4,8 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa'
 import Button from 'components/Button'
 import AraboogieImage from '/assets/araboogie100.svg?react'
 import ChatInterface from '../../MainPage/GuestMainPage/GuestChatInterface'
+import { useSignupFormStore } from 'stores/signupFormStore'
+import { checkDuplicate } from 'services'
 
 const SignupPage = () => {
   // 팝업 제거
@@ -15,12 +17,7 @@ const SignupPage = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   // 폼 데이터
-  const [formData, setFormData] = useState({
-    name: '',
-    username: '',
-    password: '',
-    confirmPassword: '',
-  })
+  const { formData, setFormData } = useSignupFormStore()
 
   // 아이디 중복확인 여부
   const [isUsernameAvailable, setIsUsernameAvailable] = useState(false)
@@ -77,10 +74,7 @@ const SignupPage = () => {
   // input onChange
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }))
+    setFormData(name, value)
     // 아이디 바뀌면 중복확인 상태 초기화
     if (name === 'username') {
       setIsUsernameAvailable(false)
@@ -88,13 +82,15 @@ const SignupPage = () => {
   }
 
   // 아이디 중복확인 → alert 허용
-  const handleDuplicateCheck = () => {
+  const handleDuplicateCheck = async () => {
     // 더미 로직: 'existingUser'이면 이미 있는 아이디
-    const dummyCheck = formData.username !== 'existingUser'
-    setIsUsernameAvailable(dummyCheck)
+    const isAvailable = await checkDuplicate(formData.username)
     alert(
-      dummyCheck ? '사용 가능한 아이디입니다.' : '이미 사용 중인 아이디입니다.',
+      isAvailable
+        ? '사용 가능한 아이디입니다.'
+        : '이미 사용 중인 아이디입니다.',
     )
+    setIsUsernameAvailable(isAvailable)
   }
 
   // 폼 전송
