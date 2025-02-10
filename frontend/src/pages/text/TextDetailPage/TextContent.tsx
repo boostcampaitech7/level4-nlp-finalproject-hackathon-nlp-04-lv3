@@ -135,7 +135,7 @@ const TextContent = ({ text }: { text: string[] }) => {
     }
   }, [tooltipExpanded])
 
-  const { addNewChat } = useChatListStore()
+  const { addNewChat, setScrollDir } = useChatListStore()
   const { submitQuestion } = usePostTextChat(textId)
 
   // 인풋에서 엔터를 누르면 툴팁만 닫음 (하이라이트는 그대로 유지)
@@ -148,6 +148,7 @@ const TextContent = ({ text }: { text: string[] }) => {
           focused: highlightSpanRef.current?.innerText,
           role: 'user',
         }
+        setScrollDir(-1)
         addNewChat(newChat)
         submitQuestion(
           `"${highlightSpanRef.current?.innerText}"\n${inputValue}`,

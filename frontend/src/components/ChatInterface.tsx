@@ -35,29 +35,30 @@ const ChatInterface = ({
     return isNaN(parsedId) ? 0 : parsedId
   }, [text_id])
 
-  const { chatList, addNewChat, resetChatList } = useChatListStore()
+  const { chatList, addNewChat, resetChatList, scrollDir, setScrollDir } =
+    useChatListStore()
   // 연쇄적인 refetch를 막기 위한 변수들
   // 최초 대화 내역 로드 여부
   const [firstLoaded, setFirstLoaded] = useState<boolean>(false)
   // 이전 대화 내역 로딩 중인지 여부
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [observerStop, setObserverStop] = useState<boolean>(true)
 
   const [prevHeight, setPrevHeight] = useState<number>(0)
-  const [prevPage, setPrevPage] = useState<number>(1)
-  const { refetch, isFetching, pageNum } = useTextChatList(textId)
+
+  const { refetch, isFetching, pageNum, setPageNum } = useTextChatList(textId)
   const { ref: observerRef } = useIntersectionObserver((entry, observer) => {
+    if (observerStop) return
     observer.unobserve(entry.target)
     setPrevHeight(chatContainerRef.current?.scrollHeight ?? 0)
-    if (!isFetching && pageNum > 0 && firstLoaded && !isLoading) {
-      setIsLoading(true)
+    if (!isFetching && pageNum > 0 && firstLoaded) {
+      console.log('??')
+      setScrollDir(1)
       refetch()
-      setTimeout(() => {
-        setIsLoading(false)
-      }, 500)
     }
   })
 
   useEffect(() => {
+    setScrollDir(-1)
     refetch()
     setTimeout(() => {
       setFirstLoaded(true)
@@ -65,33 +66,39 @@ const ChatInterface = ({
   }, [])
 
   useEffect(() => {
-    if (isFetching) return
-    if (chatContainerRef.current && prevPage < pageNum) {
+    setObserverStop(true)
+    if (chatContainerRef.current && scrollDir === 1) {
       chatContainerRef.current.scrollTo({
         top: chatContainerRef.current.scrollHeight - prevHeight - 50,
         behavior: 'smooth',
       })
-      setPrevPage(pageNum)
-    } else if (chatContainerRef.current && pageNum >= 0) {
+    } else if (chatContainerRef.current && scrollDir === -1) {
       chatContainerRef.current.scrollTo({
         top: chatContainerRef.current.scrollHeight,
         behavior: 'smooth',
       })
     }
-  }, [isFetching, chatList])
+    setTimeout(() => {
+      setScrollDir(0)
+      setObserverStop(false)
+    }, 500)
+  }, [chatList])
 
   const queryClient = new QueryClient()
   useEffect(() => {
     return () => {
       resetChatList()
+      setPageNum(0)
+      setFirstLoaded(false)
       queryClient.removeQueries({ queryKey: ['textChatList'] })
     }
-  }, [resetChatList])
+  }, [])
 
   const { submitQuestion } = usePostTextChat(textId)
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (inputValue.trim()) {
+      setScrollDir(-1)
       addNewChat({
         id: chatList.length,
         text: inputValue,
@@ -104,6 +111,7 @@ const ChatInterface = ({
   }
 
   const handleClickActionButton = (question: string) => {
+    setScrollDir(-1)
     addNewChat({
       id: chatList.length,
       text: question,
@@ -120,10 +128,12 @@ const ChatInterface = ({
     >
       {/* 채팅 메시지 영역 */}
       <div
+        key={`message-container-${textId}`}
         ref={chatContainerRef}
-        className="custom-scrollbar-small flex-1 space-y-4 overflow-y-auto px-6 pb-6"
+        className="custom-scrollbar-large flex-1 space-y-4 overflow-y-auto px-6 pb-6"
       >
         <div ref={observerRef} />
+        <div className="h-[15px] w-full" />
         {chatList.map((chat, idx) => {
           return (
             <ChatMessage
