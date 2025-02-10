@@ -4,6 +4,7 @@ import DiaryCard from './DiaryCard'
 import useDiaryList from 'hooks/useDiaryList'
 import { useDiaryListPageStore } from 'stores/diaryListPageStore'
 import PageSelector from './PageSelector'
+import { QueryClient } from '@tanstack/react-query'
 
 const DiaryListPage = () => {
   useEffect(() => {
@@ -28,8 +29,10 @@ const DiaryListPage = () => {
     }
   }, [currentPage, setPageNum])
 
+  const queryClient = new QueryClient()
   useEffect(() => {
     return () => {
+      queryClient.removeQueries({ queryKey: ['diaryList'] })
       resetPages()
     }
   }, [])
