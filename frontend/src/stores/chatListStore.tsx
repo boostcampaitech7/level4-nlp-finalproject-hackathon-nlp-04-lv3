@@ -14,7 +14,8 @@ export const useChatListStore = create<ChatListState>()((set) => ({
     set((state) => ({
       chatList: [...prevChatList, ...state.chatList],
     })),
-  addNewChat: (newChat) =>
-    set((state) => ({ chatList: [...state.chatList, newChat] })),
+  addNewChat: (newChat) => {
+    set((state) => ({ chatList: [...state.chatList, newChat] }))
+  },
   resetChatList: () => set({ chatList: [] }),
 }))

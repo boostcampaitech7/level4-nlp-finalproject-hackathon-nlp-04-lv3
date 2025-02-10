@@ -103,7 +103,7 @@ const VocabDetailPage = () => {
       title: 'AI 챗봇 문의',
       description:
         '모르는 것이 있다면, ‘아라부기’ 챗봇을 통해 즉시 질문할 수 있습니다.',
-      component: <VocabChatInterface vocabId={String(vocabData.vocab_id)} />,
+      component: <VocabChatInterface />,
     },
     {
       title: '퀴즈 기능',
@@ -169,7 +169,7 @@ const VocabDetailPage = () => {
 
           {/* 오른쪽 영역: 챗봇 UI 및 도움말 버튼 */}
           <div className="flex flex-col items-center">
-            <VocabChatInterface vocabId={String(vocabData.vocab_id)} />
+            <VocabChatInterface />
             {/* 도움말 영역 – 클릭 시 튜토리얼 오버레이 표시 */}
             <div
               className="mt-4 flex cursor-pointer items-center"

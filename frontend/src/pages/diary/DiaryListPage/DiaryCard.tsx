@@ -20,7 +20,8 @@ const DiaryCard = ({ diary }: { diary: DiaryCardType }) => {
     navigate(`/diary/${diary.diaryId}`)
   }
 
-  const hoverStyles = 'hover:cursor-pointer hover:bg-purple-800 hover:scale-105'
+  const hoverStyles =
+    'hover:cursor-pointer hover:bg-surface-tertiary hover:scale-105'
   return (
     <div
       onClick={handleClickCard}
