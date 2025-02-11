@@ -12,7 +12,15 @@ interface TooltipPosition {
   y: number
 }
 
-const TextContent = ({ text }: { text: string[] }) => {
+const TextContent = ({
+  text,
+  left,
+  top,
+}: {
+  text: string[]
+  left: number
+  top: number
+}) => {
   const { text_id } = useParams<{ text_id: string }>()
   const textId = useMemo(() => {
     const parsedId = parseInt(text_id || '', 10)
@@ -71,9 +79,16 @@ const TextContent = ({ text }: { text: string[] }) => {
         // selection Range의 위치 정보
         const rect = range.getBoundingClientRect()
         setTooltipPosition({
-          x: rect.left + window.scrollX,
-          y: rect.top + window.scrollY - 40, // 툴팁을 위쪽으로 약간 띄움
+          x: rect.left + left - 120,
+          y: rect.top + top - 190, // 툴팁을 위쪽으로 약간 띄움
         })
+        // setTooltipPosition({
+        //   x: rect.left + window.scrollX,
+        //   y: rect.top + window.scrollY - 40, // 툴팁을 위쪽으로 약간 띄움
+        // })
+        console.log(rect.left, rect.right, window.scrollX, window.scrollY)
+        console.log(dragRef.current?.offsetLeft, dragRef.current?.offsetTop)
+        console.log(left, top)
 
         // ---- (1) Range 안의 내용을 추출 ----
         const extracted = range.extractContents() // DocumentFragment
@@ -176,14 +191,14 @@ const TextContent = ({ text }: { text: string[] }) => {
     <div
       ref={dragRef}
       className={
-        'custom-scrollbar-large h-[660px] min-w-[771px] overflow-y-auto whitespace-pre-line rounded-[32px] bg-surface-primary-2 p-[20px] text-text-primary shadow-[0px_0px_13.199999809265137px_0px_rgba(178,148,250,1.00)] body-m'
+        'custom-scrollbar-large relative h-[660px] min-w-[771px] overflow-y-auto overflow-x-visible whitespace-pre-line rounded-[32px] bg-surface-primary-2 p-[20px] text-text-primary shadow-[0px_0px_13.199999809265137px_0px_rgba(178,148,250,1.00)] body-m'
       }
     >
       {getConcatText()}
       {showTooltip && (
         <div
           ref={tooltipRef}
-          className="absolute flex h-[34px] items-center rounded-[16px] bg-background-primary text-text-primary shadow-[0px_0px_13.199999809265137px_0px_rgba(178,148,250,1.00)] transition-opacity duration-300 button-s"
+          className="fixed z-50 flex h-[34px] items-center rounded-[16px] bg-background-primary text-text-primary shadow-[0px_0px_13.199999809265137px_0px_rgba(178,148,250,1.00)] transition-opacity duration-300 button-s"
           style={{
             left: `${tooltipPosition.x}px`,
             top: `${tooltipPosition.y}px`,

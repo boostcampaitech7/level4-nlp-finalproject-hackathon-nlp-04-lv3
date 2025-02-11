@@ -5,7 +5,7 @@ import TextContent from './TextContent'
 import Button from 'components/Button'
 import EasyExplainArea from './EasyExplainArea'
 import ChatbotArea from './ChatbotArea'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 const TextDetailPage = () => {
@@ -48,6 +48,16 @@ const TextDetailPage = () => {
     }
   }
 
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [top, setTop] = useState<number>(0)
+  const [left, setLeft] = useState<number>(0)
+  useEffect(() => {
+    if (containerRef.current) {
+      setTop(containerRef.current.offsetTop)
+      setLeft(containerRef.current.offsetLeft)
+    }
+  }, [containerRef])
+
   return (
     <div
       key={`textdetail-${textId}`}
@@ -66,10 +76,10 @@ const TextDetailPage = () => {
           setTutorialStep={setTutorialStep}
         />
         <div className="flex flex-grow gap-x-[40px]">
-          <div className="flex flex-col gap-y-[20px]">
+          <div ref={containerRef} className="flex flex-col gap-y-[20px]">
             <div className={`relative ${tutorialStep < 3 && 'z-40'}`}>
               {!isFetching && textData ? (
-                <TextContent text={textData.content} />
+                <TextContent text={textData.content} left={left} top={top} />
               ) : (
                 <div className="h-[660px] min-w-[771px] whitespace-pre-line rounded-[32px] bg-surface-primary-2 p-[20px] text-center text-text-primary body-m">
                   본문을 불러오는 중이에요.
