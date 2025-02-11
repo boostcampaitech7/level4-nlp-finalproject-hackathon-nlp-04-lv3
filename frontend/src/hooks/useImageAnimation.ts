@@ -1,4 +1,4 @@
-import { useEffect, RefObject } from 'react'
+import { useEffect } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
@@ -33,7 +33,7 @@ const defaultConfig: ImageAnimationConfig = {
 }
 
 export const useImageAnimation = (
-  containerRef: RefObject<HTMLElement>,
+  containerRef: React.RefObject<HTMLDivElement | null>,
   imageSelector: string,
   config: ImageAnimationConfig = {},
 ) => {

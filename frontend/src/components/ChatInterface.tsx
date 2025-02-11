@@ -1,230 +1,196 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { ChatMessage as ChatMessageType, ChatAction } from '../types/chat'
-import { ChatMessage } from './ChatMessage'
-import { FaPaperPlane } from 'react-icons/fa';
+import { useState, useEffect, useRef, useMemo } from 'react'
+import { ChatbotActionType } from '../types/chat'
+import ChatMessage from './ChatMessage'
+import { FaPaperPlane } from 'react-icons/fa'
+import { useParams } from 'react-router-dom'
+import useTextChatList from 'hooks/useTextChatList'
+import { useChatListStore } from 'stores/chatListStore'
 import 'styles/scrollbar.css'
-
-interface Message {
-  userMessage: string;
-  botMessage: string;
-  timestamp: string;
-}
+import usePostTextChat from 'hooks/text/usePostTextChat'
+import useIntersectionObserver from 'hooks/useIntersectionObserver'
+import { QueryClient } from '@tanstack/react-query'
 
 interface ChatInterfaceProps {
-  vocabId?: string;
-  messages?: ChatMessageType[];
-  actions?: ChatAction[];
-  onSendMessage?: (message: string) => void;
-  className?: string;
-  width?: string;
-  height?: string;
-  messageSize?: string;
+  actions?: ChatbotActionType[]
+  onSendMessage?: (message: string) => void
+  className?: string
+  width?: string
+  height?: string
 }
 
-export const ChatInterface: React.FC<ChatInterfaceProps> = ({
-  vocabId,
-  messages: propMessages,
+const ChatInterface = ({
   actions = [],
-  onSendMessage,
   className = '',
   width = 'w-[400px]',
   height = 'h-[600px]',
-  messageSize = 'text-[22px]',
-}) => {
-  const [localMessages, setLocalMessages] = useState<Message[]>([]);
-  const [inputValue, setInputValue] = useState('');
-  const [conversationId, setConversationId] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const chatContainerRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+}: ChatInterfaceProps) => {
+  const [inputMessage, setInputMessage] = useState('')
 
-  // 스크롤을 아래로 이동
-  useEffect(() => {
-    if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+  const chatContainerRef = useRef<HTMLDivElement>(null)
+
+  const { text_id } = useParams()
+  const textId = useMemo(() => {
+    const parsedId = parseInt(text_id || '', 10)
+    return isNaN(parsedId) ? 0 : parsedId
+  }, [text_id])
+
+  const { chatList, addNewChat, resetChatList, scrollDir, setScrollDir } =
+    useChatListStore()
+  // 연쇄적인 refetch를 막기 위한 변수들
+  // 최초 대화 내역 로드 여부
+  const [firstLoaded, setFirstLoaded] = useState<boolean>(false)
+  // 대화 목록 불러 오는 동안 옵저버가 또 감지되는 걸 막기 위한 변수
+  const [observerStop, setObserverStop] = useState<boolean>(true)
+
+  const [prevHeight, setPrevHeight] = useState<number>(0)
+
+  const { refetch, isFetching, pageNum, setPageNum } = useTextChatList(textId)
+  const { ref: observerRef } = useIntersectionObserver((entry, observer) => {
+    if (observerStop) return
+    observer.unobserve(entry.target)
+    setPrevHeight(chatContainerRef.current?.scrollHeight ?? 0)
+    if (!isFetching && pageNum > 0 && firstLoaded) {
+      setScrollDir(1)
+      refetch()
     }
-  }, [localMessages, propMessages]);
+  })
 
-  // 대화 내역 불러오기 (vocabId가 있을 때만)
   useEffect(() => {
-    const fetchChatHistory = async () => {
-      if (!conversationId || !vocabId) return;
-      
-      try {
-        const response = await fetch(`/api/v1/chatbot/conversations/${conversationId}`, {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
-        
-        if (!response.ok) {
-          throw new Error('Failed to fetch chat history');
-        }
+    setScrollDir(-1)
+    refetch()
+    setTimeout(() => {
+      setFirstLoaded(true)
+    }, 500)
+  }, [])
 
-        const data = await response.json();
-        if (data.status === 'success' && Array.isArray(data.data.messages)) {
-          setLocalMessages(data.data.messages);
-        }
-      } catch (error) {
-        console.error('Failed to fetch chat history:', error);
-      }
-    };
+  useEffect(() => {
+    setObserverStop(true)
+    if (chatContainerRef.current && scrollDir === 1) {
+      chatContainerRef.current.scrollTo({
+        top: chatContainerRef.current.scrollHeight - prevHeight - 50,
+        behavior: 'smooth',
+      })
+    } else if (chatContainerRef.current && scrollDir === -1) {
+      chatContainerRef.current.scrollTo({
+        top: chatContainerRef.current.scrollHeight,
+        behavior: 'smooth',
+      })
+    }
+    setTimeout(() => {
+      setScrollDir(0)
+      setObserverStop(false)
+    }, 500)
+  }, [chatList])
 
-    fetchChatHistory();
-  }, [conversationId, vocabId]);
+  const queryClient = new QueryClient()
+  useEffect(() => {
+    return () => {
+      resetChatList()
+      setPageNum(0)
+      setFirstLoaded(false)
+      queryClient.removeQueries({ queryKey: ['textChatList'] })
+    }
+  }, [])
 
+  const { submitQuestion, isPending } = usePostTextChat(textId)
   const sendMessage = async (message: string) => {
-    if (!message.trim()) return;
-    
-    if (onSendMessage) {
-      onSendMessage(message);
-      setInputValue('');
-      return;
-    }
+    if (!message.trim()) return
+    setScrollDir(-1)
+    addNewChat({
+      id: chatList.length,
+      text: inputMessage,
+      focused: '',
+      role: 'user',
+    })
+    setInputMessage('')
+    submitQuestion(message, '')
+  }
 
-    if (!vocabId) return;
-    
-    setIsLoading(true);
-    const newMessage: Message = {
-      userMessage: message,
-      botMessage: '',
-      timestamp: new Date().toISOString()
-    };
-    setLocalMessages(prev => [...prev, newMessage]);
-    setInputValue('');
-
-    try {
-      const response = await fetch('/api/v1/chatbot/messages', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-        body: JSON.stringify({
-          message,
-          vocabId,
-          conversationId
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to send message');
-      }
-
-      const data = await response.json();
-      if (data.status === 'success') {
-        // 새로운 conversationId가 있다면 저장
-        if (data.data.conversationId && !conversationId) {
-          setConversationId(data.data.conversationId);
-        }
-
-        // 봇의 응답을 메시지 목록에 추가
-        setLocalMessages(prev => {
-          const updated = [...prev];
-          const lastMessage = updated[updated.length - 1];
-          if (lastMessage) {
-            lastMessage.botMessage = data.data.botMessage;
-          }
-          return updated;
-        });
-      }
-    } catch (error) {
-      console.error('Failed to send message:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    sendMessage(inputValue);
-  };
+  const handleClickActionButton = (question: string) => {
+    setScrollDir(-1)
+    addNewChat({
+      id: chatList.length,
+      text: question,
+      focused: '',
+      role: 'user',
+    })
+    setInputMessage('')
+    submitQuestion(question, '')
+  }
 
   return (
     <div
-      className={`flex flex-col bg-surface-primary-2 rounded-[32px] shadow-lg ${width} ${height} ${className}`}
+      className={`flex flex-col rounded-[32px] bg-surface-primary-2 pt-6 shadow-lg ${width} ${height} ${className}`}
     >
       {/* 채팅 메시지 영역 */}
-      <div 
+      <div
+        key={`message-container-${textId}`}
         ref={chatContainerRef}
-        className="flex-1 p-6 overflow-y-auto space-y-4"
+        className="custom-scrollbar-large flex-1 space-y-4 overflow-y-auto px-6 pb-6"
       >
-        {propMessages ? (
-          // 외부에서 주입된 메시지 표시
-          propMessages.map((message, index) => (
+        <div ref={observerRef} />
+        <div className="h-[15px] w-full" />
+        {chatList.map((chat, idx) => {
+          return (
             <ChatMessage
-              key={message.id}
-              message={message}
-              messageSize={messageSize}
-              index={index}
+              key={`${chat.role}-msg-wrapper-${chat.id}-${idx}`}
+              chat={chat}
             />
-          ))
-        ) : (
-          // 로컬 메시지 표시
-          localMessages.map((message, index) => (
-            <div key={index} className="space-y-2">
-              {message.userMessage && (
-                <div className="flex justify-end">
-                  <div className="bg-surface-primary-1 rounded-2xl px-4 py-2 max-w-[70%]">
-                    {message.userMessage}
-                  </div>
-                </div>
-              )}
-              {message.botMessage && (
-                <div className="flex justify-start">
-                  <div className="bg-surface-secondary rounded-2xl px-4 py-2 max-w-[70%]">
-                    {message.botMessage}
-                  </div>
-                </div>
-              )}
-            </div>
-          ))
-        )}
-        {isLoading && (
-          <div className="flex justify-start">
-            <div className="bg-surface-secondary rounded-2xl px-4 py-2">
-              입력 중...
-            </div>
-          </div>
-        )}
+          )
+        })}
       </div>
 
-      {/* 액션 버튼 영역 */}
-      {actions.length > 0 && (
-        <div className="py-2 px-4">
-          <div className="flex flex-wrap gap-2 justify-center">
+      <div className="flex w-full flex-col items-center justify-center gap-3 p-4">
+        {/* 액션 버튼 영역 */}
+        {actions.length > 0 && (
+          <div className="flex w-full justify-end gap-2">
             {actions.map((action) => (
               <button
                 key={action.id}
-                onClick={action.onClick}
-                className="button-s px-4 py-2 bg-button-secondary-1 rounded-[14px] text-text-secondary hover:bg-[#d8d8d8] transition-colors whitespace-nowrap"
+                onClick={() => handleClickActionButton(action.question)}
+                className="whitespace-nowrap rounded-[14px] bg-button-secondary-1 px-4 py-2 text-text-secondary transition-colors button-s hover:bg-[#d8d8d8]"
+                disabled={isPending}
               >
                 {action.label}
               </button>
             ))}
           </div>
-        </div>
-      )}
-
-      {/* 입력 영역 */}
-      <div className="p-4">
-        <form onSubmit={handleSubmit} className="flex items-center gap-2">
-          <input
-            ref={inputRef}
-            type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            placeholder="메세지를 입력하기"
-            className="button-s flex-1 min-w-0 py-2 px-4 bg-surface-secondary rounded-2xl text-text-intermidiate outline-none"
-          />
-          <button
-            type="submit"
-            className="flex-shrink-0 flex h-[40px] w-[40px] items-center justify-center rounded-full bg-surface-primary-1 hover:bg-[#d8d8d8] transition-colors"
+        )}
+        {/* 입력 영역 */}
+        <div className="flex h-[47px] w-full items-center justify-center rounded-2xl bg-surface-secondary p-2.5">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault()
+              if (!isPending) {
+                sendMessage(inputMessage)
+              }
+            }}
+            className="w-full"
           >
-            <FaPaperPlane size={16} />
-          </button>
-        </form>
+            <div className="flex items-center gap-2">
+              <div className="flex flex-1 items-center">
+                <input
+                  type="text"
+                  value={inputMessage}
+                  onChange={(e) => setInputMessage(e.target.value)}
+                  placeholder="궁금한 내용을 물어보세요"
+                  className="h-8 w-full bg-transparent text-text-secondary outline-none button-s"
+                  disabled={isPending}
+                />
+              </div>
+              <button
+                type="submit"
+                className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-surface-primary-1 transition-colors hover:bg-button-primary-hover-1 disabled:cursor-not-allowed disabled:opacity-50"
+                disabled={isPending}
+              >
+                <FaPaperPlane size={16} className="text-text-primary" />
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
-  );
-};
+  )
+}
+
+export default ChatInterface

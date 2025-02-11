@@ -6,7 +6,7 @@ class VocabStudyRecordDTO(BaseModel):
     record_id: int
     vocab_id: int
     vocab: str
-    hanja: str
+    hanja: List[str]
     dict_mean: str
     easy_explain: List[str]
     correct_example: List[str]
@@ -25,8 +25,8 @@ class TextStudyRecordDTO(BaseModel):
     record_id: int
     text_id: int
     title: str
-    content: str
-    type: str
+    content: List[str]
+    type: bool
     category: str
     quiz_id: int
     quiz_level: int

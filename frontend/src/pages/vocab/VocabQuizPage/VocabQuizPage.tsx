@@ -1,162 +1,115 @@
 // VocabQuizPage.tsx
-import { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react'
+import { useParams } from 'react-router-dom'
 import Button from 'components/Button'
 import Modal from 'components/Modal'
-
-interface QuizData {
-  quiz_id: number
-  question: [string, string, string]
-  options: [string, string, string, string, string, string, string, string, string, string, string, string]
-}
-
-interface QuizResultData {
-  quiz_id: number
-  question: [string, string, string]
-  options: [string, string, string, string, string, string, string, string, string, string, string, string]
-  answer: [number, number, number]
-  user_answer: number[]
-  correct: boolean[]
-  answer_explain: [string, string, string, string, string, string, string, string, string, string, string, string]
-}
-
-const dummyQuizData: QuizData = {
-  quiz_id: 111234567,
-  question: [
-    "다음 중 '독실한'이 올바르게 사용된 문장을 고르세요.",
-    "'독실한'의 뜻으로 알맞은 것은?",
-    "'독실한'과 유사한 단어를 고르세요."
-  ],
-  options: [
-    "그는 독실한 신앙심으로 매일 기도한다.",
-    "그녀는 독실한 운동 실력으로 상을 받았다.",
-    "독실한 맛이 나는 음식이 좋다.",
-    "그는 독실한 옷차림으로 파티에 참석했다.",
-    "깊고 성실한 태도를 가진",
-    "빠르고 날렵한",
-    "화려하고 눈에 띄는",
-    "느긋하고 여유로운",
-    "집중하는",
-    "충실한",
-    "산만한",
-    "방탕한"
-  ]
-}
-
-const dummyQuizResult: QuizResultData = {
-  quiz_id: 111234567,
-  question: dummyQuizData.question,
-  options: dummyQuizData.options,
-  answer: [0, 0, 1],
-  user_answer: [],
-  correct: [],
-  answer_explain: [
-    "신앙심과 연결되어 올바른 사용입니다.",
-    "'운동 실력'과는 어울리지 않는 표현입니다.",
-    "'맛'과 연결되어 잘못된 사용입니다.",
-    "단정한 옷차림과 같은 표현이 더 적절합니다.",
-    "'독실한'의 의미와 맞습니다.",
-    "'독실한'과는 무관합니다.",
-    "화려하고 눈에 띄는",
-    "느긋하고 여유로운",
-    "집중하는",
-    "충실한",
-    "산만한",
-    "방탕한"
-  ]
-}
+import ProgressBar from 'components/ProgressBar'
+import useVocabQuiz from 'hooks/useVocabQuiz'
+import usePostVocabQuizSolve from 'hooks/usePostVocabQuizSolve'
+import { useQuizUserAnswerStore } from 'stores/quizUserAnswerStore'
+import { QueryClient } from '@tanstack/react-query'
 
 const VocabQuizPage = () => {
-  const navigate = useNavigate()
-  const { vocab_id, level } = useParams<{ vocab_id: string; level: string }>()
-  const [quizData, setQuizData] = useState<QuizData | null>(null)
+  const { vocab_id, quiz_id } = useParams<{
+    vocab_id: string
+    quiz_id: string
+  }>()
+  const vocabId = useMemo(() => {
+    const parsedId = parseInt(vocab_id || '', 10)
+    return isNaN(parsedId) ? 0 : parsedId
+  }, [vocab_id])
+  const qId = useMemo(() => {
+    const parsedQuizId = parseInt(quiz_id || '', 10)
+    return isNaN(parsedQuizId) ? 0 : parsedQuizId
+  }, [quiz_id])
+
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [selectedOption, setSelectedOption] = useState<number | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [userAnswers, setUserAnswers] = useState<number[]>([])
-  const [showModal, setShowModal] = useState(false)
 
+  const { quizSolve, setQuizId, setAnswer, resetQuizSolve } =
+    useQuizUserAnswerStore()
+  const [showModal, setShowModal] = useState(false)
   useEffect(() => {
-    const simulateApiCall = () => {
-      setTimeout(() => {
-        setQuizData(dummyQuizData)
-        setIsLoading(false)
-      }, 500)
+    setQuizId(qId)
+  }, [qId])
+
+  const { data: vocabQuiz, isLoading: isQuizLoading } = useVocabQuiz(qId)
+
+  const queryClient = new QueryClient()
+  useEffect(() => {
+    return () => {
+      queryClient.removeQueries({ queryKey: ['vocabQuiz'] })
+      resetQuizSolve()
     }
-    simulateApiCall()
   }, [])
 
   useEffect(() => {
-    setSelectedOption(userAnswers[currentQuestionIndex] ?? null)
-  }, [currentQuestionIndex, userAnswers])
+    setSelectedOption(quizSolve.userAnswer[currentQuestionIndex] ?? null)
+  }, [currentQuestionIndex, quizSolve.userAnswer])
 
   const handleOptionSelect = (index: number) => {
-    const newAnswers = [...userAnswers]
-    newAnswers[currentQuestionIndex] = index
-    setUserAnswers(newAnswers)
+    setAnswer(currentQuestionIndex, index)
     setSelectedOption(index)
 
     if (currentQuestionIndex < 2) {
-      setTimeout(() => setCurrentQuestionIndex(prev => prev + 1), 500)
+      setTimeout(() => setCurrentQuestionIndex((prev) => prev + 1), 500)
     }
   }
 
+  const { mutate: submitQuizSolve } = usePostVocabQuizSolve(vocabId)
   const handleResultCheck = () => {
-    const isAllAnswered = quizData?.question.every(
-      (_, index) => userAnswers[index] !== undefined
-    )
+    const isAllAnswered = quizSolve.userAnswer.every((answer, _) => {
+      return [0, 1, 2, 3].includes(answer)
+    })
     if (!isAllAnswered) {
       setShowModal(true)
       return
     }
-
-    // 결과 처리 로직
-  const result = {
-    ...dummyQuizResult,
-    user_answer: userAnswers as [number, number, number],
-    correct: userAnswers.map((ans, idx) => 
-      ans === dummyQuizResult.answer[idx]
-    ) as [boolean, boolean, boolean]
-  }
-
-    sessionStorage.setItem('quizResult', JSON.stringify(result))
-    navigate(`/vocab/${vocab_id}/quiz/${level}/result`)
+    submitQuizSolve(quizSolve)
   }
   // 프로그레스 바 클릭 핸들러 수정
-const handleProgressClick = (index: number) => {
-  setCurrentQuestionIndex(index)
-  setSelectedOption(userAnswers[index] ?? null)
-}
-  if (isLoading || !quizData) {
-    return <div className="flex justify-center items-center h-screen">Loading...</div>
+  const handleProgressClick = (index: number) => {
+    setCurrentQuestionIndex(index)
+    setSelectedOption(quizSolve.userAnswer[index] ?? null)
+  }
+  if (isQuizLoading || !vocabQuiz) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        Loading...
+      </div>
+    )
   }
 
   return (
-    <div className="flex justify-center w-full min-h-screen bg-background-primary">
+    <div className="flex min-h-screen w-full justify-center bg-background-primary">
       <div className="w-full max-w-[960px] px-4">
         <div className="py-8">
           <div className="mb-8">
-            <h1 className="title-m text-text-primary">퀴즈를 한번 풀어볼까요?</h1>
+            <h1 className="text-text-primary title-m">
+              퀴즈를 한번 풀어볼까요?
+            </h1>
           </div>
-          
-          <div className="w-full px-5 py-[75px] bg-surface-primary-2 rounded-[32px] flex flex-col justify-center items-center gap-14">
-            <div className="w-full flex-col justify-start items-start gap-[50px] flex">
-              <div className="w-full justify-center items-start inline-flex">
-                <div className="grow shrink basis-0 px-[33px]">
+
+          <div className="flex w-full flex-col items-center justify-center gap-14 rounded-[32px] bg-surface-primary-2 px-5 py-[75px]">
+            <div className="flex w-full flex-col items-start justify-start gap-[50px]">
+              <div className="inline-flex w-full items-start justify-center">
+                <div className="shrink grow basis-0 px-[33px]">
                   <div className="text-text-primary title-m">
-                    {quizData.question[currentQuestionIndex]}
+                    {vocabQuiz.question[currentQuestionIndex]}
                   </div>
                 </div>
               </div>
 
-              <div className="w-full px-[33px] pb-3.5 flex-col justify-center items-center gap-[30px] flex">
-                {quizData.options
-                  .slice(currentQuestionIndex * 4, (currentQuestionIndex + 1) * 4)
+              <div className="flex w-full flex-col items-center justify-center gap-[30px] px-[33px] pb-3.5">
+                {vocabQuiz.options
+                  .slice(
+                    currentQuestionIndex * 4,
+                    (currentQuestionIndex + 1) * 4,
+                  )
                   .map((option, index) => (
                     <button
                       key={index}
-                      className={`w-full h-[70px] px-[34px] py-[5px] rounded-[20px] flex items-center gap-[3px] 
-                        ${selectedOption === index ? 'bg-button-primary-1' : 'bg-background-primary hover:bg-button-secondary-1'}`}
+                      className={`flex h-[70px] w-full items-center gap-[3px] rounded-[20px] px-[34px] py-[5px] ${selectedOption === index ? 'bg-button-primary-1' : 'bg-background-primary hover:bg-button-secondary-1'}`}
                       onClick={() => handleOptionSelect(index)}
                     >
                       <div className="text-text-primary body-m">{option}</div>
@@ -165,19 +118,12 @@ const handleProgressClick = (index: number) => {
               </div>
             </div>
 
-            <div className="self-stretch w-full px-[29px] py-[20px] justify-center items-end gap-[5px] inline-flex">
-              {quizData?.question.map((_, index) => (
-                <button
-                  key={index}
-                  className={`grow shrink basis-0 h-[9px] rounded-[32px] transition-transform duration-200 transform origin-bottom hover:scale-y-150 cursor-pointer ${
-                    currentQuestionIndex === index
-                      ? 'bg-accent-highlight scale-y-110'
-                      : 'bg-background-primary hover:bg-accent-highlight'
-                  }`}
-                  onClick={() => handleProgressClick(index)}
-                  aria-label={`문제 ${index + 1}`}
-                />
-              ))}
+            <div className="inline-flex w-full items-end justify-center gap-[5px] self-stretch px-[29px] py-[20px]">
+              <ProgressBar
+                total={vocabQuiz.question.length || 0}
+                current={currentQuestionIndex}
+                onClick={handleProgressClick}
+              />
             </div>
 
             {currentQuestionIndex === 2 && selectedOption !== null && (
@@ -196,7 +142,7 @@ const handleProgressClick = (index: number) => {
         isOpen={showModal}
         onClose={() => setShowModal(false)}
         title="⚠️ 미완료된 문제"
-        message={`${quizData.question.length - userAnswers.filter(Boolean).length}개의 문제가 남았습니다!`}
+        message={`${vocabQuiz.question.length - quizSolve.userAnswer.filter(Boolean).length}개의 문제가 남았습니다!`}
       />
     </div>
   )

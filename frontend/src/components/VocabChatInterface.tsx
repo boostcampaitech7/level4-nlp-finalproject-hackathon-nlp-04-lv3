@@ -1,239 +1,198 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { FaPaperPlane } from 'react-icons/fa';
-import Button from './Button';
+import { useState, useEffect, useRef, useMemo } from 'react'
+import { FaPaperPlane } from 'react-icons/fa'
+import Button from './Button'
 import 'styles/scrollbar.css'
+import { useParams } from 'react-router'
+import { useChatListStore } from 'stores/chatListStore'
+import useVocabChatList from 'hooks/vocab/useVocabChatList'
+import ChatMessage from './ChatMessage'
+import useIntersectionObserver from 'hooks/useIntersectionObserver'
+import { QueryClient } from '@tanstack/react-query'
+import usePostVocabChat from 'hooks/vocab/usePostVocabChat'
 
-interface Message {
-  userMessage: string;
-  botMessage: string;
-  timestamp: string;
-}
+const VocabChatInterface = () => {
+  const [inputMessage, setInputMessage] = useState('')
 
-interface VocabChatInterfaceProps {
-  vocabId: string;
-}
+  const chatContainerRef = useRef<HTMLDivElement>(null)
 
-export const VocabChatInterface: React.FC<VocabChatInterfaceProps> = ({ vocabId }) => {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [inputMessage, setInputMessage] = useState('');
-  const [conversationId, setConversationId] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const { vocab_id } = useParams()
+  const vocabId = useMemo(() => {
+    const parsedId = parseInt(vocab_id || '', 10)
+    return isNaN(parsedId) ? 0 : parsedId
+  }, [vocab_id])
 
-  // 새 메시지가 추가될 때마다 스크롤을 아래로 이동
-  useEffect(() => {
-    if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+  const { chatList, addNewChat, resetChatList, scrollDir, setScrollDir } =
+    useChatListStore()
+  // 연쇄적인 refetch를 막기 위한 변수들
+  // 최초 대화 내역 로드 여부
+  const [firstLoaded, setFirstLoaded] = useState<boolean>(false)
+  // 대화 목록 불러 오는 동안 옵저버가 또 감지되는 걸 막기 위한 변수
+  const [observerStop, setObserverStop] = useState<boolean>(true)
+
+  const [prevHeight, setPrevHeight] = useState<number>(0)
+
+  const { refetch, isFetching, pageNum, setPageNum } = useVocabChatList(vocabId)
+  const { ref: observerRef } = useIntersectionObserver((entry, observer) => {
+    if (observerStop) return
+    observer.unobserve(entry.target)
+    setPrevHeight(chatContainerRef.current?.scrollHeight ?? 0)
+    if (!isFetching && pageNum > 0 && firstLoaded) {
+      setScrollDir(1)
+      refetch()
     }
-  }, [messages]);
+  })
 
   useEffect(() => {
-    // 대화 내역 불러오기
-    const fetchChatHistory = async () => {
-      if (!conversationId) return;
-      
-      try {
-        const response = await fetch(`/api/v1/chatbot/conversations/${conversationId}`, {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
-        
-        if (!response.ok) {
-          throw new Error('Failed to fetch chat history');
-        }
+    setScrollDir(-1)
+    refetch()
+    setTimeout(() => {
+      setFirstLoaded(true)
+    }, 500)
+  }, [])
 
-        const data = await response.json();
-        if (data.status === 'success' && Array.isArray(data.data.messages)) {
-          setMessages(data.data.messages);
-        }
-      } catch (error) {
-        console.error('Failed to fetch chat history:', error);
-      }
-    };
+  useEffect(() => {
+    setObserverStop(true)
+    if (chatContainerRef.current && scrollDir === 1) {
+      chatContainerRef.current.scrollTo({
+        top: chatContainerRef.current.scrollHeight - prevHeight - 50,
+        behavior: 'smooth',
+      })
+    } else if (chatContainerRef.current && scrollDir === -1) {
+      chatContainerRef.current.scrollTo({
+        top: chatContainerRef.current.scrollHeight,
+        behavior: 'smooth',
+      })
+    }
+    setTimeout(() => {
+      setScrollDir(0)
+      setObserverStop(false)
+    }, 500)
+  }, [chatList])
 
-    fetchChatHistory();
-  }, [conversationId]);
+  const queryClient = new QueryClient()
+  useEffect(() => {
+    return () => {
+      resetChatList()
+      setPageNum(0)
+      setFirstLoaded(false)
+      queryClient.removeQueries({ queryKey: ['vocabChatList'] })
+    }
+  }, [])
 
+  const { submitQuestion, isPending } = usePostVocabChat(vocabId)
   const sendMessage = async (message: string) => {
-    if (!message.trim()) return;
-    
-    setIsLoading(true);
-    // 즉시 사용자 메시지를 UI에 표시
-    const newMessage: Message = {
-      userMessage: message,
-      botMessage: '',
-      timestamp: new Date().toISOString()
-    };
-    setMessages(prev => [...prev, newMessage]);
-    setInputMessage('');
+    if (!message.trim()) return
+    setScrollDir(-1)
+    addNewChat({
+      id: chatList.length,
+      text: message,
+      role: 'user',
+    })
+    setInputMessage('')
+    submitQuestion(message)
+  }
 
-    try {
-      const response = await fetch('/api/v1/chatbot/messages', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-        body: JSON.stringify({
-          conversationId: conversationId || undefined,
-          userMessage: message,
-          vocabId: vocabId
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to send message');
-      }
-
-      const data = await response.json();
-      if (data.status === 'success') {
-        setConversationId(data.data.conversationId);
-        // 기존 메시지 배열에서 마지막 메시지를 업데이트
-        setMessages(prev => {
-          if (prev.length === 0) return prev;
-          
-          return prev.map((message, index) => {
-            if (index === prev.length - 1) {
-              return {
-                userMessage: message.userMessage,
-                botMessage: data.data.botMessage,
-                timestamp: message.timestamp
-              };
-            }
-            return message;
-          });
-        });
-      }
-    } catch (error) {
-      console.error('Failed to send message:', error);
-      // 에러 발생 시 에러 메시지를 챗봇 응답으로 표시
-      setMessages(prev => {
-        if (prev.length === 0) return prev;
-        
-        return prev.map((message, index) => {
-          if (index === prev.length - 1) {
-            return {
-              userMessage: message.userMessage,
-              botMessage: '죄송합니다. 메시지 전송 중 오류가 발생했습니다.',
-              timestamp: message.timestamp
-            };
-          }
-          return message;
-        });
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleButtonClick = (text: string) => {
-    if (!isLoading) {
-      sendMessage(text);
-    }
-  };
+  const handleButtonClick = (question: string) => {
+    setScrollDir(-1)
+    addNewChat({
+      id: chatList.length,
+      text: question,
+      role: 'user',
+    })
+    setInputMessage('')
+    submitQuestion(question)
+  }
 
   return (
-    <div className="w-[345px] flex-col justify-center items-center gap-2.5 inline-flex">
-      <div className="h-[770px] pb-[9px] bg-surface-primary-2 rounded-[32px] shadow-[0px_0px_8.100000381469727px_5px_rgba(0,0,0,0.05)] border flex-col justify-start items-center flex overflow-hidden">
-        <div className="w-[345px] h-[770px] px-6 py-[17px] flex-col justify-between items-center inline-flex">
-          {/* Chat history area */}
-          <div 
-            ref={chatContainerRef}
-            className="self-stretch h-[600px] flex-col justify-start items-center gap-4 flex overflow-y-auto"
-          >
-            {messages.map((message, index) => (
-              <div key={index} className="w-full space-y-4">
-                <div className="flex justify-end">
-                  <div className="max-w-[80%] bg-button-primary-1 text-surface-secondary rounded-2xl p-3">
-                    {message.userMessage}
-                  </div>
-                </div>
-                {(message.botMessage || isLoading) && (
-                  <div className="flex justify-start">
-                    <div className="max-w-[80%] bg-surface-secondary rounded-2xl p-3">
-                      {message.botMessage || '답변을 생성하고 있습니다...'}
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-          
-          {/* Chat input area */}
-          {/* Chat input area */}
-<div className="w-full h-[126.95px] pt-[30px] flex-col justify-start items-center gap-3 flex">
-  <div className="w-full justify-center items-center gap-2.5 flex"> {/* inline-flex -> flex + flex-wrap */}
-  <Button
-    size="small"
-    color="grey"
-    text="쉽게 설명"
-    onClick={() => handleButtonClick("쉽게 설명해주세요")}
-    plusClasses="px-[10px] button-s flex-1 min-w-[92px]" // flex-1 + min-width 추가
-  />
-  <Button
-    size="small"
-    color="grey"
-    text="반대말"
-    onClick={() => handleButtonClick("반대말을 알려주세요")}
-    plusClasses="px-[10px] button-s flex-1 min-w-[92px]"
-  />
-  <Button
-    size="small"
-    color="grey"
-    text="추가 설명"
-    onClick={() => handleButtonClick("추가 설명해주세요")}
-    plusClasses="px-[10px] button-s flex-1 min-w-[92px]"
-  />
-</div>
-  <div className="w-full h-[47px] p-2.5 bg-surface-secondary rounded-2xl flex justify-center items-start">
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        if (!isLoading) {
-          sendMessage(inputMessage);
-        }
-      }}
-      className="w-full"
-    >
-      <div className="flex items-center gap-2">
-        <div className="flex-1">
-          <input
-            type="text"
-            value={inputMessage}
-            onChange={(e) => setInputMessage(e.target.value)}
-            placeholder="메시지를 입력해 주세요"
-            className="w-full h-8 text-text-secondary button-s bg-transparent outline-none"
-            disabled={isLoading}
-          />
-        </div>
-        <button
-          type="submit"
-          className="flex-shrink-0 w-8 h-8 bg-surface-primary-1 rounded-full flex items-center justify-center hover:bg-button-primary-hover-1 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          disabled={isLoading}
+    <div className="inline-flex w-[345px] flex-col items-center justify-center gap-2.5">
+      <div
+        key={`chatbot-${vocabId}`}
+        className="flex h-[770px] w-[345px] flex-col rounded-[32px] border bg-surface-primary-2 pb-[9px] pt-6 shadow-[0px_0px_8.100000381469727px_5px_rgba(0,0,0,0.05)]"
+      >
+        {/* Chat history area */}
+        <div
+          key={`message-container-${vocabId}`}
+          ref={chatContainerRef}
+          className="custom-scrollbar-large w-full flex-1 space-y-4 overflow-y-auto px-6 pb-6"
         >
-          <FaPaperPlane size={16} className="text-text-primary" />
-        </button>
-      </div>
-    </form>
-  </div>
-</div>
+          <div ref={observerRef} />
+          <div className="h-[15px] w-full" />
+          {chatList.map((chat, idx) => {
+            return (
+              <ChatMessage
+                key={`${chat.role}-msg-wrapper-${chat.id}-${idx}`}
+                chat={chat}
+              />
+            )
+          })}
+        </div>
 
-        </div>
-      </div>
-      {/* Help section */}
-      <div className="justify-start items-center inline-flex">
-        <div className="w-[32px] h-[32px] px-[11px] py-0.5 bg-white/80 rounded-[17.50px] border-2 border-[#707070] flex-col justify-center items-center gap-2.5 inline-flex">
-          <div className="text-center text-text-secondary body-s leading-[31.20px] tracking-tight">
-            ?
+        {/* Chat input area */}
+        <div className="flex h-[126.95px] w-full flex-col items-center justify-start gap-3 p-4">
+          <div className="flex w-full items-center justify-center gap-2.5">
+            {' '}
+            {/* inline-flex -> flex + flex-wrap */}
+            <Button
+              size="small"
+              color="grey"
+              text="비슷한 말"
+              onClick={() => handleButtonClick('이 단어의 유의어를 알려줘.')}
+              plusClasses="px-[10px] button-s flex-1 min-w-[92px]" // flex-1 + min-width 추가
+            />
+            <Button
+              size="small"
+              color="grey"
+              text="반대말"
+              onClick={() => handleButtonClick('이 단어의 반의어를 알려줘.')}
+              plusClasses="px-[10px] button-s flex-1 min-w-[92px]"
+            />
+            <Button
+              size="small"
+              color="grey"
+              text="대화 예시"
+              onClick={() =>
+                handleButtonClick(
+                  '이 단어를 활용해서 일상 생활에서 발생할 수 있는 대화 예시를 만들어줘.',
+                )
+              }
+              plusClasses="px-[10px] button-s flex-1 min-w-[92px]"
+            />
           </div>
-        </div>
-        <div className="p-2.5 justify-center items-center gap-2.5 flex">
-          <div className="text-text-secondary body-s">
-            현재 페이지의 사용법 알아보기
+          <div className="flex h-[47px] w-full items-center justify-center rounded-2xl bg-surface-secondary p-2.5">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault()
+                if (!isPending) {
+                  sendMessage(inputMessage)
+                }
+              }}
+              className="w-full"
+            >
+              <div className="flex items-center gap-2">
+                <div className="flex flex-1 items-center">
+                  <input
+                    type="text"
+                    value={inputMessage}
+                    onChange={(e) => setInputMessage(e.target.value)}
+                    placeholder="궁금한 내용을 물어보세요"
+                    className="h-8 w-full bg-transparent text-text-secondary outline-none button-s"
+                    disabled={isPending}
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-surface-primary-1 transition-colors hover:bg-button-primary-hover-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  disabled={isPending}
+                >
+                  <FaPaperPlane size={16} className="text-text-primary" />
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
+
+export default VocabChatInterface

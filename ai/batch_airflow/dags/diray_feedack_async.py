@@ -4,22 +4,24 @@ import json
 import asyncio
 import aiohttp
 import asyncpg
+import logging
 from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.providers.postgres.operators.postgres import PostgresOperator
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 from airflow.operators.python import PythonOperator
 from dotenv import load_dotenv, find_dotenv
-import logging
+from pendulum import timezone
 
 
 load_dotenv(find_dotenv())
 logger = logging.getLogger(__name__)
 
 
+kst = timezone("Asia/Seoul")
+SCHEMA = os.getenv("SCHEMA").upper()
 with open(f"{os.getenv('AIRFLOW_DIR')}/prompt.json", "r", encoding="utf-8") as f:
     prompt = json.load(f)
-feedback_prompt = prompt["feedback_prompt"]
 
 
 class CompletionExecutor:
@@ -30,7 +32,7 @@ class CompletionExecutor:
             self._host = f"https://clovastudio.stream.ntruss.com/testapp/v2/tasks/{model_name}/chat-completions"
         self._api_key = os.getenv("NAVER_API_KEY")
 
-        self.request_data = {
+        self.hyper_parameter = {
             "topP": 0.3,
             "topK": 0,
             "maxTokens": 4096,
@@ -41,25 +43,29 @@ class CompletionExecutor:
             "seed": 0,
         }
 
-        self.prompt = [
-            {
-                "role": "system",
-                "content": feedback_prompt,
-            },
-            {"role": "user", "content": None},
-        ]
+        self.system_prompt = prompt["feedback_prompt"]
 
     async def execute(self, session, diary):
         headers = {
             "Authorization": f"Bearer {self._api_key}",
             "Content-Type": "application/json; charset=utf-8",
         }
-        self.prompt[1]["content"] = f"**일기**:  \n{diary}"
-        self.request_data["messages"] = self.prompt
-        logger.info(f"request body: {self.request_data}")
+
+        user_prompt = f"**일기**:  \n{diary}"
+        messages = {
+            "messages": [
+                {
+                    "role": "system",
+                    "content": self.system_prompt,
+                },
+                {"role": "user", "content": user_prompt},
+            ]
+        }
+        request_data = {**self.hyper_parameter, **messages}
+        logger.info(f"request body: {request_data}")
 
         async with session.post(
-            self._host, headers=headers, json=self.request_data
+            self._host, headers=headers, json=request_data
         ) as response:
             response_body = await response.json()
             return response_body["result"]["message"]["content"]
@@ -127,7 +133,7 @@ async def generate_save_feedback(api, session, conn, diary_id, text):
     if check_jailbreaking(feedback):
         feedbacks, review = None, None
         status = 3
-        logger.waring(f"jailbreaking: {text}")
+        logger.warning(f"jailbreaking: {text}")
     else:
         feedbacks, review = parse_feedback_review(text, feedback)
         status = 2
@@ -137,13 +143,8 @@ async def generate_save_feedback(api, session, conn, diary_id, text):
         logger.info(f"review: {review}")
 
     # 3. (비동기) 일기 피드백과 리뷰 DB 저장하기
-    await conn.execute(
-        "UPDATE DIARIES SET FEEDBACK = $1, REVIEW = $2, STATUS = $3 WHERE DIARY_ID = $4",
-        feedbacks,
-        review,
-        status,
-        diary_id,
-    )
+    query = f"UPDATE {SCHEMA}.DIARIES SET FEEDBACK = $1, REVIEW = $2, STATUS = $3 WHERE DIARY_ID = $4"
+    await conn.execute(query, feedbacks, review, status, diary_id)
 
     logger.info(f"✅ Diary {diary_id} 업데이트 완료.")
 
@@ -177,12 +178,17 @@ def trigger_feedback_generation(api, **kwargs):
     asyncio.run(generate_save_feedbacks(api, kwargs["ti"]))
 
 
-default_args = {"owner": "airflow", "retries": 0, "retry_delay": timedelta(seconds=5)}
+default_args = {
+    "owner": "airflow",
+    "retries": 1,
+    "retry_delay": timedelta(seconds=5),
+    "timezone": kst,
+}
 
 with DAG(
     dag_id="diary_feedback_async",
     default_args=default_args,
-    start_date=datetime(2025, 1, 25),
+    start_date=datetime(2025, 1, 25, tzinfo=kst),
     schedule_interval="0 1 * * *",
     catchup=True,
     tags=["diary_feedback"],
@@ -195,16 +201,28 @@ with DAG(
         postgres_conn_id="my_postgres_conn",
         sql="""
             SELECT diary_id, text
-            FROM DIARIES
-            WHERE created_at::date = '{{ macros.ds_add(ds, -1) }}'::date AND status = 1
-        """,
+            FROM {{ params.schema }}.DIARIES
+            WHERE created_at::date = '{{ macros.ds_add(ds, 1) }}'::date AND status = 1
+        """,  # macros.ds_add(ds, -1) -> macros.ds_add(ds, 1)로 수정 (시스템 오류인지 몰라도 이래야 어제 일기를 수행함)
+        params={"schema": SCHEMA},
         do_xcom_push=True,
     )
 
+    # 2. 일기 피드백 생성하고 저장하기
     generate_save_diary_feedback_task = PythonOperator(
         task_id="generate_save_diary_feedback",
         python_callable=trigger_feedback_generation,
         op_kwargs={"api": completion_executor},
     )
 
-    get_yesterday_diaries_task >> generate_save_diary_feedback_task
+    # 3. 인덱스 재정렬
+    sort_diary_task = PostgresOperator(
+        task_id="sort_diary",
+        postgres_conn_id="my_postgres_conn",
+        sql="""
+            CLUSTER {{ params.schema }}.DIARIES USING idx_user_created_at;
+        """,
+        params={"schema": SCHEMA},
+    )
+
+    get_yesterday_diaries_task >> generate_save_diary_feedback_task >> sort_diary_task

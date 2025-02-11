@@ -1,13 +1,17 @@
-{"compilerOptions": {
-    "baseUrl": "src",
-    "paths": {
-      "styles/*": ["styles/*"]
-    }
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+
+    "outDir": "../dist",
+    "jsx": "react-jsx",
+    "skipLibCheck": true
   },
   "files": [],
   "references": [
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }
   ],
-  "include": ["src/types/**/*.d.ts", "src/**/*"]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.d.ts"]
 }

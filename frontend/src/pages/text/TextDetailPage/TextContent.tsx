@@ -1,21 +1,24 @@
-import { useQueryClient } from '@tanstack/react-query'
-import { TextDataType } from 'types'
 import 'styles/scrollbar.css'
 import 'styles/drag.css'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import useTextAccount from 'hooks/temp.useTextAccount'
-import { useTextChatMessagesStore } from 'stores/textChatmessagesStore'
-import { ChatMessage } from 'types/chat'
+import useTextAccount from '../../../hooks/text/useTextAccount'
+import { ChatType } from 'types/chat'
 import { useParams } from 'react-router'
+import { useChatListStore } from 'stores/chatListStore'
+import usePostTextChat from 'hooks/text/usePostTextChat'
 
 interface TooltipPosition {
   x: number
   y: number
 }
 
-const TextContent = () => {
-  const queryClient = useQueryClient()
-  const textData = queryClient.getQueryData<TextDataType>(['textData'])
+const TextContent = ({ text }: { text: string[] }) => {
+  const { text_id } = useParams<{ text_id: string }>()
+  const textId = useMemo(() => {
+    const parsedId = parseInt(text_id || '', 10)
+    return isNaN(parsedId) ? 0 : parsedId
+  }, [text_id])
+  const { requestTextAccount } = useTextAccount(textId)
 
   const [showTooltip, setShowTooltip] = useState(false)
   const [tooltipPosition, setTooltipPosition] = useState<TooltipPosition>({
@@ -95,7 +98,7 @@ const TextContent = () => {
       }
     }
 
-    // 툴팁 외부를 클릭했을 때 툴팁을 닫고 하이라이트트 해제
+    // 툴팁 외부를 클릭했을 때 툴팁을 닫고 하이라이트 해제
     const handleClickOutside = (e: MouseEvent) => {
       if (
         (!tooltipRef.current && !showTooltip) ||
@@ -132,46 +135,41 @@ const TextContent = () => {
     }
   }, [tooltipExpanded])
 
-  const { addMessage } = useTextChatMessagesStore()
+  const { addNewChat, setScrollDir } = useChatListStore()
+  const { submitQuestion } = usePostTextChat(textId)
 
   // 인풋에서 엔터를 누르면 툴팁만 닫음 (하이라이트는 그대로 유지)
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       if (highlightSpanRef.current?.innerText && inputValue) {
-        const questionMessage: ChatMessage = {
-          id: Date.now().toString(),
-          content: `"${highlightSpanRef.current?.innerText}"\n${inputValue}`,
-          type: 'user',
-          timestamp: new Date(),
+        const newChat: ChatType = {
+          id: 0,
+          text: `"${highlightSpanRef.current?.innerText}"\n${inputValue}`,
+          focused: highlightSpanRef.current?.innerText,
+          role: 'user',
         }
-        addMessage(questionMessage)
+        setScrollDir(-1)
+        addNewChat(newChat)
+        submitQuestion(
+          `"${highlightSpanRef.current?.innerText}"\n${inputValue}`,
+          highlightSpanRef.current?.innerText,
+        )
       }
       closeTooltip()
     }
   }
 
-  const { setQueryParams, setQueryEnabled } = useTextAccount()
-  const { text_id } = useParams<{ text_id: string }>()
-  const textId = useMemo(() => {
-    const parsedId = parseInt(text_id || '', 10)
-    return isNaN(parsedId) ? null : parsedId
-  }, [text_id])
-
   // 쉬운 설명 호출
   const callTextAccount = () => {
-    if (!!highlightSpanRef.current?.innerText) {
+    if (highlightSpanRef.current?.innerText) {
       closeTooltip()
-      setQueryParams({
-        textId: textId || 0,
-        focused: highlightSpanRef.current?.innerText,
-      })
-      setQueryEnabled(true)
+      requestTextAccount(highlightSpanRef.current?.innerText)
     }
   }
 
   // 본문 한 줄에 한 문장 씩 표시되게 합치기
   const getConcatText = () => {
-    return textData?.text.join('\n')
+    return text.join('\n')
   }
 
   return (

@@ -1,13 +1,25 @@
 import { useQueryClient } from '@tanstack/react-query'
 import Button from 'components/Button'
-import useTextAccount from 'hooks/temp.useTextAccount'
-import { useEffect, useState } from 'react'
-import { TextAccountType } from 'types'
+import useTextAccount from '../../../hooks/text/useTextAccount'
+import { useEffect, useMemo, useState } from 'react'
+import 'styles/scrollbar.css'
+import { useParams } from 'react-router'
 
-const EasyExplainArea = () => {
-  const { data, isFetching } = useTextAccount()
+const EasyExplainArea = ({
+  showTutorial,
+  showNextTutorial,
+}: {
+  showTutorial: boolean
+  showNextTutorial: () => void
+}) => {
+  const { text_id } = useParams<{ text_id: string }>()
+  const textId = useMemo(() => {
+    const parsedId = parseInt(text_id || '', 10)
+    return isNaN(parsedId) ? 0 : parsedId
+  }, [text_id])
+  const { data, isFetching } = useTextAccount(textId)
   const queryClient = useQueryClient()
-  const [textAccount, setTextAccount] = useState<TextAccountType | undefined>()
+  const [textAccount, setTextAccount] = useState<string | undefined>()
 
   useEffect(() => {
     setTextAccount(data)
@@ -18,24 +30,19 @@ const EasyExplainArea = () => {
     setTextAccount(undefined)
   }
 
-  useEffect(() => {
-    if (isFetching) {
-      console.log('로딩 중...')
-    } else if (textAccount) {
-      console.log(textAccount)
-    }
-  }, [textAccount, isFetching])
   return (
-    <div className="flex h-[240px] flex-col gap-y-[10px] rounded-[32px] bg-surface-primary-2 p-[16px]">
+    <div
+      className={`relative flex h-[240px] flex-col gap-y-[10px] rounded-[32px] bg-surface-primary-2 p-[16px] ${showTutorial && 'z-40'}`}
+    >
       <div className="text-text-primary button-l">
         좀 더 쉽게 설명해드릴게요
       </div>
-      <div className="h-full text-text-primary button-s">
+      <div className="custom-scrollbar-small h-full overflow-y-auto whitespace-pre-line text-text-primary button-s">
         {isFetching
-          ? '아라부기가 생각하는 중이에요. 잠시만 기다려주세요.'
+          ? '아라부기가 생각하는 중이에요.\n잠시만 기다려주세요.'
           : textAccount
-            ? textAccount.account
-            : '본문에서 궁금한 부분을 드래그하고 "이 부분 쉽게 설명해줘" 버튼을 눌러보세요.'}
+            ? textAccount
+            : '본문에서 궁금한 부분을 드래그하고,\n"이 부분 쉽게 설명해줘" 버튼을 눌러보세요.'}
       </div>
       {textAccount && (
         <Button
@@ -45,6 +52,24 @@ const EasyExplainArea = () => {
           onClick={resetTextAccount}
           plusClasses=""
         />
+      )}
+      {showTutorial && (
+        <div className="absolute left-0 top-0 h-full w-full rounded-[32px] bg-text-transparent shadow-[0px_0px_13.199999809265137px_0px_rgba(178,148,250,1.00)]"></div>
+      )}
+      {showTutorial && (
+        <div className="absolute left-[-12px] top-0 z-40 w-[300px] -translate-x-full transform rounded-[16px] bg-surface-primary-1 px-4 py-6 text-text-intermediate button-m">
+          <div className="relative h-full w-full">
+            드래그한 부분에 대해 쉽게 풀어서 설명해드릴게요!
+            <Button
+              text="다음"
+              showFrontIcon={true}
+              size="xsmall"
+              color="white"
+              onClick={showNextTutorial}
+              plusClasses="absolute right-0 bottom-[-10px]"
+            />
+          </div>
+        </div>
       )}
     </div>
   )

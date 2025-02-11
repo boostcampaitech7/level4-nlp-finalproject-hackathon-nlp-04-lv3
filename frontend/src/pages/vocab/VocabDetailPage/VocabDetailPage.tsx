@@ -1,40 +1,50 @@
-import React, { useState } from 'react';
-import { VocabCard } from './VocabCard';
-import { VocabDetailType } from './types';
-import Button from 'components/Button';
-import {VocabChatInterface} from 'components/VocabChatInterface'; // Import VocabChatInterface component
+import { useState, useEffect } from 'react'
+import VocabCard from './VocabCard'
+import { VocabDetailType } from './types'
+import Button from 'components/Button'
+import VocabChatInterface from 'components/VocabChatInterface'
 import { useNavigate, useParams } from 'react-router-dom'
+import TutorialOverlay from './TutorialOverlay' // 경로에 맞게 수정
+import ExplanationCarousel from './ExplanationCarousel'
+import { getVocabByNumber } from 'services' // 경로에 맞게 수정
 
-export const VocabDetailPage: React.FC = () => {
+const VocabDetailPage = () => {
   const { vocab_id } = useParams()
   const navigate = useNavigate()
-  const [vocabData, setVocabData] = useState<VocabDetailType>({
-    vocab_id: 11123043,
-    vocab: "독실한",
-    hanja: "",
-    bookmark: false,
-    dict_mean: "믿음이 두텁고 성실하다.",
-    easy_explain: "어떤 믿음이나 신념을 매우 깊고 진지하게 믿고 따르는 것을 뜻해요 주로 종교를 열심히 믿는 사람을 말할 때 많이 사용하지만, 꼭 종교가 아니어도 어떤 생각이나 가치를 진심으로 지키는 사람에게도 쓸 수 있어요.",
-    correct_example: [
-    "그는 매일 새벽에 교회에 나가 기도하는 독실한 신자였다", // 난이도 1: 간단한 설명
-    "그녀는 힘든 상황에서도 신앙을 잃지 않고 독실한 자세로 예배에 참석했다", // 난이도 2: 신앙심 강조
-    "그는 기독교 신앙을 기반으로 한 가치관을 지키며 살아가는 독실한 사람이었다", // 난이도 3: 신앙과 가치관의 연관성
-    "어려운 삶의 고비에서도 그는 독실한 신앙으로 인해 희망을 놓지 않았다", // 난이도 4: 신앙의 영향과 삶의 어려움
-    "그는 독실한 신앙을 바탕으로 지역 사회에서 자선 활동을 이끄는 데 열정을 쏟았다" // 난이도 5: 신앙의 실천과 사회적 영향
-    ],
 
-    incorrect_example: [
-      "그는 독실한 운동 실력으로 대회에서 우승했다.",
-      "\"독실한\"은 실력에 쓰이지 않음"
-    ]
-  });
+  // 초기 데이터는 location.state를 사용할 수 있으나, vocab_id 변경 시 새로 데이터를 받아오도록 함
+  const [vocabData, setVocabData] = useState<VocabDetailType | null>(null)
+  const [showTutorial, setShowTutorial] = useState(false)
 
-  const handleBookmarkToggle = () => {
-    setVocabData(prev => ({
-      ...prev,
-      bookmark: !prev.bookmark
-    }));
-  };
+  // vocabData가 없는 경우 백엔드에서 데이터를 받아옴
+  useEffect(() => {
+    if (vocab_id) {
+      // 새 단어 데이터를 요청하기 전에 기존 데이터를 초기화하여 로딩 상태를 명확히 할 수 있음.
+      setVocabData(null)
+      getVocabByNumber(Number(vocab_id))
+        .then((data) => {
+          setVocabData(data)
+        })
+        .catch((err) => {
+          console.error('단어 데이터를 가져오지 못했습니다.', err)
+        })
+    }
+  }, [vocab_id]) // vocab_id가 바뀔 때마다 호출됨
+
+  // 데이터가 아직 로딩 중이면 로딩 UI를 렌더링 (원하는 로딩 컴포넌트로 대체 가능)
+  if (!vocabData) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <p>Loading...</p>
+      </div>
+    )
+  }
+
+  // const handleBookmarkToggle = () => {
+  //   setVocabData((prev) =>
+  //     prev ? { ...prev, bookmark: !prev.bookmark } : prev
+  //   );
+  // };
 
   const handleQuizClick = () => {
     navigate(`/vocab/${vocab_id}/quiz`)
@@ -49,43 +59,86 @@ export const VocabDetailPage: React.FC = () => {
 
   const handleNextVocab = () => {
     const currentId = Number(vocab_id)
-    // 임시로 최대 ID를 10으로 설정. 실제로는 API에서 최대 ID를 받아와야 함
-    const maxVocabId = 10
+    const maxVocabId = 100
     if (currentId < maxVocabId) {
       navigate(`/vocab/${currentId + 1}`)
     }
   }
 
   const isFirstVocab = Number(vocab_id) <= 1
-  const isLastVocab = Number(vocab_id) >= 10 // 임시로 최대 ID를 10으로 설정
+  const isLastVocab = Number(vocab_id) >= 50
+
+  // 튜토리얼 단계 배열 (정적 렌더링을 위해 옳은 예문 카드에 disableAnimation 전달)
+  const tutorialSteps = [
+    {
+      title: '단어 뜻 풀이',
+      description:
+        '단어 위에 마우스를 올리면 해당 한자어의 뜻을 확인할 수 있습니다.',
+      component: (
+        <VocabCard
+          data={vocabData}
+          type="definition"
+          // onBookmarkToggle={handleBookmarkToggle}
+        />
+      ),
+    },
+    {
+      title: '쉬운 설명',
+      description: '해당 단어에 대한 간단하고 이해하기 쉬운 설명을 제공합니다.',
+      component: <VocabCard data={vocabData} type="explanation" />,
+    },
+    {
+      title: '옳은 예문 제공',
+      description:
+        '단어가 문장에서 어떻게 사용되는지 알 수 있도록, 쉬운 예시부터 어려운 예시까지 차례로 제공합니다.',
+      component: <VocabCard data={vocabData} type="correctTutorial" />,
+    },
+    {
+      title: '틀린 예문 제공',
+      description:
+        '잘못 사용된 예시를 함께 제공하여 올바른 사용법을 학습할 수 있도록 합니다.',
+      component: <VocabCard data={vocabData} type="incorrectTutorial" />,
+    },
+    {
+      title: 'AI 챗봇 문의',
+      description:
+        '모르는 것이 있다면, ‘아라부기’ 챗봇을 통해 즉시 질문할 수 있습니다.',
+      component: <VocabChatInterface />,
+    },
+    {
+      title: '퀴즈 기능',
+      description:
+        '모든 학습을 마친 후, 이해도를 확인하기 위한 퀴즈를 제공합니다.',
+      component: (
+        <Button
+          size="medium"
+          color="purple"
+          text="퀴즈 풀기"
+          onClick={handleQuizClick}
+          plusClasses="px=[10px]"
+        />
+      ),
+    },
+  ]
 
   return (
     <div className="min-h-screen bg-background-primary">
       <main className="container mx-auto px-4 py-5">
-        <div className="h-[917px] px-[138px] py-5 justify-start items-start gap-[19px] inline-flex">
-          {/* Left section with cards */}
-          <div className="flex-col justify-center items-center gap-5 inline-flex">
+        <div className="flex h-[917px] w-full min-w-[940px] items-center justify-center gap-[19px] py-5">
+          {/* 왼쪽 영역: VocabCard 들 */}
+          <div className="flex flex-col items-center gap-5">
             <div className="grid grid-cols-2 gap-4">
-              <VocabCard 
-                data={vocabData} 
-                type="definition" 
-                onBookmarkToggle={handleBookmarkToggle}
+              <VocabCard
+                data={vocabData}
+                type="definition"
+                // onBookmarkToggle={handleBookmarkToggle}
               />
-              <VocabCard 
-                data={vocabData} 
-                type="explanation"
-              />
-              <VocabCard 
-                data={vocabData} 
-                type="correct"
-              />
-              <VocabCard 
-                data={vocabData} 
-                type="incorrect"
-              />
+              <ExplanationCarousel data={vocabData} />
+              <VocabCard data={vocabData} type="correct" />
+              <VocabCard data={vocabData} type="incorrect" />
             </div>
-            {/* Navigation buttons */}
-            <div className="justify-start items-center gap-[22px] inline-flex">
+            {/* 단어 내비게이션 버튼 */}
+            <div className="flex items-center gap-[22px]">
               <Button
                 size="medium"
                 color="purple"
@@ -114,12 +167,37 @@ export const VocabDetailPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Right section with chat UI */}
-          <VocabChatInterface vocabId={String(vocabData.vocab_id)} />
+          {/* 오른쪽 영역: 챗봇 UI 및 도움말 버튼 */}
+          <div className="flex flex-col items-center">
+            <VocabChatInterface />
+            {/* 도움말 영역 – 클릭 시 튜토리얼 오버레이 표시 */}
+            <div
+              className="mt-4 flex cursor-pointer items-center"
+              onClick={() => setShowTutorial(true)}
+            >
+              <div className="bg-white/80 flex h-[32px] w-[32px] flex-col items-center justify-center rounded-[17.5px] border-2 border-[#707070] px-[11px] py-0.5">
+                <div className="text-center leading-[31.2px] tracking-tight text-text-secondary body-s">
+                  ?
+                </div>
+              </div>
+              <div className="flex items-center p-2.5">
+                <div className="text-text-secondary body-s">
+                  현재 페이지의 사용법 알아보기
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </main>
+      {/* 튜토리얼 오버레이 조건부 렌더링 */}
+      {showTutorial && (
+        <TutorialOverlay
+          steps={tutorialSteps}
+          onClose={() => setShowTutorial(false)}
+        />
+      )}
     </div>
-  );
-};
+  )
+}
 
-export default VocabDetailPage;
+export default VocabDetailPage

@@ -18,7 +18,10 @@ CREATE TABLE  diaries (
 
 
 class Diaries(SQLModel, table=True):
-    __table_args__ = (Index("idx_user_created_at", "user_id", "created_at"),)
+    __table_args__ = (
+        Index("idx_diary", "diary_id"),
+        Index("idx_user_created_at", "user_id", "created_at"),
+    )
 
     diary_id: int | None = Field(default=None, primary_key=True)
     user_id: int = Field(foreign_key="users.user_id", nullable=False)

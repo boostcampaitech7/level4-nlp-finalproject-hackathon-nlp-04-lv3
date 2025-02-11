@@ -1,7 +1,7 @@
 export { default as MainLayout } from './MainLayout'
 
 export { MainPage } from './MainPage'
-export { GuestMainPage } from './MainPage/GuestMainPage'
+export { default as GuestMainPage } from './MainPage/GuestMainPage/GuestMainPage'
 export { LoginPage } from './auth/LoginPage'
 export { SignupPage } from './auth/SignupPage'
 export { ComprehensionSurveyPage } from './auth/SignupPage/'
