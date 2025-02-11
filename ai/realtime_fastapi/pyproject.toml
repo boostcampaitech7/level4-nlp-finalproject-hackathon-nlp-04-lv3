@@ -25,8 +25,7 @@ dependencies = [
     "openai (>=1.61.1,<2.0.0)",
     "pydantic (>=2.10.6,<3.0.0)",
     "logging (>=0.4.9.6,<0.5.0.0)",
-    "requests (>=2.32.3,<3.0.0)",
-    "uvicorn (>=0.34.0,<0.35.0)"
+    "requests (>=2.32.3,<3.0.0)"
 ]
 
 [build-system]

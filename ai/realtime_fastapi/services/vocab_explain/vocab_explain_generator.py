@@ -48,7 +48,8 @@ class VocabExplainGenerator:
         }
 
         response = requests.post(
-            self._host + "/testapp/v2/tasks/2wk3wvmg/chat-completions",
+            self._host
+            + "/testapp/v2/tasks/2wk3wvmg/chat-completions",  # 튜닝 전: "/testapp/v1/chat-completions/HCX-003"
             headers=headers,
             json=request_data,
             stream=True,
@@ -118,5 +119,5 @@ if __name__ == "__main__":
 
     dataset = generator.create_dataset(
         f"../vocab_explain/data/arabugi_vocab.csv",
-        "data/2wk3wvmg_arabugi_vocab_explain.jsonl",
+        "data/2wk3wvmg_arabugi_vocab_explain.jsonl",  # 튜닝 전: "data/HCX_arabugi_vocab_explain.csv"
     )
