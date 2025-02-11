@@ -33,15 +33,15 @@ const useTextChatList = (textId: number) => {
             role: 'assistant',
           })
         })
-        addPrevChatList(prevChatList)
         setPageNum((prev) => prev + 1)
+        addPrevChatList(prevChatList)
       }
       return textChatList
     },
     enabled: false,
   })
 
-  return { ...queryResult, pageNum }
+  return { ...queryResult, pageNum, setPageNum }
 }
 
 export default useTextChatList

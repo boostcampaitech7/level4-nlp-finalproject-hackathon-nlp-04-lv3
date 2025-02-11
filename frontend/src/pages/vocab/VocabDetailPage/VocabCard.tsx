@@ -2,6 +2,7 @@ import { JSX, useState } from 'react'
 import Button from '../../../components/Button'
 import { VocabDetailType, CardType } from './types'
 import { motion, AnimatePresence } from 'framer-motion'
+import 'styles/scrollbar.css'
 
 interface VocabCardProps {
   data: VocabDetailType
@@ -47,41 +48,38 @@ const VocabCard = ({ data, type }: VocabCardProps) => {
   }
 
   const renderDefinitionCard = () => (
-    <div className="inline-flex h-auto min-h-[363px] w-full min-w-[280px] max-w-[390px] flex-col items-start justify-start rounded-[32px] bg-surface-primary-2 px-4 py-[30px] shadow-[0px_0px_13.2px_rgba(178,148,250,1)] sm:px-[50px]">
-      <div className="inline-flex h-[60px] w-full items-start justify-end sm:w-[303px]">
+    <div className="flex h-[363px] w-full min-w-[280px] max-w-[390px] flex-col items-start justify-start gap-y-[20px] rounded-[32px] bg-surface-primary-2 px-4 py-[30px] shadow-[0px_0px_13.2px_rgba(178,148,250,1)] sm:px-4">
+      <div className="hidden h-[20px] w-full items-start justify-end sm:w-[303px]">
         {/* 즐겨찾기 버튼 등 추가 */}
       </div>
-      <div className="flex h-auto flex-col items-start justify-start gap-2.5 self-stretch sm:h-[76px]">
+      <div className="relative flex w-full flex-col items-start justify-start gap-2.5 px-4">
+        {showTooltip && data.hanja && (
+          <div className="absolute bottom-full left-20 z-50 mb-2 -translate-x-1/2 transform">
+            <div className="inline-flex h-auto items-center justify-center gap-2.5 whitespace-normal rounded-xl bg-surface-tertiary py-2.5 pl-4 pr-6 shadow-[0px_0px_12.9px_rgba(0,0,0,0.25)] sm:h-[92px] sm:whitespace-nowrap">
+              <div className="text-text-intermediate body-m">
+                {data.hanja.map((line, index) => (
+                  <p key={index} className="break-keep">
+                    <span>{line.slice(0, line.length - 1)}</span>
+                    <span>{'  '}</span>
+                    <span className="font-bold text-purple-300">
+                      {line.slice(line.length - 1)}
+                    </span>
+                  </p>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
         <div
-          className="relative inline-flex items-end justify-center gap-2.5 px-2.5"
+          className="leading-none text-text-primary display-l"
           onMouseEnter={() => setShowTooltip(true)}
           onMouseLeave={() => setShowTooltip(false)}
         >
-          {showTooltip && data.hanja && (
-            <div className="absolute bottom-full left-1/2 z-50 mb-2 -translate-x-1/2 transform">
-              <div className="inline-flex h-auto items-center justify-center gap-2.5 whitespace-normal rounded-xl bg-text-secondary p-2.5 shadow-[0px_0px_12.9px_rgba(0,0,0,0.25)] sm:h-[92px] sm:whitespace-nowrap">
-                <div className="text-text-inverse body-m">
-                  {data.hanja.map((line, index) => (
-                    <p key={index} className="break-keep">
-                      <span>{line.slice(0, line.length - 1)}</span>
-                      <span>{'  '}</span>
-                      <span className="text-accent-highlight">
-                        {line.slice(line.length - 1)}
-                      </span>
-                    </p>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-          <div className="break-words text-text-primary display-l">
-            {data.vocab}
-          </div>
-          <div className="h-[38px] py-[7px]" />
+          {data.vocab}
         </div>
       </div>
-      <div className="inline-flex shrink grow basis-0 items-center justify-center gap-2.5 self-stretch px-2.5 pt-3">
-        <div className="shrink grow basis-0 self-stretch text-text-secondary caption-l">
+      <div className="custom-scrollbar-small grow gap-2.5 self-stretch overflow-y-auto rounded-[12px] px-4 py-2">
+        <div className="shrink grow basis-0 self-stretch text-text-secondary body-s">
           {data.dict_mean}
         </div>
       </div>
@@ -89,15 +87,11 @@ const VocabCard = ({ data, type }: VocabCardProps) => {
   )
 
   const renderExplanationCard = () => (
-    <div className="h-auto min-h-[363px] w-full min-w-[280px] max-w-[390px] overflow-hidden rounded-[32px] border-4 border-button-secondary-1 bg-surface-primary-2">
-      <div className="flex h-full w-full flex-col">
-        <div className="px-4 pb-4 pt-6 sm:px-8">
-          <h3 className="self-stretch text-text-primary body-l">쉬운 설명</h3>
-        </div>
-        <div className="relative z-10 flex w-full flex-grow flex-col items-start px-4 sm:px-8">
-          <div className="self-stretch tracking-tight text-text-primary body-s">
-            {data.easy_explain}
-          </div>
+    <div className="flex h-[363px] w-full min-w-[280px] max-w-[390px] flex-col gap-y-[20px] overflow-hidden rounded-[32px] border-4 border-button-secondary-1 bg-surface-primary-2 px-4 py-[30px] sm:px-4">
+      <h3 className="self-stretch text-text-primary body-l">쉬운 설명</h3>
+      <div className="custom-scrollbar-small z-10 w-full grow self-stretch overflow-y-auto px-4 sm:px-8">
+        <div className="shrink grow basis-0 self-stretch text-text-primary body-s">
+          {data.easy_explain}
         </div>
       </div>
     </div>

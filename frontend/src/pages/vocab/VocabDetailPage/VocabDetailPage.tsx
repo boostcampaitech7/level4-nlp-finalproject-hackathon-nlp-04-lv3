@@ -66,7 +66,7 @@ const VocabDetailPage = () => {
   }
 
   const isFirstVocab = Number(vocab_id) <= 1
-  const isLastVocab = Number(vocab_id) >= 100
+  const isLastVocab = Number(vocab_id) >= 50
 
   // 튜토리얼 단계 배열 (정적 렌더링을 위해 옳은 예문 카드에 disableAnimation 전달)
   const tutorialSteps = [
@@ -124,7 +124,7 @@ const VocabDetailPage = () => {
   return (
     <div className="min-h-screen bg-background-primary">
       <main className="container mx-auto px-4 py-5">
-        <div className="flex h-[917px] w-full items-center justify-center gap-[19px] py-5">
+        <div className="flex h-[917px] w-full min-w-[940px] items-center justify-center gap-[19px] py-5">
           {/* 왼쪽 영역: VocabCard 들 */}
           <div className="flex flex-col items-center gap-5">
             <div className="grid grid-cols-2 gap-4">

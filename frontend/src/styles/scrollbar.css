@@ -1,3 +1,7 @@
+.custom-scrollbar-large {
+  scrollbar-gutter: stable;
+}
+
 .custom-scrollbar-large::-webkit-scrollbar {
   width: 16px;
 }
@@ -27,6 +31,14 @@
   border-radius: 10px;
 }
 
+.custom-scrollbar-large::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-surface-primary-1);
+}
+
+.custom-scrollbar-small {
+  scrollbar-gutter: stable;
+}
+
 .custom-scrollbar-small::-webkit-scrollbar {
   width: 10px;
 }
@@ -54,4 +66,8 @@
 .custom-scrollbar-small::-webkit-scrollbar-track {
   background-color: transparent;
   border-radius: 10px;
+}
+
+.custom-scrollbar-small::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-surface-primary-1);
 }

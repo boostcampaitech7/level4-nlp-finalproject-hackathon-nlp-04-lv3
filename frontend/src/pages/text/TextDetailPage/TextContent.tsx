@@ -13,12 +13,12 @@ interface TooltipPosition {
 }
 
 const TextContent = ({ text }: { text: string[] }) => {
-  const { setQueryParams, setQueryEnabled } = useTextAccount()
   const { text_id } = useParams<{ text_id: string }>()
   const textId = useMemo(() => {
     const parsedId = parseInt(text_id || '', 10)
     return isNaN(parsedId) ? 0 : parsedId
   }, [text_id])
+  const { requestTextAccount } = useTextAccount(textId)
 
   const [showTooltip, setShowTooltip] = useState(false)
   const [tooltipPosition, setTooltipPosition] = useState<TooltipPosition>({
@@ -135,7 +135,7 @@ const TextContent = ({ text }: { text: string[] }) => {
     }
   }, [tooltipExpanded])
 
-  const { addNewChat } = useChatListStore()
+  const { addNewChat, setScrollDir } = useChatListStore()
   const { submitQuestion } = usePostTextChat(textId)
 
   // 인풋에서 엔터를 누르면 툴팁만 닫음 (하이라이트는 그대로 유지)
@@ -148,6 +148,7 @@ const TextContent = ({ text }: { text: string[] }) => {
           focused: highlightSpanRef.current?.innerText,
           role: 'user',
         }
+        setScrollDir(-1)
         addNewChat(newChat)
         submitQuestion(
           `"${highlightSpanRef.current?.innerText}"\n${inputValue}`,
@@ -160,13 +161,9 @@ const TextContent = ({ text }: { text: string[] }) => {
 
   // 쉬운 설명 호출
   const callTextAccount = () => {
-    if (!!highlightSpanRef.current?.innerText) {
+    if (highlightSpanRef.current?.innerText) {
       closeTooltip()
-      setQueryParams({
-        textId: textId || 0,
-        focused: highlightSpanRef.current?.innerText,
-      })
-      setQueryEnabled(true)
+      requestTextAccount(highlightSpanRef.current?.innerText)
     }
   }
 

@@ -3,10 +3,12 @@ import TextCard from './TextCard'
 import PageSelector from './PageSelector'
 import { useTextListPageStore } from 'stores/textListPageStore'
 import { useEffect } from 'react'
+import { QueryClient } from '@tanstack/react-query'
 
 const TextListPage = () => {
   const { data: textList, isFetching, refetch, setPageNum } = useTextList()
-  const { currentPage, totalPages, setTotalPages } = useTextListPageStore()
+  const { currentPage, totalPages, setTotalPages, setCurrentPage } =
+    useTextListPageStore()
 
   useEffect(() => {
     if (textList?.totalPageCount && totalPages !== textList?.totalPageCount) {
@@ -20,6 +22,14 @@ const TextListPage = () => {
       refetch()
     }
   }, [currentPage, setPageNum])
+
+  const queryClient = new QueryClient()
+  useEffect(() => {
+    return () => {
+      queryClient.removeQueries({ queryKey: ['textList'] })
+      setCurrentPage(1)
+    }
+  }, [])
 
   return (
     <div className="flex min-h-screen flex-col items-center bg-background-primary pb-[36px] pt-[25px]">

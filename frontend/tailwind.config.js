@@ -127,6 +127,15 @@ export default {
         partialSans: ['PartialSans', 'sans-serif'],
         nanumSaranghae: ['NanumSaRangHae', 'sans-serif'],
       },
+      keyframes: {
+        expandContract: {
+          '0%, 100%': { width: '0px' },
+          '50%': { width: '320px' },
+        },
+      },
+      animation: {
+        'expand-contract': 'expandContract 3s ease-in-out infinite',
+      },
     },
   },
   plugins: [

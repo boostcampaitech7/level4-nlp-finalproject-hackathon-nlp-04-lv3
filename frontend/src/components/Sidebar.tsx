@@ -43,10 +43,10 @@ const Sidebar = () => {
     }
   }
 
-  const { navigateToRandomPage } = useVocabRandom()
+  const { refetch } = useVocabRandom()
   const handleClickVocab = () => {
     closeSidebar()
-    navigateToRandomPage()
+    refetch()
   }
 
   return (

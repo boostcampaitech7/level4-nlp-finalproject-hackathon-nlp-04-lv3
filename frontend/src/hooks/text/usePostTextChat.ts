@@ -4,7 +4,7 @@ import { useChatListStore } from 'stores/chatListStore'
 import { ChatType, TextChatRequestType, TextChatSetType } from 'types/chat'
 
 const usePostTextChat = (textId: number) => {
-  const { chatList, addNewChat } = useChatListStore()
+  const { chatList, addNewChat, setScrollDir } = useChatListStore()
 
   const getPreviousChats = (chatList: ChatType[]) => {
     let previousChats: TextChatSetType[] = []
@@ -31,6 +31,7 @@ const usePostTextChat = (textId: number) => {
   const mutationResults = useMutation({
     mutationFn: postTextChat,
     onSuccess: (answer: ChatType) => {
+      setScrollDir(-1)
       addNewChat(answer)
     },
     onError: (err: any) => {

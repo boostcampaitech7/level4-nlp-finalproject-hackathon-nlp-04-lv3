@@ -24,7 +24,9 @@ const getTextAcount = async (textId: number, focused: string) => {
     })
     .catch((err) => {
       console.error(`설명 요청 실패: ${err}`)
-      throw err
+      const errMsg =
+        'AI 서버에 요청이 많아 설명 생성에 실패했어요.\n잠시 뒤에 다시 시도해보시겠어요?'
+      return errMsg
     })
 }
 

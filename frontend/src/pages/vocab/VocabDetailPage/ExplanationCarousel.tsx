@@ -1,15 +1,19 @@
 import { useState } from 'react'
 import { VocabDetailType } from './types'
+import { Button } from 'components'
+import { motion, AnimatePresence } from 'framer-motion'
 
 const ExplanationCarousel = ({ data }: { data: VocabDetailType }) => {
   // data.easy_explain은 설명 문자열들이 들어있는 배열입니다.
   const explanations = data.easy_explain
   const [currentIndex, setCurrentIndex] = useState(0)
   const total = explanations.length
+  const [direction, setDirection] = useState(0)
 
   // 이전 항목으로 이동 (현재 첫 항목이면 동작하지 않음)
   const handlePrev = () => {
     if (currentIndex > 0) {
+      setDirection(-1)
       setCurrentIndex((prevIndex) => prevIndex - 1)
     }
   }
@@ -17,49 +21,70 @@ const ExplanationCarousel = ({ data }: { data: VocabDetailType }) => {
   // 다음 항목으로 이동 (현재 마지막 항목이면 동작하지 않음)
   const handleNext = () => {
     if (currentIndex < total - 1) {
+      setDirection(1)
       setCurrentIndex((prevIndex) => prevIndex + 1)
     }
   }
 
-  return (
-    <div className="relative">
-      {/* 카드 컨테이너 */}
-      <div className="h-auto min-h-[363px] w-full min-w-[280px] max-w-[390px] overflow-hidden rounded-[32px] border-4 border-button-secondary-1 bg-surface-primary-2">
-        <div className="flex h-full w-full flex-col">
-          <div className="px-4 pb-4 pt-6 sm:px-8">
-            <h3 className="mt-4 self-stretch text-text-primary body-l">
-              쉬운 설명
-            </h3>
-          </div>
-          <div className="relative z-10 flex w-full flex-grow flex-col items-start px-4 sm:px-8">
-            <div className="self-stretch tracking-tight text-text-primary body-s">
-              {explanations[currentIndex]}
-            </div>
-          </div>
-        </div>
-      </div>
+  const variants = {
+    enter: (direction: number) => ({
+      x: direction > 0 ? 50 : -50,
+      opacity: 0,
+    }),
+    center: {
+      zIndex: 1,
+      x: 0,
+      opacity: 1,
+    },
+    exit: (direction: number) => ({
+      zIndex: 0,
+      x: direction < 0 ? 50 : -50,
+      opacity: 0,
+    }),
+  }
 
-      {/* 좌우 네비게이션 버튼 */}
-      <button
-        onClick={handlePrev}
-        disabled={currentIndex === 0}
-        className={`absolute left-0 top-1/2 z-20 -translate-y-1/2 transform rounded-full bg-gray-200 p-2 shadow-md ${
-          currentIndex === 0 ? 'cursor-not-allowed opacity-50' : ''
-        }`}
-        aria-label="Previous explanation"
-      >
-        &lt;
-      </button>
-      <button
-        onClick={handleNext}
-        disabled={currentIndex === total - 1}
-        className={`absolute right-0 top-1/2 z-20 -translate-y-1/2 transform rounded-full bg-gray-200 p-2 shadow-md ${
-          currentIndex === total - 1 ? 'cursor-not-allowed opacity-50' : ''
-        }`}
-        aria-label="Next explanation"
-      >
-        &gt;
-      </button>
+  return (
+    <div className="flex h-[363px] w-full min-w-[280px] max-w-[390px] flex-col gap-y-[20px] rounded-[32px] border-4 border-button-secondary-1 bg-surface-primary-2 px-4 pb-[15px] pt-[30px] sm:px-4">
+      <h3 className="self-stretch px-4 text-text-primary body-l">쉬운 설명</h3>
+      <div className="custom-scrollbar-small z-10 w-full grow self-stretch overflow-y-auto overflow-x-hidden px-4">
+        <AnimatePresence initial={false} custom={direction} mode="wait">
+          <motion.div
+            key={currentIndex}
+            custom={direction}
+            variants={variants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{
+              x: { type: 'spring', stiffness: 300, damping: 30 },
+              opacity: { duration: 0.2 },
+            }}
+            className="shrink grow basis-0 self-stretch text-text-primary body-s"
+          >
+            {explanations[currentIndex]}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+      <div className="z-10 flex justify-end gap-2">
+        <Button
+          size="small"
+          color="grey"
+          text="이전"
+          showBackIcon={true}
+          disabled={currentIndex === 0}
+          onClick={handlePrev}
+          plusClasses={`px-[10px] ${currentIndex === 0 ? 'opacity-50' : ''}`}
+        />
+        <Button
+          size="small"
+          color="grey"
+          text="다음"
+          showFrontIcon={true}
+          disabled={currentIndex === total - 1}
+          onClick={handleNext}
+          plusClasses={`px-[10px] ${currentIndex === total - 1 ? 'opacity-50' : ''}`}
+        />
+      </div>
     </div>
   )
 }
