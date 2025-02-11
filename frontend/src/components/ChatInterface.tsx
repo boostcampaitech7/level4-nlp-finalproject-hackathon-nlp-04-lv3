@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { ChatbotActionType } from '../types/chat'
 import ChatMessage from './ChatMessage'
 import { FaPaperPlane } from 'react-icons/fa'
