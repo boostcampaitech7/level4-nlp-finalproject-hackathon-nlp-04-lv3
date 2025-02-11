@@ -207,4 +207,14 @@ with DAG(
         op_kwargs={"api": completion_executor},
     )
 
-    get_yesterday_diaries_task >> generate_save_diary_feedback_task
+    # 3. 인덱스 재정렬
+    sort_diary_task = PostgresOperator(
+        task_id="sort_diary",
+        postgres_conn_id="my_postgres_conn",
+        sql="""
+            CLUSTER {{ params.schema }}.DIARIES USING idx_user_created_at;
+        """,
+        params={"schema": SCHEMA},
+    )
+
+    get_yesterday_diaries_task >> generate_save_diary_feedback_task >> sort_diary_task
