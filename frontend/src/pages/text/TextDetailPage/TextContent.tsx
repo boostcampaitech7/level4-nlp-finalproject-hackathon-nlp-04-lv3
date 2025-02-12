@@ -26,7 +26,7 @@ const TextContent = ({
     const parsedId = parseInt(text_id || '', 10)
     return isNaN(parsedId) ? 0 : parsedId
   }, [text_id])
-  const { requestTextAccount } = useTextAccount(textId)
+  const { setFocused } = useTextAccount(textId)
 
   const [showTooltip, setShowTooltip] = useState(false)
   const [tooltipPosition, setTooltipPosition] = useState<TooltipPosition>({
@@ -178,7 +178,7 @@ const TextContent = ({
   const callTextAccount = () => {
     if (highlightSpanRef.current?.innerText) {
       closeTooltip()
-      requestTextAccount(highlightSpanRef.current?.innerText)
+      setFocused(highlightSpanRef.current?.innerText)
     }
   }
 

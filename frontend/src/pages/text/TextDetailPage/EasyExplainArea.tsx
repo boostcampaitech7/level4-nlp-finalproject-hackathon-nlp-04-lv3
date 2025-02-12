@@ -4,6 +4,7 @@ import useTextAccount from '../../../hooks/text/useTextAccount'
 import { useEffect, useMemo, useState } from 'react'
 import 'styles/scrollbar.css'
 import { useParams } from 'react-router'
+import { useTextAccountSTore } from 'stores/textAccountSTore'
 
 const EasyExplainArea = ({
   showTutorial,
@@ -21,9 +22,15 @@ const EasyExplainArea = ({
   const queryClient = useQueryClient()
   const [textAccount, setTextAccount] = useState<string | undefined>()
 
+  const { account } = useTextAccountSTore()
+
   useEffect(() => {
     setTextAccount(data)
   }, [data])
+
+  useEffect(() => {
+    console.log(isFetching)
+  }, [isFetching])
 
   const resetTextAccount = () => {
     queryClient.setQueryData(['textAccount'], undefined)
@@ -40,8 +47,8 @@ const EasyExplainArea = ({
       <div className="custom-scrollbar-small h-full overflow-y-auto whitespace-pre-line text-text-primary button-s">
         {isFetching
           ? '아라부기가 생각하는 중이에요.\n잠시만 기다려주세요.'
-          : textAccount
-            ? textAccount
+          : account
+            ? account
             : '본문에서 궁금한 부분을 드래그하고,\n"이 부분 쉽게 설명해줘" 버튼을 눌러보세요.'}
       </div>
       {textAccount && (

@@ -1,22 +1,32 @@
 import { useQuery } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { getTextAcount } from 'services'
+import { useTextAccountSTore } from 'stores/textAccountSTore'
 
 const useTextAccount = (textId: number) => {
   const [focused, setFocused] = useState<string>('')
+  const { setAccount } = useTextAccountSTore()
 
   const queryResult = useQuery<string>({
     queryKey: ['textAccount', textId],
-    queryFn: () => getTextAcount(textId, focused),
+    queryFn: async () => await getTextAcount(textId, focused),
     enabled: false,
   })
 
   const requestTextAccount = (focused: string) => {
     setFocused(focused)
-    queryResult.refetch()
+    // queryResult.refetch()
   }
 
-  return { ...queryResult, requestTextAccount }
+  useEffect(() => {
+    if (focused) {
+      queryResult.refetch().then((res) => {
+        setAccount(res.data || '')
+      })
+    }
+  }, [focused])
+
+  return { ...queryResult, requestTextAccount, setFocused }
 }
 
 export default useTextAccount
