@@ -1,10 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query'
 import Button from 'components/Button'
-import useTextAccount from '../../../hooks/text/useTextAccount'
-import { useEffect, useMemo, useState } from 'react'
 import 'styles/scrollbar.css'
-import { useParams } from 'react-router'
-import { useTextAccountSTore } from 'stores/textAccountSTore'
+import { useTextAccountStore } from '../../../stores/textAccountStore'
 
 const EasyExplainArea = ({
   showTutorial,
@@ -13,28 +10,13 @@ const EasyExplainArea = ({
   showTutorial: boolean
   showNextTutorial: () => void
 }) => {
-  const { text_id } = useParams<{ text_id: string }>()
-  const textId = useMemo(() => {
-    const parsedId = parseInt(text_id || '', 10)
-    return isNaN(parsedId) ? 0 : parsedId
-  }, [text_id])
-  const { data, isFetching } = useTextAccount(textId)
   const queryClient = useQueryClient()
-  const [textAccount, setTextAccount] = useState<string | undefined>()
 
-  const { account } = useTextAccountSTore()
-
-  useEffect(() => {
-    setTextAccount(data)
-  }, [data])
-
-  useEffect(() => {
-    console.log(isFetching)
-  }, [isFetching])
+  const { account, isFetching, setAccount } = useTextAccountStore()
 
   const resetTextAccount = () => {
     queryClient.setQueryData(['textAccount'], undefined)
-    setTextAccount(undefined)
+    setAccount('')
   }
 
   return (
@@ -51,7 +33,7 @@ const EasyExplainArea = ({
             ? account
             : '본문에서 궁금한 부분을 드래그하고,\n"이 부분 쉽게 설명해줘" 버튼을 눌러보세요.'}
       </div>
-      {textAccount && (
+      {account && (
         <Button
           text="설명 지우기"
           color="grey"
