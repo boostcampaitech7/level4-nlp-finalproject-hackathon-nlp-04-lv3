@@ -8,7 +8,6 @@ import AnimationWrapper from './AnimationWrapper'
 import LoginPopup from './LoginPopup'
 import Button from 'components/Button'
 import MagneticText from 'components/MagneticText'
-import Footer from '../../../components/Footer'
 
 const GuestMainPage = () => {
   useEffect(() => {
@@ -313,7 +312,6 @@ const GuestMainPage = () => {
         isOpen={isLoginPopupOpen}
         onClose={() => setIsLoginPopupOpen(false)}
       />
-      <Footer />
     </div>
   )
 }

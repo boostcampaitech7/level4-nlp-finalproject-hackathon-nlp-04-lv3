@@ -102,8 +102,8 @@ const DiaryDetailPage = () => {
     if (!containerRef.current || !textPositions || !slicedTexts) return
 
     let isLeft = false
-    let prevLeftPosition = { top: -1, left: -1, width: -1, height: -1 }
-    let prevRightPosition = { top: -1, left: -1, width: -1, height: -1 }
+    let prevLeftPosition = { top: -50, left: -1, width: -1, height: -1 }
+    let prevRightPosition = { top: -50, left: -1, width: -1, height: -1 }
 
     const newFeedbackPositions = slicedTexts.map((slicedText, idx) => {
       // 피드백이 없는 구절은 노트 표시 안 함
@@ -118,7 +118,7 @@ const DiaryDetailPage = () => {
         height: 0,
       }
 
-      const height = Math.ceil(slicedText.feedback.length / 19) * 43 + 72
+      const height = Math.ceil(slicedText.feedback.length / 19) * 44 + 72
       let pos = {
         top: textPosition.top - 40,
         left: isLeft ? -276 : 580,
@@ -127,14 +127,14 @@ const DiaryDetailPage = () => {
       }
       if (isLeft) {
         if (
-          prevLeftPosition.top > -1 &&
+          prevLeftPosition.top > -50 &&
           pos.top < prevLeftPosition.top + prevLeftPosition.height + 20
         ) {
           pos.top = prevLeftPosition.top + prevLeftPosition.height + 50
         }
       } else {
         if (
-          prevRightPosition.top > -1 &&
+          prevRightPosition.top > -50 &&
           pos.top < prevRightPosition.top + prevRightPosition.height + 20
         ) {
           pos.top = prevRightPosition.top + prevRightPosition.height + 50

@@ -1,11 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { getTextAcount } from 'services'
-import { useTextAccountSTore } from 'stores/textAccountSTore'
+import { useTextAccountStore } from 'stores/textAccountStore'
 
 const useTextAccount = (textId: number) => {
   const [focused, setFocused] = useState<string>('')
-  const { setAccount } = useTextAccountSTore()
+  const { setAccount, setIsFetching } = useTextAccountStore()
 
   const queryResult = useQuery<string>({
     queryKey: ['textAccount', textId],
@@ -15,7 +15,6 @@ const useTextAccount = (textId: number) => {
 
   const requestTextAccount = (focused: string) => {
     setFocused(focused)
-    // queryResult.refetch()
   }
 
   useEffect(() => {
@@ -25,6 +24,10 @@ const useTextAccount = (textId: number) => {
       })
     }
   }, [focused])
+
+  useEffect(() => {
+    setIsFetching(queryResult.isFetching)
+  }, [queryResult.isFetching])
 
   return { ...queryResult, requestTextAccount, setFocused }
 }
