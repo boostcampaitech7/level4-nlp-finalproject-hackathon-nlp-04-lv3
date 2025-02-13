@@ -34,7 +34,7 @@ const Header = () => {
   }
 
   return (
-    <div className="fixed left-0 top-0 z-40 inline-flex h-[126px] w-full min-w-[1440px] select-none items-center justify-between border-b-[3px] border-line bg-surface-secondary px-[40px]">
+    <div className="fixed left-0 top-0 z-50 inline-flex h-[126px] w-full min-w-[1440px] select-none items-center justify-between border-b-[3px] border-line bg-surface-secondary px-[40px]">
       <div className="inline-flex items-end gap-[30px]">
         <Link
           to="/"
