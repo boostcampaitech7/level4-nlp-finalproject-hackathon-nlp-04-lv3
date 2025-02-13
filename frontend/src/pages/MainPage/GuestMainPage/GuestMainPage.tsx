@@ -313,7 +313,6 @@ const GuestMainPage = () => {
         isOpen={isLoginPopupOpen}
         onClose={() => setIsLoginPopupOpen(false)}
       />
-      <Footer />
     </div>
   )
 }
