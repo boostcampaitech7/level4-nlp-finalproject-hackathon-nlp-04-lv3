@@ -39,6 +39,17 @@
 <br />
 <br />
 
+<h2> 👤 팀원 소개 </h2>
+
+| ![세븐일레븐_증명사진(김민선)](https://github.com/user-attachments/assets/26d1541e-53fe-44a4-816d-d7c567fa571d) | ![세븐일레븐_증명사진(강정완)](https://github.com/user-attachments/assets/098c9e64-dbc7-4d1a-b0a8-6e0b54c201c8) | ![세븐일레븐 증명사진(서선아)](https://github.com/user-attachments/assets/c6b6569d-19eb-4322-bf55-ed050d0a67ee) | ![세븐일레븐_증명사진(이인구)](https://github.com/user-attachments/assets/3742943a-5d70-4a77-8b46-0f96aa7fbaa3) | ![세븐일레븐_증명사진(이재협)](https://github.com/user-attachments/assets/6978a9c4-d2e0-41e9-8a4e-7d4f580a1c06) | ![세븐일레븐_증명사진(임상엽)](https://github.com/user-attachments/assets/d909c4cd-2b59-4454-bf4e-7cbf7f6ff4b0)
+|:---:|:---:|:---:|:---:|:---:|:---:|
+| **김민선(팀장)** | **강정완** | **서선아** | **이인구** | **이재협** | **임상엽** |
+| Backend, AI, Infra | Backend, AI, Infra | Backend, AI | AI | Frontend, AI, Infra | Frontend, AI |
+| [CLM-BONNY](https://github.com/CLM-BONNY) | [GJ98](https://github.com/GJ98) | [seon03](https://github.com/seon03) | [inguelee](https://github.com/inguelee) | [jhyeop](https://github.com/jhyeop) | [gityeop](https://github.com/gityeop) |
+
+<br />
+<br />
+
 <h2> 📱 사용법 </h2>
 
 <h4>아래의 주소에 접속하시면 아라부기 서비스를 이용하실 수 있습니다.</h4>
@@ -51,7 +62,7 @@ http://www.arabugi.site
 <br />
 <br />
 
-<h2>🛠️ 기술 스택</h2> 
+<h2> 🛠️ 기술 스택 </h2> 
 
 | Frontend | Backend | AI |
 |----------|---------|----|
