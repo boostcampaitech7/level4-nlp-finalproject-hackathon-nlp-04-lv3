@@ -1,0 +1,38 @@
+[project]
+name = "backend-fastapi"
+version = "0.1.0"
+description = "Backend for fastapi project"
+authors = [
+    {name = "GJ98", email = "gangjeong22@gmail.com"},
+    {name = "minseon", email = "alstjs4739@gmail.com"},
+    {name = "seon03", email = "seonaseo1@ewhain.net"},
+]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<4.0"
+fastapi = ">=0.115.6,<0.116.0"
+sqlmodel = ">=0.0.22,<0.0.23"
+requests = ">=2.32.3,<3.0.0"
+passlib = ">=1.7.4,<2.0.0"
+python-jose = ">=3.3.0,<4.0.0"
+pydantic-settings = ">=2.7.1,<3.0.0"
+python-dotenv = ">=1.0.1,<2.0.0"
+psycopg2-binary = ">=2.9.10,<3.0.0"
+python-multipart = ">=0.0.20,<0.0.21"
+uvicorn = ">=0.34.0,<0.35.0"
+typing-extensions = ">=4.12.2,<5.0.0"
+email-validator = ">=2.0,<3.0"
+apscheduler = "^3.11.0"
+pre-commit = ">=4.1.0,<5.0.0"
+httpx = "^0.28.1"
+pytest = "^8.3.4"
+bcrypt = "^4.2.1"
+pytest-mock = "^3.14.0"
+loguru = "^0.7.3"
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^4.1.0"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
