@@ -1,0 +1,57 @@
+{
+  "compilerOptions": {
+    "incremental": true,
+    "composite": true,
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "outDir": "../dist",
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    // "allowImportingTsExtensions": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    // "emitDeclarationOnly": false,
+    "jsx": "react-jsx",
+    "declaration": true,
+    "noEmit": false,
+
+    /* Paths */
+    "baseUrl": ".",
+    "paths": {
+      "animations": ["src/animations"],
+      "animations/*": ["src/animations/*"],
+      "components": ["src/components"],
+      "components/*": ["src/components/*"],
+      "hooks": ["src/hooks"],
+      "hooks/*": ["src/hooks/*"],
+      "pages": ["src/pages"],
+      "pages/*": ["src/pages/*"],
+      "services": ["src/services"],
+      "services/*": ["src/services/*"],
+      "stores": ["src/stores"],
+      "stores/*": ["src/stores/*"],
+      "styles": ["src/styles"],
+      "styles/*": ["src/styles/*"],
+      "types": ["src/types"],
+      "types/*": ["src/types/*"],
+      "utils": ["src/utils"],
+      "utils/*": ["src/utils/*"],
+      "react/jsx-runtime": ["../node_modules/react/jsx-runtime"]
+    },
+
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.d.ts"],
+  "exclude": ["node_modules"],
+  "references": [{ "path": "./tsconfig.node.json" }]
+}

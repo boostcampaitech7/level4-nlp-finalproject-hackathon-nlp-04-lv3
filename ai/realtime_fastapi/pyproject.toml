@@ -1,0 +1,41 @@
+[project]
+name = "realtime-fastapi"
+version = "0.1.0"
+description = "AI for FastAPI project"
+authors = [
+    {name = "GJ98", email = "gangjeong22@gmail.com"},
+    {name = "minseon", email = "alstjs4739@gmail.com"},
+    {name = "seon03", email = "seonaseo1@ewhain.net"},
+    {name = "inguelee", email = "enguelee@gmail.com"},
+    {name = "jhyeop", email = "pizzauniv99@gmail.com"},
+    {name = "gityeop", email = "cauchyco517@gmail.com"}
+]
+
+readme = "README.md"
+requires-python = ">=3.10"
+
+dependencies = [
+    "fastapi (>=0.115.8,<0.116.0)",
+    "httpx (>=0.28.1,<0.29.0)",
+    "uvicorn (>=0.34.0,<0.35.0)",
+    "python-dotenv (>=1.0.1,<2.0.0)",
+    "requests (>=2.32.3,<3.0.0)",
+    "google-generativeai (>=0.8.4,<0.9.0)",
+    "pandas (>=2.2.3,<3.0.0)",
+    "openai (>=1.61.1,<2.0.0)",
+    "pydantic (>=2.10.6,<3.0.0)",
+    "logging (>=0.4.9.6,<0.5.0.0)",
+    "requests (>=2.32.3,<3.0.0)"
+]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.dependencies]
+
+
+[tool.poetry.group.dev.dependencies]
+commitizen = "^4.1.1"
+pre-commit = "^4.1.0"
+pytest = "^8.3.4"

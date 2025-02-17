@@ -1,0 +1,71 @@
+name: Build & Deploy Arabugi Backend Image
+
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - .github/workflows/build_backend_image.yaml
+      - backend/app.py
+      - backend/api/**
+      - backend/core/**
+      - backend/models/**
+      - backend/schemas/**
+      - backend/services/**
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        ref: develop
+
+    # Docker Hub 로그인 (보안 강화)
+    - name: Login to Docker Hub
+      run: |
+        echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+    # Docker 이미지 빌드 (캐시 적용)
+    - name: Build Docker Image
+      run: |
+        docker build --build-arg DB_HOST=${{ secrets.DB_HOST }} \
+                     --build-arg DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+                     --build-arg ALGORITHM=${{ secrets.ALGORITHM }} \
+                     --build-arg SECRET_KEY=${{ secrets.SECRET_KEY }} \
+                     --build-arg EXPIRE_MINUTES=${{ secrets.EXPIRE_MINUTES }} \
+                     --tag ${{ secrets.DOCKER_REPO }}:backend-${{ github.sha }} ./backend
+
+    # Docker 이미지 태깅 (latest 태그 추가)
+    - name: Tag Docker Image
+      run: |
+        docker tag ${{ secrets.DOCKER_REPO }}:backend-${{ github.sha }} ${{ secrets.DOCKER_REPO }}:backend-latest
+
+    # Docker Hub로 이미지 푸시
+    - name: Push Docker Image
+      run: |
+        docker push ${{ secrets.DOCKER_REPO }}:backend-${{ github.sha }}
+        docker push ${{ secrets.DOCKER_REPO }}:backend-latest
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: NCP login and pull & run docker image
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.BACKEND_ADDRESS }}
+          username: ${{ secrets.NCP_USERNAME }}
+          password: ${{ secrets.BACKEND_PASSWORD }}
+          port: ${{ secrets.NCP_PORT }}
+          script: |
+            echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+            sudo docker stop arabugi-backend || true
+            sudo docker rm -f arabugi-backend || true
+            sudo docker rmi ${{ secrets.DOCKER_REPO }}:backend-latest || true
+            sudo docker pull ${{ secrets.DOCKER_REPO }}:backend-latest
+            docker run -d --name arabugi-backend -e TZ=Asia/Seoul -p 8000:8000 ${{ secrets.DOCKER_REPO }}:backend-latest
