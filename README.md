@@ -3,9 +3,9 @@
 <div align="center">
   <img width="800" alt="프로젝트 소개 1" src="https://github.com/user-attachments/assets/e0901ac3-2314-4b0d-96b6-c14d21a115e0" />
   <div>
-    <a href=""> 🔗 랩업리포트 보러가기</a>
+    <a href="https://github.com/boostcampaitech7/level4-nlp-finalproject-hackathon-nlp-04-lv3/blob/main/docs/%E1%84%82%E1%85%A6%E1%84%8B%E1%85%B5%E1%84%87%E1%85%A5%20%E1%84%8F%E1%85%B3%E1%86%AF%E1%84%85%E1%85%A1%E1%84%8B%E1%85%AE%E1%84%83%E1%85%B3%20%E1%84%80%E1%85%B5%E1%84%8B%E1%85%A5%E1%86%B8%20%E1%84%92%E1%85%A2%E1%84%8F%E1%85%A5%E1%84%90%E1%85%A9%E1%86%AB%20Wrap-up%20Report.pdf"> 🔗 랩업리포트 보러가기</a>
     <br />
-    <a href=""> 🔗 최종발표자료 보러가기</a>
+    <a href="https://github.com/boostcampaitech7/level4-nlp-finalproject-hackathon-nlp-04-lv3/blob/main/docs/NLP_04%E1%84%8C%E1%85%A9_%E1%84%82%E1%85%A6%E1%84%8B%E1%85%B5%E1%84%87%E1%85%A5%20%E1%84%8F%E1%85%B3%E1%86%AF%E1%84%85%E1%85%A1%E1%84%8B%E1%85%AE%E1%84%83%E1%85%B3_%E1%84%82%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%92%E1%85%A1%E1%86%A8%E1%84%89%E1%85%B3%E1%86%B8%E1%84%8C%E1%85%A1%E1%84%85%E1%85%B3%E1%86%AF%20%E1%84%8B%E1%85%B1%E1%84%92%E1%85%A1%E1%86%AB%20%E1%84%8B%E1%85%A5%E1%84%92%E1%85%B1%E1%84%85%E1%85%A7%E1%86%A8%E1%84%86%E1%85%AE%E1%86%AB%E1%84%92%E1%85%A2%E1%84%85%E1%85%A7%E1%86%A8%20%E1%84%92%E1%85%A1%E1%86%A8%E1%84%89%E1%85%B3%E1%86%B8%20%E1%84%89%E1%85%A5%E1%84%87%E1%85%B5%E1%84%89%E1%85%B3.pdf"> 🔗 최종발표자료 보러가기</a>
   </div>
 </div>
 
